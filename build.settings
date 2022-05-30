@@ -1,0 +1,68 @@
+settings =
+{
+    splashScreen = 
+    {
+        enable = false
+    },
+
+    orientation =
+    {
+        default = "portrait",  --initial launch orientation
+        supported = { "portrait" },  --table of allowed options for auto-orientation
+    },
+
+    android = 
+    {
+        usesPermissions = 
+        {
+            --"android.permission.INTERNET",
+        },
+    },
+
+    iphone = 
+    {
+        plist = 
+        {
+            xcassets = "Images.xcassets",
+            UIStatusBarHidden = true,
+            CFBundleDisplayName = "bilgi",
+            CFBundleName = "bilgi",
+
+            CFBundleIconFiles = {
+                "Icon-40.png",
+                "Icon-58.png",
+                "Icon-76.png",
+                "Icon-80.png",
+                "Icon-87.png",
+                "Icon-120.png",
+                "Icon-152.png",
+                "Icon-167.png",
+                "Icon-180.png",
+            },
+
+            CFBundleLocalizations =
+            {
+                "en",  --English
+                "tr",  --Turkish
+            },
+        },
+    },
+
+    plugins =
+    {
+        ["CoronaProvider.native.popup.social"] = { publisherId = "com.coronalabs" },
+    },
+
+    excludeFiles = 
+    {
+        all = { "*.pdn", "storeFiles*", ".git*", "*.md" },
+
+        ios = {"Icon-*dpi.png", "Icon*.ico", "Icon*.icns", "Icon-Amazon.png", "IconNotificationDefault*.png", "AndroidResources*"},
+
+        osx = {"Icon*.png", "Icon*.ico", "IconNotificationDefault*.png", "AndroidResources*"},
+        
+        android = {"*.nib", "*.xcassets", "Icon-40.png", "Icon-58.png", "Icon-76.png", "Icon-80.png", "Icon-87.png", "Icon-120.png", "Icon-152.png", "Icon-167.png", "Icon-180.png", "iTunes*.png", "Icon*.ico", "Icon*.icns"},
+
+        win32 = {"*.nib", "*.xcassets", "Icon*.png", "Icon*.icns", "iTunes*.png", "IconNotificationDefault*.png", "AndroidResources*"},
+    },
+}
