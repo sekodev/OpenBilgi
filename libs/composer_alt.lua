@@ -7,6 +7,7 @@
 -- Code is MIT licensed; see https://www.coronalabs.com/links/code/license
 -- 
 -- Repository: https://github.com/coronalabs/framework-composer
+--
 -----------------------------------------------------------------------------------------
 
 local Library = require "CoronaLibrary"
