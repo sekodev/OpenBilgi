@@ -4,4 +4,6 @@ OpenBilgi is the open source version of the trivia/quiz game [*bilgi*](https://p
 
 ## Engine
 
-You need [Solar2D](https://solar2d.com/) to compile and build the project. You can find source code and latest releases on [Solar2D GitHub](https://github.com/coronalabs/corona/).
+You need [Solar2D](https://solar2d.com/) to compile and build the project. 
+Source code and latest releases on [Solar2D GitHub](https://github.com/coronalabs/corona/).
+[Documentation](https://docs.coronalabs.com/)
