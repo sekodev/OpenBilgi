@@ -1,3 +1,15 @@
+------------------------------------------------------------------------------
+--
+-- This file is part of OpenBilgi, a roguelike trivia game repository
+--
+-- For overview and more information on licensing please refer to README.md 
+--
+-- Home page: https://github.com/sekodev/OpenBilgi
+--
+-- Contact: info.sleepybug@gmail.com
+--
+------------------------------------------------------------------------------
+
 local translationSetup = {}
 
 function translationSetup.getData()
