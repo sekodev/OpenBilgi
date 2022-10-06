@@ -50,7 +50,7 @@ function scene:show( event )
     elseif ( phase == "did" ) then
         composer.removeHidden()
 
-        -- Wait for 1500ms and automatically change to menu screen
+        -- Wait some time and automatically change to menu screen
         tmr = timer.performWithDelay( 1500, changeScene, 1 )
     end
 end
