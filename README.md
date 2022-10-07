@@ -43,3 +43,11 @@ License information can be found in corresponding links.
 [Russo One](https://www.dafont.com/russo-one.font) by Jovanny Lemonad
 Copyright (c) 2011-2012, Jovanny Lemonad (jovanny.ru), with Reserved Font Name "Russo"
 This Font Software is licensed under the [SIL Open Font License](http://scripts.sil.org/OFL), Version 1.1.
+<br><br>
+
+## Contact information
+[e-mail](mailto:info.sleepybug@gmail.com?subject=[GitHub]%20OpenBilgi) (preferred)
+
+[Facebook](https://www.facebook.com/sleepybugstudio/)
+
+[Twitter](https://twitter.com/sleepybugstudio)
