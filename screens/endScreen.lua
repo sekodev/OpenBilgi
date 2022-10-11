@@ -13,31 +13,44 @@
 local composer = require ("libs.composer_alt")
 local scene = composer.newScene()
 
-local widget = require( "widget" )
+local widget = require ("widget")
 local particleDesigner = require( "libs.particleDesigner" )
+local random = math.random
 
-local mainGroup, menuGroup, loadingGroup, shareGroup, infoGroup
+local mainGroup, menuGroup, scoreGroup, mapGroup, rateGroup, shareGroup, infoGroup
 
-local currentLanguage = composer.getVariable( "currentLanguage" )
 local timeTransitionScene = composer.getVariable( "timeTransitionScene" )
-local fontLogo = composer.getVariable( "fontLogo" )
 local fontIngame = composer.getVariable( "fontIngame" )
+local fontLogo = composer.getVariable( "fontLogo" )
+local fontSize = display.safeActualContentHeight / 15
 
 local priceLockCoins = composer.getVariable( "priceLockCoins" )
 local coinsAvailable = composer.getVariable( "coinsAvailable" )
 local locksAvailable = composer.getVariable( "locksAvailable" )
 local savedRandomSeed = composer.getVariable( "savedRandomSeed" )
 
-local frameButtonPlay, frameButtonSettings, frameButtonCredits, frameButtonConvert, frameLockQuestionSet
-local buttonShare
+local amountQuestionSingleGame = composer.getVariable( "amountQuestionSingleGame" )     --20
+local amountQuestionSingleSet = composer.getVariable( "amountQuestionSingleSet" )   --5
+
+local isRecordBroken = false
+local isInteractionAvailable = false
+
+local scoreHigh = composer.getVariable( "scoreHigh" )
+local scoreCurrent = 0
+local questionCurrent = 0
+
+local statusGame = ""
+local coinsEarned = 0
+local coinsCompletedSet = composer.getVariable( "coinsCompletedSet" )
+
+local frameButtonPlay, frameButtonSettings, frameButtonMainMenu, frameButtonConvert, frameLockQuestionSet
+local textScore, labelScore
+local textAwardCoinSet, textAwardCoinEarned, textAwardLock
+local mapPin
 
 local tableSoundFiles = {}
 local tableTimers = {}
-
-local isInteractionAvailable = true
-
-local rectAnimation
-local animateLoading
+local tableCheckpoints = {}
 
 
 local function cancelTimers()
@@ -47,45 +60,37 @@ local function cancelTimers()
     end
 end
 
-local function resumeTimers()
-    for i = #tableTimers, 1, -1 do
-        timer.resume( tableTimers[i] )
-    end
-end
-
-local function pauseTimers()
-    for i = #tableTimers, 1, -1 do
-        timer.pause( tableTimers[i] )
-    end
-end
-
 local function cleanUp()
-    Runtime:removeEventListener( "enterFrame", animateLoading )
-    Runtime:removeEventListener( "system", onSystemEvent )
-    
     cancelTimers()
     transition.cancel( )
+
+    if (#tableCheckpoints > 0) then
+        for i = #tableCheckpoints, 1, -1 do
+            tableCheckpoints[i] = {}
+            table.remove( tableCheckpoints, i )
+        end
+    end
 end
 
--- Change scene
-local function hideActiveCard()
-    local isSaveAvailable = false
-
-    if (savedRandomSeed ~= 0) then
-        isSaveAvailable = true
+local function clearDisplayGroup(targetGroup, callSource)
+    if (callSource == nil) then
+        callSource = ""
     end
 
-    -- Pass current scene name, lock and save status
-    local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, 
-    params = {callSource = "menuScreen", isSetLocked = frameLockQuestionSet.isActivated, isSaveAvailable = isSaveAvailable}}
-    composer.gotoScene( "screens.gameScreen", optionsChangeScene )
-end
-
-local function clearDisplayGroup(targetGroup)
     for i = targetGroup.numChildren, 1, -1 do
         display.remove( targetGroup[i] )
         targetGroup[i] = nil
     end
+end
+
+local function showMailUI()
+    local mailAddress = "info.sleepybug@gmail.com"
+    local mailSubject = sozluk.getString("sendSupportMailSubject")
+    local mailBody = sozluk.getString("sendSupportMailBody")
+
+    local mailOptions = { to = mailAddress, subject = mailSubject, body = mailBody }
+
+    native.showPopup( "mail", mailOptions )
 end
 
 -- Show share UI based on the operating system
@@ -123,7 +128,8 @@ local function showShareQR()
     backgroundShade.id = "shareCancel"
     backgroundShade:addEventListener( "touch", handleShareTouch )
 
-    -- QR codes will be picked depending on the theme selection
+
+    -- QR codes will be picked depending on the theme selection-- Handles touch events when in-game share UI is shown
     local fileQRCode = "assets/other/QRCode.png"
     if (composer.getVariable( "currentTheme" ) == "dark") then
         fileQRCode = "assets/other/QRCode.png"
@@ -179,7 +185,6 @@ function handleShareTouch(event)
     end
     return true
 end
-
 -- Create share UI that shows two options - QR code or system(OS) share UI
 local function showShareUI()
     local backgroundShade = display.newRect( shareGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
@@ -272,29 +277,10 @@ local function showShareUI()
     buttonShareQR.y = buttonShareLink.y - heightShareButtons - distanceChoices
     buttonBack.y = buttonShareQR.y - heightShareButtons - distanceChoices
 end
-
--- Show rating UI depending on the operating system
-local function showRateUI()
-    if (system.getInfo("platform") == "ios" or system.getInfo("platform") == "macos" or system.getInfo("platform") == "tvos") then
-        -- local idAppStore = "1234567890" -- placeholder
-        -- https://solar2dmarketplace.com/plugins?ReviewPopUp_tech-scotth
-    else
-        local namePackage = composer.getVariable( "packageName" )
-        local storeSupported = { "google" }
-
-        local optionsRateGame = {
-            --iOSAppId = idAppStore,
-            androidAppPackageName = namePackage,
-            supportedAndroidStores = storeSupported
-        }
-        native.showPopup( "appStore", optionsRateGame )
-    end
-end
-
 -- Create warning box to give user information about the lock system
 local function showLockInformation()
     infoGroup.alpha = 0
-
+    
     local backgroundShade = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
     backgroundShade:setFillColor( unpack(themeData.colorBackground) )
     backgroundShade.alpha = 1
@@ -306,7 +292,7 @@ local function showLockInformation()
 
     local widthLockInfoButtons = frameLockInformation.width / 1.1
     local heightLockInfoButtons = display.safeActualContentHeight / 10
-    local yDistanceElements = heightLockInfoButtons / 2
+    local yDistanceElements = heightLockInfoButtons / 3
     local fontSizeInformation = display.safeActualContentHeight / 30
 
     local colorButtonFillDefault = themeData.colorButtonFillDefault
@@ -562,30 +548,6 @@ local function showCoinsConverted( buttonConverter, locksConverted, coinsConvert
             table.insert( tableTimers, timerWaitCoinsConverted )
         end } )
 end
-
--- Animate conversion elements to draw players' attention to the game mechanic
-local function showConversionAvailable()
-    local timeShake = 75
-    local rotationShake = 20
-
-    frameButtonConvert.textLabel:setFillColor( unpack(themeData.colorButtonFillTrue) )
-
-    transition.to( frameButtonConvert.textLabel, { time = timeShake, xScale = 1.5, yScale = 1.5, onComplete = function ()
-            transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = rotationShake, onComplete = function ()
-                transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = -rotationShake, onComplete = function ()
-                        transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = rotationShake, onComplete = function ()
-                            transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = -rotationShake, onComplete = function ()
-                                transition.to( frameButtonConvert.textLabel, { time = timeShake, xScale = 1, yScale = 1, onComplete = function ()
-                                        frameButtonConvert.textLabel.rotation = 0
-                                        frameButtonConvert.textLabel:setFillColor( unpack(themeData.colorTextDefault) )
-                                    end })
-                                end })
-                        end })
-                    end })
-            end })
-        end })
-end
-
 -- Visually, show player that they are using the lock system and calculate remaining locks
 local function useLock()
     local colorTextDefault = themeData.colorTextDefault
@@ -627,8 +589,8 @@ end
 
 -- Handle touch events for every visible UI element
 function handleTouch(event)
-    if (event.phase == "began") then
-        if (isInteractionAvailable) then
+	if (event.phase == "began") then
+		if (isInteractionAvailable) then
             local colorButtonOver = themeData.colorButtonOver
             local colorButtonFillTrue = themeData.colorButtonFillTrue
             local colorButtonFillWrong = themeData.colorButtonFillWrong
@@ -636,10 +598,10 @@ function handleTouch(event)
             local colorTextOver = themeData.colorTextOver
             local colorTextSelected = themeData.colorTextSelected
 
-            if (event.target.id == "play" or 
-                event.target.id == "continue" or
-                event.target.id == "settings" or
-                event.target.id == "credits") then
+            if (event.target.id == "mainMenu" or 
+                event.target.id == "leaderboard" or
+                event.target.id == "restart" or
+                event.target.id == "settings") then
 
                 isInteractionAvailable = false
 
@@ -648,125 +610,69 @@ function handleTouch(event)
                 event.target.textLabel:setFillColor( unpack(colorTextOver) )
                 event.target:setStrokeColor( unpack(colorButtonOver) )
 
-                -- Stop particle effects before scene transition starts
-                menuGroup.emitterFXLeft:stop()
-                menuGroup.emitterFXRight:stop()
-                audio.fadeOut( { channel = 3, time = 1000 } )
-
                 audio.play( tableSoundFiles["answerChosen"], {channel = 2} )
 
-                if (event.target.id == "play") then
-                    audio.fadeOut( { channel = channelMusicBackground, time = 750 } )
+                local timeWaitChoice = 500
+                local targetScreen = ""
+
+                if (event.target.id == "mainMenu") then
+                    targetScreen = "menuScreen"
+                elseif (event.target.id == "leaderboard") then
+                    targetScreen = "leaderboard"
+                elseif (event.target.id == "restart") then
+                    targetScreen = "gameScreen"
+                    timeWaitChoice = 750
+
+                    audio.fadeOut( { channel = channelMusicBackground, time = timeWaitChoice } )
 
                     -- if lock is enabled, show player that a lock is used
                     if (frameLockQuestionSet.isActivated) then
                         useLock()
                     end
-
-                    -- Wait some time before changing the scene
-                    -- One reason for this is the particle effects that we need to hide
-                    -- If particle effects are not properly handled, it doesn't look good
-                    -- Other reason is a design choice. It mimics the ingame action of choosing the answer
-                    local timeWaitChoice = 1000
-
-                    local timerHighlightChoice = timer.performWithDelay( timeWaitChoice, function () 
-                            event.target:setFillColor( unpack(colorButtonFillTrue) )
-                            event.target.textLabel:setFillColor( unpack(colorTextSelected) )
-                            event.target:setStrokeColor( unpack(colorButtonFillTrue) )
-                            
-                            audio.play( tableSoundFiles["answerRight"], {channel = 2} )
-
-                            local timerChangeScene = timer.performWithDelay( timeWaitChoice * 2, function () 
-                                    hideActiveCard()
-                                end, 1 )
-                            table.insert( tableTimers, timerChangeScene )
-                        end, 1 )
-                    table.insert( tableTimers, timerHighlightChoice )
-                elseif (event.target.id == "continue") then
-                    audio.fadeOut( { channel = channelMusicBackground, time = 750 } )
-
-                    local timeWaitChoice = 1000
-
-                    local timerHighlightChoice = timer.performWithDelay( timeWaitChoice, function () 
-                            event.target:setFillColor( unpack(colorButtonFillTrue) )
-                            event.target.textLabel:setFillColor( unpack(colorTextSelected) )
-                            event.target:setStrokeColor( unpack(colorButtonFillTrue) )
-                            
-                            audio.play( tableSoundFiles["answerRight"], {channel = 2} )
-
-                            local timerChangeScene = timer.performWithDelay( timeWaitChoice * 2, function () 
-                                    hideActiveCard()
-                                end, 1 )
-                            table.insert( tableTimers, timerChangeScene )
-                        end, 1 )
-                    table.insert( tableTimers, timerHighlightChoice )
                 elseif (event.target.id == "settings") then
-                    local timeWaitChoice = 500
-
-                    -- Transition emitters to 0 alpha because stopping particles takes more time
-                    transition.to( menuGroup.emitterFXLeft, { time = timeWaitChoice, alpha = 0 } )
-                    transition.to( menuGroup.emitterFXRight, { time = timeWaitChoice, alpha = 0, onComplete = function ()
-                        event.target:setFillColor( unpack(colorButtonFillTrue) )
-                        event.target.textLabel:setFillColor( unpack(colorTextSelected) )
-                        event.target:setStrokeColor( unpack(colorButtonFillTrue) )
-
-                        audio.play( tableSoundFiles["answerRight"], {channel = 2} )
-
-                        local timerChangeScene = timer.performWithDelay( timeWaitChoice, function () 
-                                local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "menuScreen"}}
-                                composer.gotoScene( "screens.settingScreen", optionsChangeScene )
-                            end, 1 )
-                        table.insert( tableTimers, timerChangeScene )
-                    end } )
-                elseif (event.target.id == "credits") then
-                    local timeWaitChoice = 500
-
-                    transition.to( menuGroup.emitterFXLeft, { time = timeWaitChoice, alpha = 0 } )
-                    transition.to( menuGroup.emitterFXRight, { time = timeWaitChoice, alpha = 0, onComplete = function ()
-                        event.target:setFillColor( unpack(colorButtonFillTrue) )
-                        event.target.textLabel:setFillColor( unpack(colorTextSelected) )
-                        event.target:setStrokeColor( unpack(colorButtonFillTrue) )
-
-                        audio.play( tableSoundFiles["answerRight"], {channel = 2} )
-
-                        local timerChangeScene = timer.performWithDelay( timeWaitChoice, function () 
-                                local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "menuScreen"}}
-                                composer.gotoScene( "screens.creditScreen", optionsChangeScene )
-                            end, 1 )
-                        table.insert( tableTimers, timerChangeScene )
-                    end } )
+                    targetScreen = "settingScreen"
                 end
+                
+
+                -- Wait some time before changing the scene
+                -- One reason for this is the particle effects that we need to hide
+                -- If particle effects are not properly handled, it doesn't look good
+                -- Other reason is a design choice. It mimics the ingame action of choosing the answer
+                local timerHighlightChoice = timer.performWithDelay( timeWaitChoice, function () 
+                        event.target:setFillColor( unpack(colorButtonFillTrue) )
+                        event.target.textLabel:setFillColor( unpack(colorTextSelected) )
+                        event.target:setStrokeColor( unpack(colorButtonFillTrue) )
+
+                        audio.play( tableSoundFiles["answerRight"], {channel = 2} )
+
+                        local timerChangeScene = timer.performWithDelay( timeWaitChoice, function () 
+                                local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, 
+                                    params = {callSource = "endScreen", scoreCurrent = scoreCurrent,
+                                     isSetLocked = frameLockQuestionSet.isActivated, statusGame = statusGame}}
+                                composer.gotoScene( "screens." .. targetScreen, optionsChangeScene )
+                            end, 1 )
+                        table.insert( tableTimers, timerChangeScene )
+                    end, 1 )
+                table.insert( tableTimers, timerHighlightChoice )
             elseif (event.target.id == "shareSocial") then
                 audio.play( tableSoundFiles["answerChosen"], {channel = 2} )
 
                 event.target:setFillColor( unpack(themeData.colorButtonOver) )
 
                 showShareUI()
-            elseif (event.target.id == "rateGame") then
+            elseif (event.target.id == "showStats") then
+                isInteractionAvailable = false
+
                 audio.play( tableSoundFiles["answerChosen"], {channel = 2} )
 
                 event.target:setFillColor( unpack(themeData.colorButtonOver) )
 
-                showRateUI()
-            elseif (event.target.id == "showStats") then
-                isInteractionAvailable = false
-
-                menuGroup.emitterFXLeft:stop()
-                menuGroup.emitterFXRight:stop()
-                audio.fadeOut( { channel = 3, time = 500 } )
-
-                audio.play( tableSoundFiles["answerChosen"], {channel = 2} )
-
-                local timeWaitChoice = 500
-
-                transition.to( menuGroup.emitterFXLeft, { time = timeWaitChoice, alpha = 0 } )
-                transition.to( menuGroup.emitterFXRight, { time = timeWaitChoice, alpha = 0, onComplete = function ()
-                        local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "menuScreen"}}
-                        composer.gotoScene( "screens.statsScreen", optionsChangeScene )
-                    end})
+                local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene,
+                 params = {callSource = "endScreen", scoreCurrent = scoreCurrent, statusGame = statusGame}}
+                composer.gotoScene( "screens.statsScreen", optionsChangeScene )
             elseif (event.target.id == "convertCurrency") then
                 isInteractionAvailable = false
-                
+
                 -- Convert coins to locks if possible
                 -- Else, if player doesn't have enough funds, show minimum number of coins needed to get a single(1) lock
                 if (coinsAvailable >= priceLockCoins) then
@@ -811,10 +717,10 @@ function handleTouch(event)
                         end })
                 end
             end
-        end
+		end
     elseif (event.phase == "ended" or "cancelled" == event.phase) then
         if (isInteractionAvailable) then
-            if (event.target.id == "shareSocial" or "rateGame" == event.target.id) then
+            if (event.target.id == "shareSocial") then
                 event.target:setFillColor( unpack(themeData.colorButtonDefault) )
             elseif (event.target.id == "closeLockInfo") then
                 clearDisplayGroup(infoGroup)
@@ -871,24 +777,253 @@ function handleTouch(event)
     return true
 end
 
+-- Start fireworks on high score
+local function shootFireworks()
+    local numFireworks = random(3, 5)
+
+    for i = 1, numFireworks do
+        local timerFire = timer.performWithDelay( 1000 * (i - 1), function () 
+                local emitterFireworks = particleDesigner.newEmitter( "assets/particleFX/fireworks.json" )
+                emitterFireworks.x = random(display.safeActualContentWidth)
+                emitterFireworks.y = random(display.safeActualContentHeight)
+                scoreGroup:insert(emitterFireworks)
+
+                audio.play( tableSoundFiles["fireworks"], {channel = 2, loops = numFireworks} )
+            end, 1 )
+        table.insert(tableTimers, timerFire)
+    end
+end
+
+-- Animate conversion elements to draw players' attention to the game mechanic
+local function showConversionAvailable()
+    local timeShake = 75
+    local rotationShake = 20
+
+    frameButtonConvert.textLabel:setFillColor( unpack(themeData.colorButtonFillTrue) )
+
+    transition.to( frameButtonConvert.textLabel, { time = timeShake, xScale = 1.5, yScale = 1.5, onComplete = function ()
+            transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = rotationShake, onComplete = function ()
+                transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = -rotationShake, onComplete = function ()
+                        transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = rotationShake, onComplete = function ()
+                            transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = -rotationShake, onComplete = function ()
+                                transition.to( frameButtonConvert.textLabel, { time = timeShake, xScale = 1, yScale = 1, onComplete = function ()
+                                        frameButtonConvert.textLabel.rotation = 0
+                                        frameButtonConvert.textLabel:setFillColor( unpack(themeData.colorTextDefault) )
+                                    end })
+                                end })
+                        end })
+                    end })
+            end })
+        end })
+end
+
+-- Show number of locks the player earned in this run
+local function showLocksEarned()
+    if (textAwardLock ~= nil) then
+        transition.to( textAwardLock, { time = 500, y = menuGroup.textNumLocks.y, alpha = 0, onComplete = function ()
+            locksAvailable = locksAvailable + 1
+            menuGroup.textNumLocks.text = locksAvailable
+
+            composer.setVariable( "locksAvailable", locksAvailable )
+
+            savePreferences()
+        end } )
+    end
+end
+
+-- Show number of coins player earned in this run
+local function showCoinsEarned()
+    transition.to( textAwardCoinEarned, { time = 500, y = menuGroup.textNumCoins.y, alpha = 0, onComplete = function ()
+        coinsAvailable = coinsAvailable + coinsEarned
+
+        local currencyShort, currencyAbbreviation = formatCurrencyString(coinsAvailable)
+        menuGroup.textNumCoins.text = currencyShort .. currencyAbbreviation
+        
+        -- If player completes a set successfully, will earn a fixed amount of coins(coinsCompletedSet) + coinsEarned
+        if (textAwardCoinSet) then
+            transition.to( textAwardCoinSet, { time = 500, y = menuGroup.textNumCoins.y, alpha = 0, onComplete = function ()
+                coinsAvailable = coinsAvailable + coinsCompletedSet
+
+                local currencyShort, currencyAbbreviation = formatCurrencyString(coinsAvailable)
+                menuGroup.textNumCoins.text = currencyShort .. currencyAbbreviation
+
+                composer.setVariable( "coinsAvailable", coinsAvailable )
+
+                local coinsTotal = composer.getVariable( "coinsTotal" ) + coinsEarned
+                composer.setVariable( "coinsTotal", coinsTotal )
+
+                savePreferences()
+            end } )
+        else
+            composer.setVariable( "coinsAvailable", coinsAvailable )
+
+            local coinsTotal = composer.getVariable( "coinsTotal" ) + coinsEarned
+            composer.setVariable( "coinsTotal", coinsTotal )
+
+            savePreferences()
+        end
+    end } )
+end
+
+-- Show player progress in single run, x / 20(amountQuestionSingleGame) questions
+local function showProgressMade()
+    -- Check if progress map is created
+    if (mapPin) then
+        transition.to( mapPin, { time = 1000, x = mapPin.xTarget, onComplete = function () 
+                -- If (questionCurrent > 1) then     -- test line
+                -- Shake pin if player is more than 3/4 of the way
+                if (questionCurrent >= amountQuestionSingleGame - amountQuestionSingleSet) then
+                    local timeShake = 150
+                    local rotationShake = 40
+
+                    transition.to( mapPin, { time = timeShake, xScale = 1.5, yScale = 1.5, onComplete = function ()
+                            transition.to( mapPin, { time = timeShake, rotation = rotationShake, onComplete = function ()
+                                transition.to( mapPin, { time = timeShake, rotation = -rotationShake, onComplete = function ()
+                                        transition.to( mapPin, { time = timeShake, rotation = rotationShake, onComplete = function ()
+                                            transition.to( mapPin, { time = timeShake, rotation = -rotationShake, onComplete = function ()
+                                                transition.to( mapPin, { time = timeShake, xScale = 1, yScale = 1, onComplete = function ()
+                                                        mapPin.rotation = 0
+                                                    end })
+                                                end })
+                                        end })
+                                    end })
+                            end })
+                        end })
+                end
+            end } )
+    end
+end
+
+-- When every UI element becomes visible on the screen, show progress map and then, player progress
+local function showProgressMap()
+    if (mapGroup.numChildren > 0) then
+        transition.to( mapGroup, { time = 250, alpha = 1, onComplete = function ()
+                showProgressMade()
+            end} )
+    end
+end
+
+-- Show player that they scored better than before
+local function showHighScore()
+    shootFireworks()
+
+    transition.to( textScore, {time = 2000, xScale = 1, yScale = 1, onComplete = function () 
+            transition.to( labelScore, {time = 1000, xScale = 1, yScale = 1, alpha = 1, onComplete = function () 
+                    showProgressMap()
+                    
+                    transition.to( menuGroup, {time = 250, alpha = 1, onComplete = function ()
+                            isInteractionAvailable = true
+
+                            local timerInformation = timer.performWithDelay( 1000, function ()
+                                    showLocksEarned()
+                                    showCoinsEarned()
+                                end, 1 )
+                            table.insert( tableTimers, timerInformation )
+                        end} )
+                end} )
+        end} )
+end
+
+local function checkHighScore()
+    if (scoreCurrent > scoreHigh) then
+        isRecordBroken = true
+
+        composer.setVariable( "scoreHigh", scoreCurrent )
+        savePreferences()
+    end
+end
+
+local function createProgressMap(yButtonTop)
+    -- Hide progress map if record is broken
+    -- It will be made visible after fireworks are over
+    if (isRecordBroken) then
+        mapGroup.alpha = 0
+    end
+
+    local colorTextDefault = themeData.colorTextDefault
+
+    local mapLine = display.newRect( mapGroup, display.contentCenterX, 0, display.safeActualContentWidth / 1.2, 15 )
+    mapLine:setFillColor( unpack(colorTextDefault) )
+    mapLine.y = yButtonTop - mapLine.height
+
+
+    -- Add +1 to take starting point into the mix
+    local amountCheckpoints = (amountQuestionSingleGame / amountQuestionSingleSet) + 1
+    local widthCheckpoint = 10
+    local widthBetweenCheckpoints = mapLine.width / 4
+
+    for i = 1, amountCheckpoints do
+        local mapCheckpoint = display.newRect( mapGroup, 0, 0, widthCheckpoint, mapLine.height * 2 )
+        mapCheckpoint:setFillColor( unpack(colorTextDefault) )
+        if (i == 1) then
+            mapCheckpoint.x = mapLine.x - mapLine.width / 2 + mapCheckpoint.width / 2
+        else
+            mapCheckpoint.x = tableCheckpoints[i - 1].x + widthBetweenCheckpoints
+        end
+
+        mapCheckpoint.y = mapLine.y
+
+        table.insert(tableCheckpoints, mapCheckpoint) 
+    end
+
+    local widthMapPin = mapLine.height * 2.5
+    mapPin = display.newImageRect( mapGroup, "assets/menu/pinMap.png", widthMapPin, widthMapPin )
+    mapPin:setFillColor( unpack(colorTextDefault) )
+
+
+    mapPin.x = mapLine.x - mapLine.width / 2 + widthCheckpoint / 2
+    mapPin.y = mapLine.y - mapLine.height / 2 - mapPin.height
+
+    local xPositionMapAbsolute = (questionCurrent * mapLine.width) / amountQuestionSingleGame
+    mapPin.xTarget = mapLine.x - mapLine.width / 2 + widthCheckpoint / 2 + xPositionMapAbsolute
+end
+
+local function createScoreElements()
+    local optionsTextScore = { text = scoreCurrent, font = fontLogo, fontSize = fontSize }
+    textScore = display.newText( optionsTextScore )
+    textScore:setFillColor( unpack( themeData.colorTextDefault ) )
+    textScore.x = display.contentCenterX
+    if (mapPin ~= nil) then
+        textScore.y = mapPin.y - mapPin.height / 2 - textScore.height
+    else
+        textScore.y = frameButtonPlay.y - frameButtonPlay.height / 2 - textScore.height * 1.5
+    end
+    scoreGroup:insert(textScore)
+
+    local optionsLabelScore = { text = sozluk.getString("score"), font = fontLogo, fontSize = fontSize / 1.1 }
+    labelScore = display.newText( optionsLabelScore )
+    labelScore:setFillColor( unpack(themeData.colorButtonFillWrong) )
+    labelScore.x = display.contentCenterX
+    labelScore.y = textScore.y - textScore.height / 2 - labelScore.height / 1.5
+    scoreGroup:insert(labelScore)
+
+
+    if (isRecordBroken) then
+        textScore.xScale, textScore.yScale = display.safeActualContentHeight / 3, textScore.xScale
+
+        labelScore.text = sozluk.getString("highScore")
+        labelScore.alpha = 0
+        labelScore.xScale, labelScore.yScale = textScore.xScale, textScore.yScale
+    end
+end
+
 local function createMenuElements()
     local background = display.newRect( menuGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
-    background.id = "background"
     background:setFillColor( unpack(themeData.colorBackground) )
-    background:addEventListener( "touch", function () return true end )
 
 
     local widthUIButton = display.safeActualContentWidth / 9
     local heightUIButton = widthUIButton
 
-    local colorButtonOver = themeData.colorButtonOver
-    local colorButtonDefault = themeData.colorButtonDefault
+    local widthMenuButtons = display.safeActualContentWidth / 1.5
+    local fontSizeButtons = display.safeActualContentHeight / 30
     local cornerRadiusButtons = themeData.cornerRadiusButtons
     local strokeWidthButtons = themeData.strokeWidthButtons
+    local colorButtonDefault = themeData.colorButtonDefault
+    local colorButtonOver = themeData.colorButtonOver
     local colorButtonFillDefault = themeData.colorButtonFillDefault
     local colorTextDefault = themeData.colorTextDefault
     local colorButtonStroke = themeData.colorButtonStroke
-
 
     local optionsButtonShare = 
     {
@@ -898,30 +1033,11 @@ local function createMenuElements()
         height = heightUIButton,
         onEvent = handleTouch,
     }
-    buttonShare = widget.newButton( optionsButtonShare )
+    local buttonShare = widget.newButton( optionsButtonShare )
     buttonShare:setFillColor( unpack(colorButtonDefault) )
     buttonShare.x = display.safeActualContentWidth - buttonShare.width / 1.2
     buttonShare.y = display.safeActualContentHeight - buttonShare.height / 1.2
     menuGroup:insert(buttonShare)
-
-    local optionsButtonRate = 
-    {
-        id = "rateGame",
-        defaultFile = "assets/menu/rateGame.png",
-        width = widthUIButton,
-        height = heightUIButton,
-        onEvent = handleTouch,
-    }
-    local buttonRate = widget.newButton( optionsButtonRate )
-    buttonRate:setFillColor( unpack(colorButtonDefault) )
-    buttonRate.x = display.contentCenterX
-    buttonRate.y = display.safeActualContentHeight - buttonRate.height / 1.2
-    menuGroup:insert(buttonRate)
-
-    -- A rate game button will be displayed if we asked player to rate the game
-    if (not composer.getVariable( "askedRateGame" )) then
-        buttonRate.isVisible = false
-    end
 
     local optionsButtonStats = 
     {
@@ -937,66 +1053,71 @@ local function createMenuElements()
     buttonStats.y = display.safeActualContentHeight - buttonStats.height / 1.2
     menuGroup:insert(buttonStats)
 
-    local widthMenuButtons = display.safeActualContentWidth / 1.5
-    local fontSizeButtons = display.safeActualContentHeight / 30
+    frameButtonMainMenu = display.newRoundedRect( display.contentCenterX, 0, widthMenuButtons, 0, cornerRadiusButtons )
+    frameButtonMainMenu.id = "mainMenu"
+    frameButtonMainMenu:setFillColor( unpack( colorButtonFillDefault ) )
+    frameButtonMainMenu.strokeWidth = strokeWidthButtons
+    frameButtonMainMenu:setStrokeColor( unpack( colorButtonStroke ) )
+    frameButtonMainMenu:addEventListener( "touch", handleTouch )
+    menuGroup:insert( frameButtonMainMenu )
 
-    frameButtonCredits = display.newRoundedRect( display.contentCenterX, 0, widthMenuButtons, 0, cornerRadiusButtons )
-    frameButtonCredits.id = "credits"
-    frameButtonCredits:setFillColor( unpack(colorButtonFillDefault) )
-    frameButtonCredits.strokeWidth = strokeWidthButtons
-    frameButtonCredits:setStrokeColor( unpack(colorButtonStroke) )
-    frameButtonCredits:addEventListener( "touch", handleTouch )
-    menuGroup:insert( frameButtonCredits )
-
-    local optionsLabelCredits = { text = sozluk.getString("credits"), 
+    local optionsLabelMainMenu = { text = sozluk.getString("mainMenu"), 
         height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
-    frameButtonCredits.textLabel = display.newText( optionsLabelCredits )
-    frameButtonCredits.textLabel:setFillColor( unpack(colorTextDefault) )
-    frameButtonCredits.textLabel.x = frameButtonCredits.x
-    menuGroup:insert(frameButtonCredits.textLabel)
+    frameButtonMainMenu.textLabel = display.newText( optionsLabelMainMenu )
+    frameButtonMainMenu.textLabel:setFillColor( unpack( colorTextDefault ) )
+    frameButtonMainMenu.textLabel.x = frameButtonMainMenu.x
+    menuGroup:insert(frameButtonMainMenu.textLabel)
 
-    frameButtonCredits.height = frameButtonCredits.textLabel.height * 2
-    frameButtonCredits.y = buttonShare.y - buttonShare.height / 2 - frameButtonCredits.height
-    frameButtonCredits.textLabel.y = frameButtonCredits.y
+    frameButtonMainMenu.height = frameButtonMainMenu.textLabel.height * 2
+    frameButtonMainMenu.y = buttonShare.y - buttonShare.height / 2 - frameButtonMainMenu.height
+    frameButtonMainMenu.textLabel.y = frameButtonMainMenu.y
 
-    frameButtonSettings = display.newRoundedRect( display.contentCenterX, 0, widthMenuButtons, frameButtonCredits.height, cornerRadiusButtons )
+    frameButtonSettings = display.newRoundedRect( display.contentCenterX, 0, widthMenuButtons, frameButtonMainMenu.height, cornerRadiusButtons )
     frameButtonSettings.id = "settings"
-    frameButtonSettings:setFillColor( unpack(colorButtonFillDefault) )
+    frameButtonSettings:setFillColor( unpack( colorButtonFillDefault ) )
     frameButtonSettings.strokeWidth = strokeWidthButtons
-    frameButtonSettings:setStrokeColor( unpack(colorButtonStroke) )
-    frameButtonSettings.y = frameButtonCredits.y - frameButtonCredits.height / 2 - frameButtonSettings.height / 1.2
+    frameButtonSettings:setStrokeColor( unpack( colorButtonStroke ) )
+    frameButtonSettings.y = frameButtonMainMenu.y - frameButtonMainMenu.height / 2 - frameButtonSettings.height / 1.2
     frameButtonSettings:addEventListener( "touch", handleTouch )
     menuGroup:insert( frameButtonSettings )
 
     local optionsLabelSettings = { text = sozluk.getString("settings"), 
         height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
     frameButtonSettings.textLabel = display.newText( optionsLabelSettings )
-    frameButtonSettings.textLabel:setFillColor( unpack(colorTextDefault) )
+    frameButtonSettings.textLabel:setFillColor( unpack( colorTextDefault ) )
     frameButtonSettings.textLabel.x, frameButtonSettings.textLabel.y = frameButtonSettings.x, frameButtonSettings.y
     menuGroup:insert(frameButtonSettings.textLabel)
 
-    frameButtonPlay = display.newRoundedRect( display.contentCenterX, 0, widthMenuButtons, frameButtonCredits.height * 1.5, cornerRadiusButtons )
-    frameButtonPlay.id = "play"
-    frameButtonPlay:setFillColor( unpack(colorButtonFillDefault) )
+    frameButtonPlay = display.newRoundedRect( display.contentCenterX, 0, widthMenuButtons, frameButtonSettings.height * 1.5, cornerRadiusButtons )
+    frameButtonPlay.id = "restart"
+    frameButtonPlay:setFillColor( unpack( colorButtonFillDefault ) )
     frameButtonPlay.strokeWidth = strokeWidthButtons * 3
-    frameButtonPlay:setStrokeColor( unpack(colorButtonStroke) )
+    frameButtonPlay:setStrokeColor( unpack( colorButtonStroke ) )
     frameButtonPlay.y = frameButtonSettings.y - frameButtonSettings.height / 2 - frameButtonPlay.height
     frameButtonPlay:addEventListener( "touch", handleTouch )
     menuGroup:insert( frameButtonPlay )
 
 
-    -- If there is a save available, "Start" will be shown as "Continue"
-    local textLabelPlay = sozluk.getString("startGame")
-    if (savedRandomSeed ~= 0) then
-        textLabelPlay = sozluk.getString("continueGame")
-        frameButtonPlay.id = "continue"
+    -- When player fails to complete a set successfully, show "Restart" button
+    -- When player is successful, show "Continue" to convey the message that there is more
+    local labelSettings = sozluk.getString("restart")
+    if (statusGame == "success" or statusGame == "successSetUnlocked" or 
+        statusGame == "successSetNA" or statusGame == "successSetCompletedBefore" or
+        statusGame == "successEndgame") then
+        labelSettings = sozluk.getString("continue")
     end
-    local optionsLabelPlay = { text = textLabelPlay, 
+    local optionsLabelSettings = { text = labelSettings, 
         height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
-    frameButtonPlay.textLabel = display.newText( optionsLabelPlay )
-    frameButtonPlay.textLabel:setFillColor( unpack(colorTextDefault) )
+    frameButtonPlay.textLabel = display.newText( optionsLabelSettings )
+    frameButtonPlay.textLabel:setFillColor( unpack( colorTextDefault ) )
     frameButtonPlay.textLabel.x, frameButtonPlay.textLabel.y = frameButtonPlay.x, frameButtonPlay.y
     menuGroup:insert(frameButtonPlay.textLabel)
+
+    if (isRecordBroken) then
+        menuGroup.alpha = 0
+    else
+        isInteractionAvailable = true
+    end
 
 
     frameLockQuestionSet = display.newImageRect( menuGroup, "assets/menu/padlock.png", widthUIButton, heightUIButton )
@@ -1008,31 +1129,6 @@ local function createMenuElements()
     frameLockQuestionSet.alpha = 0.3
     frameLockQuestionSet.alphaInactive = frameLockQuestionSet.alpha
     frameLockQuestionSet:addEventListener( "touch", handleTouch )
-
-    
-    local optionsTitleText = { text = "?", 
-        height = 0, align = "center", font = fontLogo, fontSize = display.safeActualContentHeight / 5 }
-    local logoTitle = display.newText( optionsTitleText )
-    logoTitle:setFillColor( unpack(themeData.colorButtonFillTrue) )
-    logoTitle.x = display.contentCenterX
-    logoTitle.y = frameButtonPlay.y - frameButtonPlay.height / 2 - logoTitle.height / 1.8
-    menuGroup:insert(logoTitle)
-
-    -- Load particle file depending on selected theme
-    local fileParticleFX = "assets/particleFX/torch.json"
-    if (themeData.themeSelected == "light") then
-        fileParticleFX = "assets/particleFX/torch-light.json"
-    end
-
-    menuGroup.emitterFXLeft = particleDesigner.newEmitter( fileParticleFX )
-    menuGroup.emitterFXLeft.x = frameButtonPlay.x - frameButtonPlay.width / 3
-    menuGroup.emitterFXLeft.y = logoTitle.y + logoTitle.height / 4
-    menuGroup:insert(menuGroup.emitterFXLeft)
-
-    menuGroup.emitterFXRight = particleDesigner.newEmitter( fileParticleFX )
-    menuGroup.emitterFXRight.x = frameButtonPlay.x + frameButtonPlay.width / 3
-    menuGroup.emitterFXRight.y = menuGroup.emitterFXLeft.y
-    menuGroup:insert(menuGroup.emitterFXRight)
 
 
     --coinsAvailable = 250
@@ -1077,7 +1173,7 @@ local function createMenuElements()
     local currencyShort, currencyAbbreviation = formatCurrencyString(coinsAvailable)
     local optionsNumCoins = { text = currencyShort .. currencyAbbreviation, font = fontLogo, fontSize = fontSizeCurrency }
     menuGroup.textNumCoins = display.newText( optionsNumCoins )
-    menuGroup.textNumCoins:setFillColor( unpack( colorTextDefault ) )
+    menuGroup.textNumCoins:setFillColor( unpack(colorTextDefault) )
     menuGroup.textNumCoins.x = frameButtonPlay.x + frameButtonPlay.width / 2 - menuGroup.textNumCoins.width / 2
     menuGroup.textNumCoins.y = menuGroup.imageLock.y
     menuGroup:insert(menuGroup.textNumCoins)
@@ -1113,9 +1209,42 @@ local function createMenuElements()
     menuGroup.textCoinsConverted.xScale, menuGroup.textCoinsConverted.yScale = 0.01, 0.01
     menuGroup:insert(menuGroup.textCoinsConverted)
 
-
     frameButtonConvert.y = menuGroup.imageCoin.y
     frameButtonConvert.textLabel.y = frameButtonConvert.y
+
+
+    local optionsCoinAwardEarned = { text = "+ " .. coinsEarned, font = fontLogo, fontSize = fontSizeCurrency }
+    textAwardCoinEarned = display.newText( optionsCoinAwardEarned )
+    textAwardCoinEarned:setFillColor( unpack( colorTextDefault ) )
+    textAwardCoinEarned.x = menuGroup.textNumCoins.x
+    textAwardCoinEarned.y = menuGroup.textNumCoins.y + menuGroup.textNumCoins.height / 2 + textAwardCoinEarned.height / 1.5
+    menuGroup:insert(textAwardCoinEarned)
+
+    if (coinsEarned <= 0) then
+        textAwardCoinEarned.alpha = 0
+    end
+
+    -- If a set is completed, there is a %25 chance that a lock will be awarded
+    if (statusGame == "successSetUnlocked" or statusGame == "successSetNA" or 
+        statusGame == "successSetCompletedBefore" or statusGame == "successEndgame") then
+        local chanceEarnLocks = 25 -- %25
+        local randomChanceLocks = random(1, 100)
+        if (randomChanceLocks <= chanceEarnLocks) then
+            local optionsLockAward = { text = "+1", font = fontLogo, fontSize = fontSizeCurrency }
+            textAwardLock = display.newText( optionsLockAward )
+            textAwardLock:setFillColor( unpack( colorTextDefault ) )
+            textAwardLock.x = menuGroup.textNumLocks.x
+            textAwardLock.y = textAwardCoinEarned.y
+            menuGroup:insert(textAwardLock)
+        end
+
+        local optionsCoinAwardSet = { text = "+ " .. coinsCompletedSet, font = fontLogo, fontSize = fontSizeCurrency }
+        textAwardCoinSet = display.newText( optionsCoinAwardSet )
+        textAwardCoinSet:setFillColor( unpack( colorTextDefault ) )
+        textAwardCoinSet.x = menuGroup.textNumCoins.x
+        textAwardCoinSet.y = textAwardCoinEarned.y + textAwardCoinEarned.height / 2 + textAwardCoinSet.height / 1.5
+        menuGroup:insert(textAwardCoinSet)
+    end
 
 
     -- Show lock icon if a save file is available
@@ -1125,55 +1254,80 @@ local function createMenuElements()
     end
 end
 
--- Handle touch events for permission dialog box
-local function handlePermissionTouch(event)
-    if (event.phase == "ended") then
-        if (event.target.id == "openURL") then
-            if (event.target.underline) then
-                event.target.underline:setFillColor( unpack( themeData.colorHyperlinkDarkVisited ) )
-            end
+-- Show rating UI depending on the operating system
+local function showRateUI()
+	if (system.getInfo("platform") == "ios" or system.getInfo("platform") == "macos" or system.getInfo("platform") == "tvos") then
+		-- local idAppStore = "1234567890" -- placeholder
+        -- https://solar2dmarketplace.com/plugins?ReviewPopUp_tech-scotth
+	else
+	    local namePackage = composer.getVariable( "packageName" )
+	    local storeSupported = { "google" }
 
-            system.openURL( event.target.URL )
-        elseif (event.target.id == "acceptTerms") then
-            composer.setVariable( "isTermsPrivacyAccepted", true )
-
-            savePreferences()
-
-            clearDisplayGroup(infoGroup)
-        end
-    end
-    return true
+	    local optionsRateGame = {
+	        --iOSAppId = idAppStore,
+	        androidAppPackageName = namePackage,
+	        supportedAndroidStores = storeSupported
+	    }
+	    native.showPopup( "appStore", optionsRateGame )
+	end
 end
 
--- Show dialog box for privacy policy and terms of use permission request
--- Privacy policy and terms of use documents are linked here
-local function showPermissionRequest()
-    infoGroup.alpha = 0
+local function handleRatingTouch(event)
+    if (event.phase == "ended") then
+		if (event.target.id == "rateOK") then
+			composer.setVariable( "askedRateGame", true )
+            savePreferences()
 
-    local backgroundShade = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
+            clearDisplayGroup(rateGroup)
+			showRateUI()
+		elseif (event.target.id == "rateLater") then
+            -- This option is NOT used to ask for ratings later
+			composer.setVariable( "askedRateGame", true )
+            savePreferences()
+
+            clearDisplayGroup(rateGroup)
+		elseif (event.target.id == "sendFeedback") then
+            composer.setVariable( "askedRateGame", true )
+            savePreferences()
+
+            clearDisplayGroup(rateGroup)
+            showMailUI()
+		end
+	end
+	return true
+end
+
+-- Show a dialog box asking to rate the game
+-- This is only shown once. After that, game only shows a rate button and leaves it up to the player
+function createAskRatingElements()
+    local backgroundShade = display.newRect( rateGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
     backgroundShade:setFillColor( unpack(themeData.colorBackground) )
-    backgroundShade.alpha = 1
+    backgroundShade.alpha = .9
     backgroundShade.id = "backgroundShade"
     backgroundShade:addEventListener( "touch", function () return true end )
 
-    local frameTermsPrivacyRequest = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth / 1.1, 0 )
-    frameTermsPrivacyRequest:setFillColor( unpack(themeData.colorBackgroundPopup) )
 
-    local heightPermissionButton = display.safeActualContentHeight / 14
-    local widthPermissionButton = heightPermissionButton
-    local yDistanceElements = heightPermissionButton / 2
-    local fontSizeInformation = display.safeActualContentHeight / 30
-    
-    local fontSizePolicy = heightPermissionButton / 3
-    local colorHyperlink = themeData.colorHyperlink
-    local colorHyperlinkDark = themeData.colorHyperlinkDark
-    local colorHyperlinkVisited = themeData.colorHyperlinkVisited
-    local colorHyperlinkDarkVisited = themeData.colorHyperlinkDarkVisited
+    local fontSizeQuestion = display.safeActualContentHeight / 30
+
+    local frameQuestionRating = display.newRect( rateGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth / 1.1, 0 )
+    frameQuestionRating:setFillColor( unpack(themeData.colorBackgroundPopup) )
+
+    local optionsTextRating = { text = sozluk.getString("ratingAsk"), 
+        width = frameQuestionRating.width / 1.1, height = 0, align = "center", font = fontLogo, fontSize = fontSizeQuestion }
+    frameQuestionRating.textLabel = display.newText( optionsTextRating )
+    frameQuestionRating.textLabel:setFillColor( unpack(themeData.colorBackground) )
+    frameQuestionRating.textLabel.x = frameQuestionRating.x
+    rateGroup:insert(frameQuestionRating.textLabel)
+
+
+    local widthRateButtons = frameQuestionRating.width / 1.1
+    local heightRateButtons = display.safeActualContentHeight / 10
+	local distanceChoices = heightRateButtons / 5
+    local fontSizeChoices = fontSizeQuestion / 1.1
 
     local colorButtonFillDefault = themeData.colorButtonFillDefault
     local colorButtonFillOver = themeData.colorButtonFillOver
     local colorButtonDefault = themeData.colorButtonDefault
-    local colorButtonOver = themeData.colorButtonOver
     local colorTextDefault = themeData.colorTextDefault
     local colorTextOver = themeData.colorTextOver
     local colorButtonStroke = themeData.colorButtonStroke
@@ -1181,95 +1335,73 @@ local function showPermissionRequest()
     local cornerRadiusButtons = themeData.cornerRadiusButtons
     local strokeWidthButtons = themeData.strokeWidthButtons
 
-
-    local optionsTermsPrivacyRequest = { text = sozluk.getString("termsRequest"), font = fontLogo, fontSize = fontSizeInformation,
-                                width = frameTermsPrivacyRequest.width / 1.1, height = 0, align = "center" }
-    local textTermsPrivacyRequest = display.newText( optionsTermsPrivacyRequest )
-    textTermsPrivacyRequest:setFillColor( unpack(themeData.colorBackground) )
-    textTermsPrivacyRequest.x = display.contentCenterX
-    infoGroup:insert(textTermsPrivacyRequest)
-
-    local optionsButtonAcceptTerms =
+    local optionsButtonSendFeedback = 
     {
         shape = "roundedRect",
         fillColor = { default = colorButtonFillDefault, over = colorButtonFillOver },
-        width = frameTermsPrivacyRequest.width / 1.1,
-        height = heightPermissionButton,
+        width = widthRateButtons,
+        height = heightRateButtons,
         cornerRadius = cornerRadiusButtons,
         strokeColor = { default = colorButtonStroke, over = colorButtonDefault },
         strokeWidth = strokeWidthButtons * 3,
-        label = sozluk.getString("termsRequestAccept"),
+        label = sozluk.getString("ratingFeedback"),
         labelColor = { default = colorTextDefault, over = colorButtonFillDefault },
         font = fontLogo,
-        fontSize = fontSizePolicy,
-        id = "acceptTerms",
-        onEvent = handlePermissionTouch,
+        fontSize = fontSizeChoices,
+        id = "sendFeedback",
+        onEvent = handleRatingTouch,
     }
-    local buttonAcceptTerms = widget.newButton( optionsButtonAcceptTerms )
-    buttonAcceptTerms.x = display.contentCenterX
-    infoGroup:insert( buttonAcceptTerms )
+    local buttonSendFeedback = widget.newButton( optionsButtonSendFeedback )
+    buttonSendFeedback.x = display.contentCenterX
+    rateGroup:insert( buttonSendFeedback )
 
-    local optionsButtonPrivacyPolicy = 
+    local optionsButtonAskLater = 
     {
-        label = sozluk.getString("privacyPolicy"),
-        width = widthPermissionButton,
-        height = heightPermissionButton,
-        textOnly = true,
+        shape = "roundedRect",
+        fillColor = { default = colorButtonFillDefault, over = colorButtonFillOver },
+        width = widthRateButtons,
+        height = heightRateButtons,
+        cornerRadius = cornerRadiusButtons,
+        strokeColor = { default = colorButtonStroke, over = colorButtonDefault },
+        strokeWidth = strokeWidthButtons * 3,
+        label = sozluk.getString("ratingLater"),
+        labelColor = { default = colorTextDefault, over = colorButtonFillDefault },
         font = fontLogo,
-        fontSize = fontSizePolicy,
-        labelColor = { default = { unpack(colorHyperlinkDark) }, over = { unpack(colorHyperlinkDarkVisited) } },
-        id = "openURL",
-        onEvent = handlePermissionTouch,
+        fontSize = fontSizeChoices,
+        id = "rateLater",
+        onEvent = handleRatingTouch,
     }
-    local buttonPrivacyPolicy = widget.newButton( optionsButtonPrivacyPolicy )
-    if (currentLanguage == "tr") then
-        buttonPrivacyPolicy.URL = "https://sekodev.github.io/games/privacy/gizlilikPolitikasi.html"
-    elseif (currentLanguage == "en") then
-        buttonPrivacyPolicy.URL = "https://sekodev.github.io/games/privacy/privacyPolicy.html"
-    end
-    buttonPrivacyPolicy.x = display.contentCenterX
-    infoGroup:insert(buttonPrivacyPolicy)
+    local buttonAskLater = widget.newButton( optionsButtonAskLater )
+    buttonAskLater.x = display.contentCenterX
+    rateGroup:insert( buttonAskLater )
 
-    buttonPrivacyPolicy.underline = display.newRect( infoGroup, buttonPrivacyPolicy.x, 0, buttonPrivacyPolicy.width, 5 )
-    buttonPrivacyPolicy.underline:setFillColor( unpack( colorHyperlinkDark ) )
-
-    local optionsButtonTermsUse = 
+    local optionsButtonRateOK = 
     {
-        label = sozluk.getString("termsUse"),
-        width = widthPermissionButton,
-        height = heightPermissionButton,
-        textOnly = true,
+        shape = "roundedRect",
+        fillColor = { default = colorButtonFillDefault, over = colorButtonFillOver },
+        width = widthRateButtons,
+        height = heightRateButtons,
+        cornerRadius = cornerRadiusButtons,
+        strokeColor = { default = colorButtonStroke, over = colorButtonDefault },
+        strokeWidth = strokeWidthButtons * 3,
+        label = sozluk.getString("ratingOK"),
+        labelColor = { default = colorTextDefault, over = colorButtonFillDefault },
         font = fontLogo,
-        fontSize = fontSizePolicy,
-        labelColor = { default = { unpack(colorHyperlinkDark) }, over = { unpack(colorHyperlinkDarkVisited) } },
-        id = "openURL",
-        onEvent = handlePermissionTouch,
+        fontSize = fontSizeChoices,
+        id = "rateOK",
+        onEvent = handleRatingTouch,
     }
-    local buttonTermsUse = widget.newButton( optionsButtonTermsUse )
-    if (currentLanguage == "tr") then
-        buttonTermsUse.URL = "https://sekodev.github.io/games/terms/kullanimSartlari.html"
-    elseif (currentLanguage == "en") then
-        buttonTermsUse.URL = "https://sekodev.github.io/games/terms/termsConditions.html"
-    end
-    buttonTermsUse.x = display.contentCenterX
-    infoGroup:insert(buttonTermsUse)
+    local buttonRateOK = widget.newButton( optionsButtonRateOK )
+    buttonRateOK.x = display.contentCenterX
+    rateGroup:insert( buttonRateOK )
 
-    buttonTermsUse.underline = display.newRect( infoGroup, buttonTermsUse.x, 0, buttonTermsUse.width, 5 )
-    buttonTermsUse.underline:setFillColor( unpack( colorHyperlinkDark ) )
 
-    frameTermsPrivacyRequest.height = textTermsPrivacyRequest.height + buttonAcceptTerms.height + buttonPrivacyPolicy.height + buttonTermsUse.height + yDistanceElements * 3.5
-    frameTermsPrivacyRequest.y = display.contentCenterY
-    textTermsPrivacyRequest.y = frameTermsPrivacyRequest.y - frameTermsPrivacyRequest.height / 2 + textTermsPrivacyRequest.height / 2 + yDistanceElements
-
-    buttonTermsUse.y = textTermsPrivacyRequest.y + textTermsPrivacyRequest.height / 2 + buttonTermsUse.height / 2 + yDistanceElements
-    buttonTermsUse.underline.y = buttonTermsUse.y + buttonTermsUse.height / 2
-
-    buttonPrivacyPolicy.y = buttonTermsUse.y + buttonTermsUse.height / 2 + buttonPrivacyPolicy.height
-    buttonPrivacyPolicy.underline.y = buttonPrivacyPolicy.y + buttonPrivacyPolicy.height / 2
-
-    buttonAcceptTerms.y = buttonPrivacyPolicy.y + buttonPrivacyPolicy.height / 2 + buttonAcceptTerms.height / 2 + yDistanceElements
-
-    infoGroup.alpha = 1
+    frameQuestionRating.height = frameQuestionRating.textLabel.height + buttonRateOK.height + buttonAskLater.height + buttonSendFeedback.height + distanceChoices * 5
+    frameQuestionRating.y = display.contentCenterY
+    frameQuestionRating.textLabel.y = frameQuestionRating.y - frameQuestionRating.height / 2 + frameQuestionRating.textLabel.height / 1.5
+    buttonSendFeedback.y = (frameQuestionRating.y + frameQuestionRating.height / 2) - buttonSendFeedback.height / 2 - distanceChoices
+    buttonAskLater.y = buttonSendFeedback.y - heightRateButtons - distanceChoices
+    buttonRateOK.y = buttonAskLater.y - heightRateButtons - distanceChoices
 end
 
 -- Increase lock price as the player advances through the game, unlocks more question sets
@@ -1279,17 +1411,6 @@ local function calculateLockPrice()
 
     if (priceLockCoins < composer.getVariable("priceLockCoins")) then
         priceLockCoins = composer.getVariable("priceLockCoins")
-    end
-end
-
--- Handle system events such as resuming/suspending the game/application
-function onSystemEvent(event)
-    if( event.type == "applicationResume" ) then
-        resumeTimers()
-    elseif( event.type == "applicationSuspend" ) then
-        pauseTimers()
-    elseif( event.type == "applicationExit" ) then
-        
     end
 end
 
@@ -1309,39 +1430,67 @@ local function loadSoundFX()
     tableSoundFiles["answerChosen"] = audio.loadSound( "assets/soundFX/answerChosen.wav" )
     tableSoundFiles["answerRight"] = audio.loadSound( "assets/soundFX/answerRight.wav" )
     tableSoundFiles["answerWrong"] = audio.loadSound( "assets/soundFX/answerWrong.wav" )
+    tableSoundFiles["fireworks"] = audio.loadSound( "assets/soundFX/fireworks.wav" )
     tableSoundFiles["lockQuestionSet"] = audio.loadSound( "assets/soundFX/lockSet.wav" )
-    tableSoundFiles["campfire"] = audio.loadSound( "assets/soundFX/campfire.mp3" )
 end
 
--- Transition from ingame music to menu theme
 local function handleAudioTransition()
-    local fadeTime = 500
+    audio.dispose( streamMusicBackground )
 
-    audio.fadeOut( {channel = channelMusicBackground, time = fadeTime} )
-
-    local timerAudio = timer.performWithDelay( fadeTime + 50, function ()
-        audio.dispose( streamMusicBackground )
-
-        streamMusicBackground = audio.loadStream("assets/music/menuTheme.mp3")
-        channelMusicBackground = audio.play(streamMusicBackground, {loops = -1})
-        audio.setVolume(composer.getVariable( "musicLevel" ), {channel = channelMusicBackground})
-     end, 1)
-    table.insert( tableTimers, timerAudio )
+    streamMusicBackground = audio.loadStream("assets/music/questionsTheme.mp3")
+    channelMusicBackground = audio.play(streamMusicBackground, {loops = -1})
+    audio.setVolume(composer.getVariable( "musicLevel" ), {channel = channelMusicBackground})
 end
 
 function scene:create( event )
     mainGroup = self.view
+
     menuGroup = display.newGroup( )
-    loadingGroup = display.newGroup( )
+    scoreGroup = display.newGroup( )
+    mapGroup = display.newGroup( )
+    rateGroup = display.newGroup( )
     shareGroup = display.newGroup( )
     infoGroup = display.newGroup( )
 
+    if (event.params) then
+        if (event.params["scoreCurrent"]) then
+            scoreCurrent = event.params["scoreCurrent"]
+        end
+
+        if (event.params["questionCurrent"]) then
+            questionCurrent = event.params["questionCurrent"]
+        end
+
+        if (event.params["statusGame"]) then
+            statusGame = event.params["statusGame"]
+        end
+
+        if (event.params["coinsEarned"]) then
+            coinsEarned = event.params["coinsEarned"]
+        end
+    end
+
     calculateLockPrice()
     loadSoundFX()
+    checkHighScore()
+--isRecordBroken = true
     createMenuElements()
 
-    mainGroup:insert(loadingGroup)
+    if (statusGame == "fail") then
+        -- Check if player is halfway through and not completed (defensive)
+        -- if (questionCurrent > 0) then
+        if (questionCurrent >= amountQuestionSingleGame / 2 and questionCurrent < amountQuestionSingleGame) then
+            local yButtonTop = frameButtonPlay.y - frameButtonPlay.height
+            createProgressMap(yButtonTop)
+        end
+    end
+
+    createScoreElements()
+
     mainGroup:insert(menuGroup)
+    mainGroup:insert(scoreGroup)
+    mainGroup:insert(mapGroup)
+    mainGroup:insert(rateGroup)
     mainGroup:insert(shareGroup)
     mainGroup:insert(infoGroup)
 end
@@ -1352,20 +1501,45 @@ function scene:show( event )
     if ( phase == "will" ) then
 
     elseif ( phase == "did" ) then
+        composer.removeHidden()
+        composer.setVariable("currentAppScene", "endScreen")
+
         if (event.params) then
-            -- If scene is called from endScreen or gameScreen we need smooth audio transition to menu theme
-            if (event.params["callSource"] == "endScreen" or "gameScreen" == event.params["callSource"]) then
+            if (event.params["callSource"] == "gameScreen") then
                 handleAudioTransition()
             end
         end
+
+
+        local gamesPlayed = composer.getVariable( "gamesPlayed" )
+        local askedRateGame = composer.getVariable( "askedRateGame" )
+
+        -- Check if current score is better than all time high
+        -- If player beats a record, show fireworks
+        if (isRecordBroken) then
+            showHighScore()
+        else
+            -- If player wasn't asked to rate the game before, ask for rating
+            if (not askedRateGame) then
+                if (gamesPlayed % 10 == 0) then
+                    createAskRatingElements()
+                end
+            end
+
+            local timerInformation = timer.performWithDelay( 1000, function () 
+                    showLocksEarned()
+                    showCoinsEarned()
+                    showProgressMade()
+                end, 1 )
+            table.insert( tableTimers, timerInformation )
+        end
+
 
         -- Start checking for conversion availability
         -- If minimum number of coins are available to purchase a single(1) lock, vibration animation will start
         -- Animation won't stop until conversion is triggered
         local timerConversionCheck
         timerConversionCheck = timer.performWithDelay( 3000, function ()
-                --local coinsAvailable = tonumber(menuGroup.textNumCoins.text)
-
                 if (coinsAvailable >= priceLockCoins) then
                     showConversionAvailable()
                 else
@@ -1374,20 +1548,6 @@ function scene:show( event )
                 end
             end, -1 )
         table.insert( tableTimers, timerConversionCheck )
-
-        composer.removeHidden()
-        composer.setVariable("currentAppScene", "menuScreen")
-
-        -- Show user dialog box for privacy policy and terms of use upon first start
-        local isTermsPrivacyAccepted = composer.getVariable( "isTermsPrivacyAccepted" )
-        if (not isTermsPrivacyAccepted) then
-            showPermissionRequest()
-        end
-
-        audio.setVolume( composer.getVariable( "soundLevel" ), {channel = 3} )
-        audio.play( tableSoundFiles["campfire"], {channel = 3, loops = -1} )
-
-        Runtime:addEventListener( "system", onSystemEvent )
     end
 end
 
@@ -1397,7 +1557,6 @@ function scene:hide( event )
     if ( phase == "will" ) then
         cleanUp()
     elseif ( phase == "did" ) then
-        -- Manually unload sound effects
         unloadSoundFX()
     end
 end
