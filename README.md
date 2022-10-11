@@ -40,6 +40,7 @@ License information can be found in corresponding links.
 <br><br>
 
 ## Font
+
 [Russo One](https://www.dafont.com/russo-one.font) by Jovanny Lemonad
 Copyright (c) 2011-2012, Jovanny Lemonad (jovanny.ru), with Reserved Font Name "Russo"
 This Font Software is licensed under the [SIL Open Font License](http://scripts.sil.org/OFL), Version 1.1.
@@ -51,3 +52,11 @@ This Font Software is licensed under the [SIL Open Font License](http://scripts.
 [Facebook](https://www.facebook.com/sleepybugstudio/)
 
 [Twitter](https://twitter.com/sleepybugstudio)
+<br><br>
+
+## Copyright notice
+
+Facebook and Twitter brands and logos are properties of their respective owners.
+
+2020, Sleepy Bug Studio. All rights reserved.
+<br><br>
