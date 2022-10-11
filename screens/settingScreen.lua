@@ -505,6 +505,7 @@ function scene:show( event )
                 statusGame = event.params["statusGame"]
 
                 -- Game status is passed for endScreen
+                -- When this screen is called from endScreen, player will return to that screen
                 if (statusGame == "successSetUnlocked" or statusGame == "successSetNA" or 
                     statusGame == "successSetCompletedBefore" or statusGame == "successEndgame") then
                     statusGame = "success"
