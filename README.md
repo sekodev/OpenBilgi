@@ -10,6 +10,11 @@ Repository build(version): 52(v0.7.2)
 You need [Solar2D](https://solar2d.com/) to compile and build the project.
 <br><br>
 
+## Before you go...
+
+Code quality is not great at this version. I prioritized releasing working versions over code quality. There are some changes I made to improve but you won't see it in this release. I'll slowly try to reflect those changes into this repository as well. Until then, you're on your own :)
+<br><br>
+
 ## Music
 
 [Automation](http://soundimage.org/wp-content/uploads/2016/11/Automation.mp3)(used as menuTheme.mp3) and [Safe Cracking](https://soundimage.org/wp-content/uploads/2019/05/Safe-Cracking.mp3)(used as questionsTheme.mp3) by [Eric Matyas](https://soundimage.org/)
