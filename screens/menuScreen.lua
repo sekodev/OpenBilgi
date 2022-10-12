@@ -121,13 +121,7 @@ local function showShareQR()
     backgroundShade.id = "shareCancel"
     backgroundShade:addEventListener( "touch", handleShareTouch )
 
-    -- QR codes will be picked depending on the theme selection
     local fileQRCode = "assets/other/QRCode.png"
-    if (composer.getVariable( "currentTheme" ) == "dark") then
-        fileQRCode = "assets/other/QRCode.png"
-    elseif (composer.getVariable( "currentTheme" ) == "light") then
-        fileQRCode = "assets/other/QRCode-light.png"
-    end
 
     local qrCode = display.newImageRect( shareGroup, fileQRCode, display.safeActualContentHeight / 2, display.safeActualContentHeight / 2 )
     qrCode.x, qrCode.y = display.contentCenterX, display.contentCenterY
