@@ -116,8 +116,6 @@ end
 -- Currently links to Google Play page
 -- Replace QR code assets to change the link
 local function showShareQR()
-    -- You can use https://fastqrcode.com/ to generate QR codes
-
     local backgroundShade = display.newRect( shareGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
     backgroundShade:setFillColor( unpack(themeData.colorBackground) )
     backgroundShade.id = "shareCancel"
