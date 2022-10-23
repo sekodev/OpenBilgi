@@ -72,11 +72,7 @@ local function cleanUp()
     end
 end
 
-local function clearDisplayGroup(targetGroup, callSource)
-    if (callSource == nil) then
-        callSource = ""
-    end
-
+local function clearDisplayGroup(targetGroup)
     for i = targetGroup.numChildren, 1, -1 do
         display.remove( targetGroup[i] )
         targetGroup[i] = nil
