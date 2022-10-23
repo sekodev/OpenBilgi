@@ -249,18 +249,6 @@ local function pickStartingQuestionSet()
     end
 end
 
--- Reverts statistics variables to starting values
-function resetStatistics()
-    composer.setVariable( "scoreHigh", 0 )
-    composer.setVariable( "gamesPlayed", 0 )
-    composer.setVariable( "questionsAnsweredTotal", 0 )
-    composer.setVariable( "runsCompleted", 0 )
-    composer.setVariable( "locksUsed", 0 )
-    composer.setVariable( "coinsTotal", 0 )
-
-    savePreferences()
-end
-
 -- Safety net for bugs introduced in different versions and game reset
 local function resetFaultyVariables()
     -- reset fault revival percentage

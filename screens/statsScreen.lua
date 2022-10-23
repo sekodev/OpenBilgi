@@ -80,6 +80,18 @@ local function clearDisplayGroup(targetGroup)
     end
 end
 
+-- Reverts statistics variables to starting values
+local function resetStatistics()
+    composer.setVariable( "scoreHigh", 0 )
+    composer.setVariable( "gamesPlayed", 0 )
+    composer.setVariable( "questionsAnsweredTotal", 0 )
+    composer.setVariable( "runsCompleted", 0 )
+    composer.setVariable( "locksUsed", 0 )
+    composer.setVariable( "coinsTotal", 0 )
+
+    savePreferences()
+end
+
 local function handleConfirmationTouch(event)
     if (event.phase == "ended") then
         if (event.target.id == "resetStatsConfirm") then
