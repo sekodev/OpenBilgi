@@ -1214,11 +1214,7 @@ local function showPermissionRequest()
         onEvent = handlePermissionTouch,
     }
     local buttonPrivacyPolicy = widget.newButton( optionsButtonPrivacyPolicy )
-    if (currentLanguage == "tr") then
-        buttonPrivacyPolicy.URL = "https://sekodev.github.io/games/privacy/gizlilikPolitikasi.html"
-    elseif (currentLanguage == "en") then
-        buttonPrivacyPolicy.URL = "https://sekodev.github.io/games/privacy/privacyPolicy.html"
-    end
+    buttonPrivacyPolicy.URL = "https://sekodev.github.io/games/privacy/privacyPolicy-" .. currentLanguage .. ".html"
     buttonPrivacyPolicy.x = display.contentCenterX
     infoGroup:insert(buttonPrivacyPolicy)
 
@@ -1238,11 +1234,7 @@ local function showPermissionRequest()
         onEvent = handlePermissionTouch,
     }
     local buttonTermsUse = widget.newButton( optionsButtonTermsUse )
-    if (currentLanguage == "tr") then
-        buttonTermsUse.URL = "https://sekodev.github.io/games/terms/kullanimSartlari.html"
-    elseif (currentLanguage == "en") then
-        buttonTermsUse.URL = "https://sekodev.github.io/games/terms/termsConditions.html"
-    end
+    buttonTermsUse.URL = "https://sekodev.github.io/games/terms/termsUse-" .. currentLanguage .. ".html"
     buttonTermsUse.x = display.contentCenterX
     infoGroup:insert(buttonTermsUse)
 

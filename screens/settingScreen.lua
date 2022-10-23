@@ -241,11 +241,7 @@ local function handleTouch(event)
                     
 
                     if (event.target.id == "controlSound") then
-                        --audio.stop( 2 )
-                        
-                        for i = 2, audio.totalChannels do
-                            audio.setVolume( event.target.levelCurrent, {channel = i} )
-                        end
+                        audio.setVolume( event.target.levelCurrent, {channel = 2} )
 
                         -- Play sample sound
                         if (not audio.isChannelPlaying( 2 )) then
@@ -280,6 +276,10 @@ local function handleTouch(event)
                 composer.setVariable( "musicLevel", event.target.levelCurrent )
             elseif (event.target.id == "controlSound") then
                 display.getCurrentStage( ):setFocus( nil )
+
+                for i = 2, audio.totalChannels do
+                    audio.setVolume( event.target.levelCurrent, {channel = i} )
+                end
 
                 event.target:setFillColor( unpack(themeData.colorButtonFillWrong) )
 
