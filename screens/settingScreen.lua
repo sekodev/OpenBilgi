@@ -337,7 +337,8 @@ function createSettingsElements()
         height = 0, align = "center", font = fontLogo, fontSize = display.safeActualContentHeight / 40 }
     local labelVersionNumber = display.newText( optionsLabelVersion )
     labelVersionNumber:setFillColor( unpack(colorTextDefault) )
-    labelVersionNumber.x = display.safeActualContentWidth - labelVersionNumber.width / 1.8
+    labelVersionNumber.anchorX = 1
+    labelVersionNumber.x = display.safeActualContentWidth - buttonBack.width / 2
     labelVersionNumber.y = buttonBack.y
     menuGroup:insert(labelVersionNumber)
 
