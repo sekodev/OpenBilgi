@@ -1,3 +1,7 @@
+Türkçe metin için [tıklayın](../../games/terms/termsUse-tr.md).
+
+For Turkish version, click [here](../../games/terms/termsUse-tr.md).
+<br><br>
 # Terms of Use
 
 This Terms of Use outline the rules and regulations for the use of Sleepy Bug Studio's("Sleepy Bug", "We", "Our", "Us") applications/games(hereinafter referred to as "Applications").
@@ -7,7 +11,7 @@ By downloading or using Applications developed by Sleepy Bug, these terms will a
 
 ## Your Privacy
 
-Please refer to our [Privacy Policy](../../games/privacy/privacyPolicy.md) for more information.
+Please refer to our [Privacy Policy](../../games/privacy/privacyPolicy-en.md) for more information.
 <br><br>
 
 ## Using Our Applications
@@ -46,7 +50,7 @@ We may update Terms of Use from time to time. Thus, you are advised to review th
 
 ## Contact Us
 
-If you have any questions or suggestions about our Terms of Use, do not hesitate to contact us at info@meetling.io.
+If you have any questions or suggestions about our Terms of Use, do not hesitate to contact us at [info.sleepybug@gmail.com](mailto:info.sleepybug@gmail.com).
 <br><br>
 
-This Terms of Use are effective as of 31.03.2022(March 31, 2022).
+This Terms of Use are effective as of 22.05.2022(May 22, 2022).

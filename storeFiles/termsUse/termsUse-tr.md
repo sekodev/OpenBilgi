@@ -1,3 +1,7 @@
+For English version, click [here](../../games/terms/termsUse-en.md).
+
+İngilizce metin için [tıklayın](../../games/terms/termsUse-en.md).
+<br><br>
 # Kullanım Şartları
 
 Kullanım Şartları, Sleepy Bug Studio("Sleepy Bug", "Geliştirici", "Biz") ile Kullanıcı("Siz", "Kullanıcı") arasında yapılan ve Sleepy Bug tarafından geliştirilen oyunların/uygulamaların("Uygulamalar") kullanımıyla ilgili kural ve düzenlemeleri belirleyen belgedir. 
@@ -7,7 +11,7 @@ Sleepy Bug tarafından geliştirilen Uygulamalar'dan herhangi birini indirdiğin
 
 ## Gizliliğiniz
 
-Detaylı bilgi için lütfen [Gizlilik Politikası](../../games/privacy/gizlilikPolitikasi.md) sayfamızı inceleyin.
+Detaylı bilgi için lütfen [Gizlilik Politikası](../../games/privacy/privacyPolicy-tr.md) sayfamızı inceleyin.
 <br><br>
 
 ## Uygulamalar'ın Kullanımı
@@ -44,7 +48,7 @@ Kullanım Şartları ihtiyaç görüldüğü takdirde değişikliğe uğrayabili
 
 ## İletişim
 
-Kullanım Şartları ile ilgili herhangi bir sorunuz veya öneriniz varsa [info@meetling.io](mailto:info@meetling.io) adresinden bizimle iletişime geçebilirsiniz.
+Kullanım Şartları ile ilgili herhangi bir sorunuz veya öneriniz varsa [info.sleepybug@gmail.com](mailto:info.sleepybug@gmail.com) adresinden bizimle iletişime geçebilirsiniz.
 <br><br>
 
-Kullanım Şartları 31.03.2022(31 Mart 2022) tarihi itibariyle geçerlidir.
+Kullanım Şartları 22.05.2022(22 Mayıs 2022) tarihi itibariyle geçerlidir.

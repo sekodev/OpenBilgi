@@ -1,3 +1,7 @@
+Türkçe metin için [tıklayın](../../games/privacy/privacyPolicy-tr.md).
+
+For Turkish version, click [here](../../games/privacy/privacyPolicy-tr.md).
+<br><br>
 # Privacy Policy
 
 This Privacy Policy creates a legal agreement between Sleepy Bug Studio("Sleepy Bug", "We", "Our", "Us") as the "Data Controller" and You("You", "Your", "Player", "User"). In this context, the purpose of this Privacy Policy is to provide information on the collection, processing and use of the data provided by You in connection with the use of Sleepy Bug's games/applications(hereinafter referred to as "Applications") as well as the grade, purpose and scope of transfer thereof. The purpose of this privacy notice is to provide You with information regarding the processing of personal data of the users that use Applications developed by Sleepy Bug. When You use the Applications or communicate with Sleepy Bug, We may collect information about You in accordance with the nature of the information and transaction within current technical possibilities. You accept, acknowledge and promise that Your personal information and data might be used in limited manner by Sleepy Bug and/or through Sleepy Bug to the extent that it is limited to the format and purposes set forth in this Privacy Policy.
@@ -46,6 +50,6 @@ We may update this Privacy Policy from time to time. Thus, You are advised to re
 
 ## Contact Us
 
-If you have any questions or suggestions about this Privacy Policy, do not hesitate to contact Us at info@meetling.io.
+If you have any questions or suggestions about this Privacy Policy, do not hesitate to contact Us at [info.sleepybug@gmail.com](mailto:info.sleepybug@gmail.com).
 
-This Privacy Policy is effective as of 22.03.2022(March 22, 2022)
+This Privacy Policy is effective as of 22.05.2022(May 22, 2022)
