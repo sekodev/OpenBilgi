@@ -265,12 +265,6 @@ local function resetFaultyVariables()
         pickStartingQuestionSet()
     end
 
-    -- set theme to dark
-    local currentTheme = composer.getVariable( "currentTheme" )
-    if (currentTheme == "light") then
-        composer.setVariable( "currentTheme", "dark" )
-    end
-
     savePreferences()
 end
 

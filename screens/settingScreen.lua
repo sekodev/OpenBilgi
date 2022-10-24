@@ -452,8 +452,6 @@ function createSettingsElements()
     frameButtonReset.y = display.safeActualContentHeight - frameButtonReset.height
     frameButtonReset.textLabel.y = frameButtonReset.y
 
---[[
-    -- This option will be enabled later when colors are determined
     local themeName
     if (composer.getVariable( "currentTheme" ) == "dark") then
         themeName = sozluk.getString("themeDark")
@@ -479,7 +477,6 @@ function createSettingsElements()
     frameButtonTheme.height = frameButtonTheme.textLabel.height * 2
     frameButtonTheme.y = frameButtonReset.y - frameButtonReset.height / 2 - frameButtonTheme.height
     frameButtonTheme.textLabel.y = frameButtonTheme.y
-    ]]
 end
 
 local function unloadSoundFX()
