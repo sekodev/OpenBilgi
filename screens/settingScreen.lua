@@ -208,7 +208,14 @@ local function handleTouch(event)
                 -- Pressing the icon mutes sound effects
                 event.target.buttonControl.x = event.target.buttonControl.line.x
 
-                event.target.buttonControl.levelCurrent = 0
+                if (event.target.buttonControl.levelCurrent <= 0) then
+                    event.target.buttonControl.levelCurrent = event.target.buttonControl.levelBeforeMute
+                else
+                    event.target.buttonControl.levelBeforeMute = event.target.buttonControl.levelCurrent
+                    event.target.buttonControl.levelCurrent = 0
+                end
+
+                event.target.buttonControl.x = event.target.buttonControl.line.x + (event.target.buttonControl.line.width * event.target.buttonControl.levelCurrent)
 
                 for i = 2, audio.totalChannels do
                     audio.setVolume( event.target.buttonControl.levelCurrent, {channel = i} )
@@ -219,7 +226,14 @@ local function handleTouch(event)
                 -- Pressing the icon mutes the music
                 event.target.buttonControl.x = event.target.buttonControl.line.x
 
-                event.target.buttonControl.levelCurrent = 0
+                if (event.target.buttonControl.levelCurrent <= 0) then
+                    event.target.buttonControl.levelCurrent = event.target.buttonControl.levelBeforeMute
+                else
+                    event.target.buttonControl.levelBeforeMute = event.target.buttonControl.levelCurrent
+                    event.target.buttonControl.levelCurrent = 0
+                end
+
+                event.target.buttonControl.x = event.target.buttonControl.line.x + (event.target.buttonControl.line.width * event.target.buttonControl.levelCurrent)
 
                 audio.setVolume( event.target.buttonControl.levelCurrent, {channel = channelMusicBackground} )
 
@@ -233,6 +247,7 @@ local function handleTouch(event)
                 if (event.x >= event.target.line.x and event.x <= event.target.line.x + event.target.line.width) then
                     event.target.x = event.x
 
+                    event.target.levelBeforeMute = event.target.levelCurrent
                     event.target.levelCurrent = (event.target.x - event.target.line.x) / event.target.line.width
 
                     if (event.target.levelCurrent < 0.05) then
@@ -373,6 +388,7 @@ function createSettingsElements()
     imageSound.buttonControl:setFillColor( unpack(colorButtonFillWrong) )
     imageSound.buttonControl.id = "controlSound"
     imageSound.buttonControl.levelCurrent = composer.getVariable("soundLevel")
+    imageSound.buttonControl.levelBeforeMute = imageSound.buttonControl.levelCurrent -- Used to keep last sound level before mute is pressed
     imageSound.buttonControl:addEventListener( "touch", handleTouch )
 
     imageSound.buttonControl.line = display.newRect( menuGroup, 0, imageSound.buttonControl.y, 0, heightLineSound )
@@ -393,6 +409,7 @@ function createSettingsElements()
     imageMusic.buttonControl:setFillColor( unpack(colorButtonFillWrong) )
     imageMusic.buttonControl.id = "controlMusic"
     imageMusic.buttonControl.levelCurrent = composer.getVariable("musicLevel")
+    imageMusic.buttonControl.levelBeforeMute = imageMusic.buttonControl.levelCurrent -- Used to keep last music level before mute is pressed
     imageMusic.buttonControl:addEventListener( "touch", handleTouch )
 
     imageMusic.buttonControl.line = display.newRect( menuGroup, 0, imageMusic.y, 0, imageMusic.height / 12 )
