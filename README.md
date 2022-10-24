@@ -59,6 +59,11 @@ This Font Software is licensed under the [SIL Open Font License](http://scripts.
 [Twitter](https://twitter.com/sleepybugstudio)
 <br><br>
 
+## Privacy Policy and Terms of Use
+
+You can find Privacy Policy and Terms of Use for *bilgi*, [here](https://sekodev.github.io/bilgiWeb/). Keep in mind, these are NOT updated specifically for  *OpenBilgi*.
+<br><br>
+
 ## Copyright notice
 
 Facebook and Twitter brands and logos are properties of their respective owners.
