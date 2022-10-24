@@ -208,6 +208,7 @@ local function handleTouch(event)
                 -- Pressing the icon mutes sound effects
                 event.target.buttonControl.x = event.target.buttonControl.line.x
 
+                -- Quick mute/unmute
                 if (event.target.buttonControl.levelCurrent <= 0) then
                     event.target.buttonControl.levelCurrent = event.target.buttonControl.levelBeforeMute
                 else
@@ -226,6 +227,7 @@ local function handleTouch(event)
                 -- Pressing the icon mutes the music
                 event.target.buttonControl.x = event.target.buttonControl.line.x
 
+                -- Quick mute/unmute
                 if (event.target.buttonControl.levelCurrent <= 0) then
                     event.target.buttonControl.levelCurrent = event.target.buttonControl.levelBeforeMute
                 else
