@@ -1493,7 +1493,10 @@ function scene:show( event )
 
         if (event.params) then
             if (event.params["callSource"] == "gameScreen") then
-                handleAudioTransition()
+                --handleAudioTransition()
+                -- Increase volume back to level set by the user
+                -- We do this because we lower the volume in gameScreen when player sees visual cue of time remaining
+                audio.setVolume(composer.getVariable( "musicLevel" ), {channel = channelMusicBackground})
             end
         end
 
