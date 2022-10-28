@@ -16,6 +16,7 @@ local scene = composer.newScene()
 local widget = require ("widget")
 
 local currentLanguage = composer.getVariable( "currentLanguage" )
+local currentTheme = composer.getVariable( "currentTheme" )
 local fontIngame = composer.getVariable( "fontIngame" )
 local fontLogo = composer.getVariable( "fontLogo" )
 local timeTransitionScene = composer.getVariable( "timeTransitionScene" )
@@ -76,6 +77,8 @@ local function handleTouch(event)
 			system.openURL( "https://www.facebook.com/sleepybugstudio/" )
 		elseif (event.target.id == "twitter") then
 			system.openURL( "https://twitter.com/sleepybugstudio" )
+        elseif (event.target.id == "github") then
+            system.openURL( "https://github.com/sekodev/OpenBilgi" )
 		elseif (event.target.id == "sendMail") then
             showMailUI()
         elseif (event.target.id == "openURL") then
@@ -178,6 +181,24 @@ local function createContactButtons()
     buttonTwitter.y = buttonFacebook.y
     creditsGroup:insert(buttonTwitter)
 
+    local fileGithub = "assets/menu/github.png"
+    if (currentTheme == "dark") then
+        fileGithub = "assets/menu/github-light.png"
+    end
+
+    local optionsButtonGithub = 
+    {
+        defaultFile = fileGithub,
+        width = widthContactButton,
+        height = heightContactButton,
+        id = "github",
+        onEvent = handleTouch,
+    }
+    local buttonGithub = widget.newButton( optionsButtonGithub )
+    buttonGithub.y = buttonTwitter.y
+    creditsGroup:insert(buttonGithub)
+
+--[[
     local optionsButtonSendMail = 
     {
         defaultFile = "assets/menu/sendMail.png",
@@ -189,13 +210,13 @@ local function createContactButtons()
     local buttonSendMail = widget.newButton( optionsButtonSendMail )
     buttonSendMail.y = buttonTwitter.y
     creditsGroup:insert(buttonSendMail)
-
+]]
 
     local distanceButtons = (display.safeActualContentWidth - (widthContactButton * 3) ) / 4
 
     buttonFacebook.x = buttonFacebook.width / 2 + distanceButtons
     buttonTwitter.x = buttonFacebook.x + widthContactButton + distanceButtons
-    buttonSendMail.x = buttonTwitter.x + widthContactButton + distanceButtons
+    buttonGithub.x = buttonTwitter.x + widthContactButton + distanceButtons
 
     yLimitBottom = buttonTwitter.y - buttonTwitter.height / 1.5
 end
@@ -494,9 +515,7 @@ local function createCreditsElements()
 
     local scaleLogo = 0.5
     local fileLogo = "assets/other/logoSolar2D.png"
-    if (composer.getVariable( "currentTheme" ) == "dark") then
-        fileLogo = "assets/other/logoSolar2D.png"
-    elseif (composer.getVariable( "currentTheme" ) == "light") then
+    if (currentTheme == "light") then
         fileLogo = "assets/other/logoSolar2D-light.png"
     end
     titleEngine.imageLogo = display.newImageRect( creditsGroup, fileLogo, 1144 * scaleLogo, 400 * scaleLogo )
