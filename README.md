@@ -66,7 +66,7 @@ You can find Privacy Policy and Terms of Use for *bilgi*, [here](https://sekodev
 
 ## Copyright notice
 
-Facebook and Twitter brands and logos are properties of their respective owners.
+Facebook, Twitter and GitHub brands and logos are properties of their respective owners.
 
 2020, Sleepy Bug Studio. All rights reserved.
 <br><br>
