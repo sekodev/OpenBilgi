@@ -245,7 +245,7 @@ local function endGame(statusGame)
     local scoreCurrent = coinsEarned
 
     if (statusGame == "success") then
-        -- delete current random seed to prevent player from locking down this successful session
+        -- Delete current random seed to prevent player from locking down this successful session
     	composer.setVariable( "lastRandomSeed", 0 )
 
         local runsCompleted = composer.getVariable( "runsCompleted" ) + 1
@@ -257,9 +257,9 @@ local function endGame(statusGame)
         local selectedLockedSet
 
         if (#lockedQuestionSets > 0) then
-            -- add selected set to the completed sets if not previously completed else don't unlock new set
+            -- Add selected set to the completed sets if not previously completed else don't unlock new set
             if (not isSetCompletedBefore) then
-                -- add currently completed set to the completed question sets
+                -- Add currently completed set to the completed question sets
                 table.insert( completedQuestionSets, questionSetSelected )
                 composer.setVariable( "completedQuestionSets", completedQuestionSets )
 
@@ -272,27 +272,27 @@ local function endGame(statusGame)
 
                 statusGame = "successSetUnlocked"
             else
-                -- set completed before, don't unlock new one
+                -- Set completed before, don't unlock new one
                 statusGame = "successSetCompletedBefore"
             end
         else
-            -- all sets unlocked. no locked sets left.
+            -- All sets unlocked. no locked sets left.
             if (#availableQuestionSets == #completedQuestionSets) then
-                -- condition: all sets completed
-                -- no more sets available to show player
+                -- Condition: all sets completed
+                -- No more sets available to show player
                 statusGame = "successEndgame"
             else
-                -- condition: LAST(1) set remaining
+                -- Condition: LAST(1) set remaining
                 if (not isSetCompletedBefore) then
-                    -- condition: LAST(1) set completed
+                    -- Condition: LAST(1) set completed
                     table.insert( completedQuestionSets, questionSetSelected )
                     composer.setVariable( "completedQuestionSets", completedQuestionSets )
 
-                    -- no more sets available to show player
+                    -- No more sets available to show player
                     statusGame = "successSetNA"
                 else
-                    -- condition: LAST(1) set NOT completed
-                    -- set completed before, don't unlock new one
+                    -- Condition: LAST(1) set NOT completed
+                    -- Set completed before, don't unlock new one
                     statusGame = "successSetCompletedBefore"
                 end
             end
@@ -300,7 +300,7 @@ local function endGame(statusGame)
     else
         statusGame = "fail"
 
-        -- decrease current question to find 
+        -- Decrease current question to find 
         questionCurrent = questionCurrent - 1
     end
 
@@ -454,6 +454,7 @@ local function createGameTimer(targetGroup)
     end
 end
 
+-- Create choices(answers) for the question
 local function createFramesChoices(targetGroup)
     targetGroup.choices = {}
 
@@ -475,6 +476,10 @@ local function createFramesChoices(targetGroup)
         targetGroup:insert(frameChoice)
         frameChoice:addEventListener( "touch", handleGameTouch )
 
+        -- Make sure true choice(answer) is added to table
+        -- Then, add random selection from the remaining choices
+        -- This is to get different choices, even when the question is same
+        -- Useful when number of choices for that question(numChoices) is 2 or 3
         local randomIndex, choiceIndex
         if (tableQuestions[questionIndex].choices[i].isAnswer) then
             frameChoice.isAnswer = true
@@ -496,8 +501,10 @@ local function createFramesChoices(targetGroup)
         table.insert( targetGroup.choices, frameChoice )
     end
 
+    -- Shuffle choices so they don't appear at the same order every time
     shuffleTable(targetGroup.choices)
 
+    -- Create rectangular frames to surround every single choice
     for i = 1, #targetGroup.choices do
     	frameChoice = targetGroup.choices[i]
 
@@ -529,6 +536,7 @@ local function createFramesChoices(targetGroup)
     end
 end
 
+-- Create dialog box that asks player 'Are you sure?'
 local function createQuitConfirmationMenu(targetGroup)
 	local fontSizeQuestion = display.safeActualContentHeight / 30
 
@@ -615,6 +623,7 @@ local function createQuitConfirmationMenu(targetGroup)
     targetGroup.buttonQuitDecline.alpha = 0
 end
 
+-- Create settings menu that opens up when player clicks gear(settings) icon
 local function createSettingsMenu(targetGroup)
     local xDistanceSides = display.safeActualContentWidth / 10
     local widthButtonSettings = display.safeActualContentWidth / 10

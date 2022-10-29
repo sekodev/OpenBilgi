@@ -260,11 +260,15 @@ local function createCreditsElements()
 
     createContactButtons()
 
+    local scaleLogo = 0.8
+    local logoSB = display.newImageRect( creditsGroup, "assets/other/logoSleepyBug.png", 813 * scaleLogo, 194 * scaleLogo )
+    logoSB.x, logoSB.y = display.contentCenterX, yLimitBottom + logoSB.height
+
     local optionsDevTeam = { text = sozluk.getString("developedBy"), font = fontLogo, fontSize = sizeTitles, align = "center" }
     local titleDevTeam = display.newText( optionsDevTeam )
     titleDevTeam:setFillColor( unpack( colorTitle ) )
     titleDevTeam.x = display.contentCenterX
-    titleDevTeam.y = yLimitBottom + titleDevTeam.height
+    titleDevTeam.y = logoSB.y + logoSB.height + titleDevTeam.height
     creditsGroup:insert(titleDevTeam)
 
     local optionsDevName = { text = "Serkan Aksit", font = fontIngame, fontSize = sizeNames, align = "center"}
@@ -536,6 +540,7 @@ local function createCreditsElements()
     containerCredits.moveSpeed = 4
     creditsGroup:insert(containerCredits)
 
+    containerCredits:insert(logoSB)
     containerCredits:insert(titleDevTeam)
     containerCredits:insert(titleDevTeam.name)
     containerCredits:insert(titleTester)
@@ -571,6 +576,7 @@ local function createCreditsElements()
 
 
     -- Store initial y coordinates so you can move them back to their starting point after each moved out of the screen
+    logoSB.y0 = logoSB.y
     titleDevTeam.y0 = titleDevTeam.y
     titleDevTeam.name.y0 = titleDevTeam.name.y
     titleTester.y0 = titleTester.y
