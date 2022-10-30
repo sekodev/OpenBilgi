@@ -308,6 +308,7 @@ local function showLockInformation()
     local colorTextDefault = themeData.colorTextDefault
     local colorTextOver = themeData.colorTextOver
     local colorButtonStroke = themeData.colorButtonStroke
+    local colorPadlock = themeData.colorPadlock
 
     local cornerRadiusButtons = themeData.cornerRadiusButtons
     local strokeWidthButtons = themeData.strokeWidthButtons
@@ -349,7 +350,7 @@ local function showLockInformation()
     local heightUIButton = widthUIButton
 
     local imageLock = display.newImageRect( infoGroup, "assets/menu/padlock.png", widthUIButton / 1.5, heightUIButton / 1.5 )
-    imageLock:setFillColor( unpack(colorButtonDefault) )
+    imageLock:setFillColor( unpack(colorPadlock) )
     imageLock.x = frameButtonPlay.x - frameButtonPlay.width / 2 + imageLock.width / 2
     imageLock.y = display.safeScreenOriginY + imageLock.height / 1.5
 
@@ -439,6 +440,7 @@ local function showCoinsNeeded()
     local colorButtonDefault = themeData.colorButtonDefault
     local colorButtonOver = themeData.colorButtonOver
     local colorTextDefault = themeData.colorTextDefault
+    local colorPadlock = themeData.colorPadlock
 
     local widthUIButton = display.safeActualContentWidth / 9
     local heightUIButton = widthUIButton
@@ -447,7 +449,7 @@ local function showCoinsNeeded()
 
 
     local imageLock = display.newImageRect( infoGroup, "assets/menu/padlock.png", widthUIButton / 1.5, heightUIButton / 1.5 )
-    imageLock:setFillColor( unpack(colorButtonDefault) )
+    imageLock:setFillColor( unpack(colorPadlock) )
     imageLock.x = frameButtonPlay.x - frameButtonPlay.width / 2 + imageLock.width / 2
     imageLock.y = display.safeScreenOriginY + (imageLock.height / 1.5) * 4
 
@@ -880,6 +882,7 @@ local function createMenuElements()
     local colorButtonFillDefault = themeData.colorButtonFillDefault
     local colorTextDefault = themeData.colorTextDefault
     local colorButtonStroke = themeData.colorButtonStroke
+    local colorPadlock = themeData.colorPadlock
 
 
     local optionsButtonShare = 
@@ -992,7 +995,7 @@ local function createMenuElements()
 
 
     frameLockQuestionSet = display.newImageRect( menuGroup, "assets/menu/padlock.png", widthUIButton, heightUIButton )
-    frameLockQuestionSet:setFillColor( unpack(colorButtonDefault) )
+    frameLockQuestionSet:setFillColor( unpack(colorPadlock) )
     frameLockQuestionSet.id = "lockQuestionSet"
     frameLockQuestionSet.isActivated = false
     frameLockQuestionSet.x = frameButtonPlay.x + frameButtonPlay.width / 2 + frameLockQuestionSet.width / 1.5
@@ -1051,7 +1054,7 @@ local function createMenuElements()
 
     -- Lock asset is created, will be hidden if not available
     menuGroup.imageLock = display.newImageRect( menuGroup, "assets/menu/padlock.png", widthUIButton / 1.5, heightUIButton / 1.5 )
-    menuGroup.imageLock:setFillColor( unpack(colorButtonDefault) )
+    menuGroup.imageLock:setFillColor( unpack(colorPadlock) )
     menuGroup.imageLock.x = frameButtonPlay.x - frameButtonPlay.width / 2 + menuGroup.imageLock.width / 2
     menuGroup.imageLock.y = display.safeScreenOriginY + menuGroup.imageLock.height / 1.5
 

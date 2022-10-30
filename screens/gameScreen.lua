@@ -802,12 +802,15 @@ local function createUIElements(targetGroup)
     targetGroup.textNumCoins.xImageCoin = imageCoin.x
     targetGroup.textNumCoins.yImageCoin = imageCoin.y
 
+
+    local colorVisualCue = themeData.colorVisualCue
     local strokeWidthVisualCue = themeData.strokeWidthVisualCue
+
     targetGroup.cueVisual = display.newRoundedRect( targetGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth - strokeWidthVisualCue, display.safeActualContentHeight - strokeWidthVisualCue, cornerRadiusButtons )
-    targetGroup.cueVisual:setFillColor( unpack(colorButtonFillWrong), 0 )
+    targetGroup.cueVisual:setFillColor( unpack(colorVisualCue), 0 )
     targetGroup.cueVisual.alpha = 0
     targetGroup.cueVisual.strokeWidth = strokeWidthVisualCue
-    targetGroup.cueVisual:setStrokeColor( unpack(colorButtonFillWrong) )
+    targetGroup.cueVisual:setStrokeColor( unpack(colorVisualCue) )
 end
 
 -- Create every element that player sees on the screen

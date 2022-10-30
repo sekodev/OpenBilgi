@@ -34,7 +34,10 @@ function themeSettings.getData(themeSelected)
 		themeData.strokeWidthButtons = 3
 		themeData.cornerRadiusButtons = 25
 
+		themeData.colorVisualCue = { .878, 0, 0 }
 		themeData.strokeWidthVisualCue = 10
+
+		themeData.colorPadlock = { .878, 0, 0 }
 
 		themeData.colorTextDefault = { .917, .917, .843 }
 		themeData.colorTextOver = { 0, 0, 0 }
@@ -67,7 +70,10 @@ function themeSettings.getData(themeSelected)
 		themeData.strokeWidthButtons = 3
 		themeData.cornerRadiusButtons = 25
 
+		themeData.colorVisualCue = { .878, 0, 0 }
 		themeData.strokeWidthVisualCue = 10
+
+		themeData.colorPadlock = { .878, 0, 0 }
 
 		themeData.colorTextDefault = { 0, 0, 0 }
 		themeData.colorTextOver = { 0, 0, 0 }
