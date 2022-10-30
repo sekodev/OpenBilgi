@@ -1496,6 +1496,7 @@ function scene:show( event )
                 --handleAudioTransition()
                 -- Increase volume back to level set by the user
                 -- We do this because we lower the volume in gameScreen when player sees visual cue of time remaining
+                channelMusicBackground = audio.play(streamMusicBackground, {loops = -1})
                 audio.setVolume(composer.getVariable( "musicLevel" ), {channel = channelMusicBackground})
             end
         end
