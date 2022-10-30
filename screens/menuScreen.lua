@@ -835,7 +835,7 @@ function handleTouch(event)
                 if (event.target.isActivated) then
                     event.target.isActivated = false
                     event.target.alpha = event.target.alphaInactive
-                    event.target:setFillColor( unpack(themeData.colorButtonDefault) )
+                    event.target:setFillColor( unpack(themeData.colorPadlock) )
                 else
                     audio.play( tableSoundFiles["lockQuestionSet"], {channel = 2} )
 
