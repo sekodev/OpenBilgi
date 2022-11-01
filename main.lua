@@ -287,9 +287,8 @@ sozluk.setTranslationsPath( "libs.translations" )
 sozluk.setTranslationFolder( "translations" )
 sozluk.init()
 
---[[
+
 -- Code block used for language selection
--- Block comment will be removed in future versions
 local shownLanguage
 
 if (system.getInfo("targetAppStore") == "google" or system.getInfo("targetAppStore") == "amazon" or system.getInfo("targetAppStore") == "none") then
@@ -298,26 +297,18 @@ elseif (system.getInfo("targetAppStore") == "apple") then
     shownLanguage = string.sub( system.getPreference("ui", "language"), 1, 2 )
 end
 
-if ( shownLanguage == "en" or shownLanguage == "EN" or "English" == shownLanguage ) then
-    composer.setVariable( "currentLanguage", "en" )
-elseif ( shownLanguage == "ru" or shownLanguage == "RU" or "Russian" == shownLanguage ) then
-    --composer.setVariable( "currentLanguage", "ru" )
-elseif ( shownLanguage == "ja" or shownLanguage == "JA" or "Japanese" == shownLanguage ) then
-    --composer.setVariable( "currentLanguage", "ja" )
-elseif ( shownLanguage == "zh" or shownLanguage == "ZH" or "Chinese" == shownLanguage ) then
-    --composer.setVariable( "currentLanguage", "zh" )
-elseif ( shownLanguage == "pt" or shownLanguage == "PT" or "Portuguese" == shownLanguage ) then
-    --composer.setVariable( "currentLanguage", "pt" )
-elseif ( shownLanguage == "es" or shownLanguage == "ES" or "Spanish" == shownLanguage ) then
-    --composer.setVariable( "currentLanguage", "es" )
-elseif ( shownLanguage == "tr" or shownLanguage == "TR" or "Türkçe" == shownLanguage or shownLanguage == "Turkish" or "Turkce" == shownLanguage ) then
+print (shownLanguage)
+shownLanguage = "en"
+
+--if ( shownLanguage == "en" or shownLanguage == "EN" or "English" == shownLanguage ) then
+--    composer.setVariable( "currentLanguage", "en" )
+if ( shownLanguage == "tr" or shownLanguage == "TR" or "Türkçe" == shownLanguage or shownLanguage == "Turkish" or "Turkce" == shownLanguage ) then
     composer.setVariable( "currentLanguage", "tr" )
 else
     composer.setVariable( "currentLanguage", "en" )
 end
-]]--
--- Set language to Turkish because there is no content available in any other language at the moment
-composer.setVariable( "currentLanguage", "tr" )
+
+--composer.setVariable( "currentLanguage", "tr" )
 sozluk.setSelectedTranslation( composer.getVariable("currentLanguage") )
 
 -- Load preferences file and initialize variables

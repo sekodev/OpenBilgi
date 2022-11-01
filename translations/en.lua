@@ -19,7 +19,7 @@ function translationSetup.getData()
     translationData["continueGame"] = "Continue"
     translationData["settings"] = "Settings"
     translationData["credits"] = "About us"
-    translationData["termsRequestStart"] = "You need to accept our terms & conditions before you start using the app."
+    translationData["termsRequest"] = "You need to accept our terms & conditions before you start using the app."
     translationData["termsRequestAccept"] = "I accept."
     translationData["termsUse"] = "Terms of Use"
     translationData["privacyPolicy"] = "Privacy Policy"
