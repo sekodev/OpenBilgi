@@ -297,9 +297,6 @@ elseif (system.getInfo("targetAppStore") == "apple") then
     shownLanguage = string.sub( system.getPreference("ui", "language"), 1, 2 )
 end
 
-print (shownLanguage)
-shownLanguage = "en"
-
 --if ( shownLanguage == "en" or shownLanguage == "EN" or "English" == shownLanguage ) then
 --    composer.setVariable( "currentLanguage", "en" )
 if ( shownLanguage == "tr" or shownLanguage == "TR" or "Türkçe" == shownLanguage or shownLanguage == "Turkish" or "Turkce" == shownLanguage ) then
