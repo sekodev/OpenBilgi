@@ -5,8 +5,6 @@
 -- composer.lua
 --
 -- Code is MIT licensed; see https://www.coronalabs.com/links/code/license
--- 
--- Repository: https://github.com/coronalabs/framework-composer
 --
 -----------------------------------------------------------------------------------------
 
@@ -558,9 +556,27 @@ local effectList = {
 		["from"] =
 		{
 			xStart = 0,
-			xEnd = -displayW * 2,
+			xEnd = -displayW * 3,
 			rotationStart = 0,
 			rotationEnd = -30,
+		},
+
+		["to"] =
+		{
+			xStart = 0,
+			xEnd = 0,
+		},
+		concurrent = true
+	},
+
+	["tossRight"] =
+	{
+		["from"] =
+		{
+			xStart = 0,
+			xEnd = displayW * 3,
+			rotationStart = 0,
+			rotationEnd = 30,
 		},
 
 		["to"] =
