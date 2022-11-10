@@ -54,8 +54,7 @@ local function assignVariables()
 
     composer.setVariable( "currentVersion" , "OpenBilgi, v0.7.3 (53)" ) -- Visible in Settings screen
     composer.setVariable( "packageName" , "io.sleepybug.bilgi" ) -- Required to show rating pop-ups
-    composer.setVariable( "urlGooglePlay" , "https://play.google.com/store/apps/details?id=io.sleepybug.bilgi" ) -- Required for sharing store link on social media
-    --composer.setVariable( "urlAppStore" , "https://play.google.com/store/apps/details?id=io.sleepybug.bilgi" ) -- Will be used for App Store version
+    composer.setVariable( "urlLandingPage" , "https://sekodev.github.io/bilgiWeb/" ) -- Required for sharing landing page on social media
     composer.setVariable( "pathIconFile" , "assets/menu/iconQuiz.png" ) -- Required for share UI
 
     composer.setVariable( "currentTheme" , "dark") -- dark, light(inactive)

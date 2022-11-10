@@ -91,22 +91,16 @@ end
 
 -- Show share UI based on the operating system
 local function showShareSystemUI()
-    local urlStore = ""
+    local urlLandingPage = composer.getVariable( "urlLandingPage" ) -- You can change landing page URL from main.lua
     local pathShareAsset = composer.getVariable( "pathIconFile" ) -- You can change pathIconFile from main.lua
 
     if (system.getInfo("platform") == "ios" or system.getInfo("platform") == "macos" or system.getInfo("platform") == "tvos") then
-        -- You can change store URL from main.lua
-        -- urlStore = composer.getVariable( "urlAppStore" )
-
         -- You need to use Activity Popup for iOS
         -- https://docs.coronalabs.com/plugin/CoronaProvider_native_popup_activity/index.html
     else
-        -- You can change store URL from main.lua
-        urlStore = composer.getVariable( "urlGooglePlay" )
-
         local itemsSocial = {
             image = { filename = pathShareAsset, baseDir = system.resourceDirectory },
-            url = { urlStore }
+            url = { urlLandingPage }
         }
 
         native.showPopup( "social", itemsSocial )
