@@ -53,7 +53,7 @@ local function assignVariables()
     composer.setVariable( "userToken", "" )
 
     composer.setVariable( "currentVersion" , "OpenBilgi, v0.7.3 (53)" ) -- Visible in Settings screen
-    composer.setVariable( "packageName" , "io.sleepybug.bilgi" ) -- Required to show rating pop-ups
+    composer.setVariable( "packageName" , "io.sleepybug.OpenBilgi" ) -- Required to show rating pop-ups
     composer.setVariable( "urlLandingPage" , "https://sekodev.github.io/bilgiWeb/" ) -- Required for sharing landing page on social media
     composer.setVariable( "pathIconFile" , "assets/menu/iconQuiz.png" ) -- Required for share UI
 
