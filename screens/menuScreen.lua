@@ -36,9 +36,6 @@ local tableTimers = {}
 
 local isInteractionAvailable = true
 
-local rectAnimation
-local animateLoading
-
 
 local function cancelTimers()
     for i = #tableTimers, 1, -1 do
@@ -60,7 +57,6 @@ local function pauseTimers()
 end
 
 local function cleanUp()
-    Runtime:removeEventListener( "enterFrame", animateLoading )
     Runtime:removeEventListener( "system", onSystemEvent )
     
     cancelTimers()
