@@ -70,16 +70,8 @@ end
 
 -- Handle touch events for everything on screen including URLs attached to credits elements
 local function handleTouch(event)
-	if (event.phase == "ended") then
-		if (event.target.id == "openWebPage") then
-			system.openURL( "" )
-		elseif (event.target.id == "facebook") then
-			system.openURL( "https://www.facebook.com/sleepybugstudio/" )
-		elseif (event.target.id == "twitter") then
-			system.openURL( "https://twitter.com/sleepybugstudio" )
-        elseif (event.target.id == "github") then
-            system.openURL( "https://github.com/sekodev/OpenBilgi" )
-		elseif (event.target.id == "sendMail") then
+    if (event.phase == "ended") then
+        if (event.target.id == "sendMail") then
             showMailUI()
         elseif (event.target.id == "openURL") then
             if (event.target.underline) then
@@ -88,13 +80,13 @@ local function handleTouch(event)
 
             system.openURL( event.target.URL )
         elseif (event.target.id == "mainMenu") then
-        	Runtime:removeEventListener( "enterFrame", moveCredits )
+            Runtime:removeEventListener( "enterFrame", moveCredits )
 
             local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "creditScreen"}}
             composer.gotoScene( "screens.menuScreen", optionsChangeScene )
-		end
-	end
-	return true
+        end
+    end
+    return true
 end
 
 -- Create buttons for contact information that stay on top, below the screen
@@ -154,10 +146,11 @@ local function createContactButtons()
         defaultFile = "assets/menu/facebook.png",
         width = widthContactButton,
         height = heightContactButton,
-        id = "facebook",
+        id = "openURL",
         onEvent = handleTouch,
     }
     local buttonFacebook = widget.newButton( optionsButtonFacebook )
+    buttonFacebook.URL = "https://www.facebook.com/sleepybugstudio/"
     buttonFacebook.y = buttonTermsUse.y - buttonTermsUse.height - buttonFacebook.height / 1.5
     creditsGroup:insert(buttonFacebook)
 
@@ -166,10 +159,11 @@ local function createContactButtons()
         defaultFile = "assets/menu/twitter.png",
         width = widthContactButton,
         height = heightContactButton,
-        id = "twitter",
+        id = "openURL",
         onEvent = handleTouch,
     }
     local buttonTwitter = widget.newButton( optionsButtonTwitter )
+    buttonTwitter.URL = "https://twitter.com/sleepybugstudio"
     buttonTwitter.y = buttonFacebook.y
     creditsGroup:insert(buttonTwitter)
 
@@ -183,10 +177,11 @@ local function createContactButtons()
         defaultFile = fileGithub,
         width = widthContactButton,
         height = heightContactButton,
-        id = "github",
+        id = "openURL",
         onEvent = handleTouch,
     }
     local buttonGithub = widget.newButton( optionsButtonGithub )
+    buttonGithub.URL = "https://github.com/sekodev/OpenBilgi"
     buttonGithub.y = buttonTwitter.y
     creditsGroup:insert(buttonGithub)
 
