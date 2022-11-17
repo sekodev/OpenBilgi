@@ -20,8 +20,8 @@ local tmr
 
 
 local function changeScene()
-	timer.cancel( tmr )
-	tmr = nil
+    timer.cancel( tmr )
+    tmr = nil
 
     local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "logoScreen"}}
     composer.gotoScene( "screens.menuScreen", optionsChangeScene )
@@ -30,7 +30,7 @@ end
 function scene:create( event )
     mainGroup = self.view
 
-    local background = display.newRect( mainGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
+    local background = display.newRect( mainGroup, display.contentCenterX, display.contentCenterY, display.contentWidth, display.contentHeight )
     background:setFillColor( unpack(themeData.colorBackground) ) -- themeData is global, main.lua
 
     -- This is included because of low asset quality
