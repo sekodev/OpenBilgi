@@ -28,6 +28,11 @@ local coinsAvailable = composer.getVariable( "coinsAvailable" )
 local locksAvailable = composer.getVariable( "locksAvailable" )
 local savedRandomSeed = composer.getVariable( "savedRandomSeed" )
 
+local screenWidthSafe = display.safeActualContentWidth
+local screenHeightSafe = display.safeActualContentHeight
+local screenWidth = display.contentWidth
+local screenHeight = display.contentHeight
+
 local frameButtonPlay, frameButtonSettings, frameButtonCredits, frameButtonConvert, frameLockQuestionSet
 local buttonShare
 
@@ -106,14 +111,16 @@ end
 -- Currently links to Google Play page
 -- Replace QR code assets to change the link
 local function showShareQR()
-    local backgroundShade = display.newRect( shareGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
+    local backgroundShade = display.newRect( shareGroup, display.contentCenterX, display.contentCenterY, screenWidth, screenHeight )
     backgroundShade:setFillColor( unpack(themeData.colorBackground) )
     backgroundShade.id = "shareCancel"
     backgroundShade:addEventListener( "touch", handleShareTouch )
 
     local fileQRCode = "assets/other/QRCode.png"
 
-    local qrCode = display.newImageRect( shareGroup, fileQRCode, display.safeActualContentHeight / 2, display.safeActualContentHeight / 2 )
+    local widthQRCode = screenHeightSafe / 2
+    local heightQRCode = widthQRCode
+    local qrCode = display.newImageRect( shareGroup, fileQRCode, widthQRCode, heightQRCode )
     qrCode.x, qrCode.y = display.contentCenterX, display.contentCenterY
 end
 
@@ -164,19 +171,19 @@ end
 
 -- Create share UI that shows two options - QR code or system(OS) share UI
 local function showShareUI()
-    local backgroundShade = display.newRect( shareGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
+    local backgroundShade = display.newRect( shareGroup, display.contentCenterX, display.contentCenterY, screenWidth, screenHeight )
     backgroundShade:setFillColor( unpack(themeData.colorBackground) )
     backgroundShade.alpha = .8
     backgroundShade.id = "backgroundShade"
     backgroundShade:addEventListener( "touch", function () return true end )
 
-    local frameShareOptions = display.newRect( shareGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth / 1.1, 0 )
+    local frameShareOptions = display.newRect( shareGroup, display.contentCenterX, display.contentCenterY, screenWidthSafe / 1.1, 0 )
     frameShareOptions:setFillColor( unpack(themeData.colorBackgroundPopup) )
 
     local widthShareButtons = frameShareOptions.width / 1.1
-    local heightShareButtons = display.safeActualContentHeight / 10
+    local heightShareButtons = screenHeightSafe / 10
     local distanceChoices = heightShareButtons / 5
-    local fontSizeChoices = (display.safeActualContentHeight / 25) / 1.1
+    local fontSizeChoices = (screenHeightSafe / 25) / 1.1
 
     local colorButtonFillDefault = themeData.colorButtonFillDefault
     local colorButtonFillOver = themeData.colorButtonFillOver
@@ -277,19 +284,19 @@ end
 local function showLockInformation()
     infoGroup.alpha = 0
 
-    local backgroundShade = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
+    local backgroundShade = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, screenWidth, screenHeight )
     backgroundShade:setFillColor( unpack(themeData.colorBackground) )
     backgroundShade.alpha = 1
     backgroundShade.id = "backgroundShade"
     backgroundShade:addEventListener( "touch", function () return true end )
 
-    local frameLockInformation = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth / 1.1, 0 )
+    local frameLockInformation = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, screenWidthSafe / 1.1, 0 )
     frameLockInformation:setFillColor( unpack(themeData.colorBackgroundPopup) )
 
     local widthLockInfoButtons = frameLockInformation.width / 1.1
-    local heightLockInfoButtons = display.safeActualContentHeight / 10
+    local heightLockInfoButtons = screenHeightSafe / 10
     local yDistanceElements = heightLockInfoButtons / 2
-    local fontSizeInformation = display.safeActualContentHeight / 30
+    local fontSizeInformation = screenHeightSafe / 30
 
     local colorButtonFillDefault = themeData.colorButtonFillDefault
     local colorButtonFillOver = themeData.colorButtonFillOver
@@ -336,7 +343,7 @@ local function showLockInformation()
     infoGroup:insert( buttonBack )
 
 
-    local widthUIButton = display.safeActualContentWidth / 9
+    local widthUIButton = screenWidthSafe / 9
     local heightUIButton = widthUIButton
 
     local imageLock = display.newImageRect( infoGroup, "assets/menu/padlock.png", widthUIButton / 1.5, heightUIButton / 1.5 )
@@ -432,7 +439,7 @@ local function showCoinsNeeded()
     local colorTextDefault = themeData.colorTextDefault
     local colorPadlock = themeData.colorPadlock
 
-    local widthUIButton = display.safeActualContentWidth / 9
+    local widthUIButton = screenWidthSafe / 9
     local heightUIButton = widthUIButton
 
     infoGroup.alpha = 0
@@ -471,7 +478,7 @@ local function showCoinsNeeded()
 
 
     local widthWarningElements = (textNumCoins.x + textNumCoins.width / 2) - (imageLock.x - imageLock.width / 2)
-    local xDistanceSides = (display.safeActualContentWidth - widthWarningElements) / 2
+    local xDistanceSides = (screenWidthSafe - widthWarningElements) / 2
 
     imageLock.x = xDistanceSides + imageLock.width / 2
     textNumLocks.x = imageLock.x + imageLock.width + textNumLocks.width / 2
@@ -505,7 +512,7 @@ local function showCoinsConverted( buttonConverter, locksConverted, coinsConvert
     local colorButtonDefault = themeData.colorButtonDefault
     local colorTextDefault = themeData.colorTextDefault
 
-    local widthUIButton = display.safeActualContentWidth / 9
+    local widthUIButton = screenWidthSafe / 9
     local heightUIButton = widthUIButton
 
     menuGroup.textCoinsConverted.text = "- " .. coinsConverted
@@ -856,13 +863,13 @@ function handleTouch(event)
 end
 
 local function createMenuElements()
-    local background = display.newRect( menuGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
+    local background = display.newRect( menuGroup, display.contentCenterX, display.contentCenterY, screenWidth, screenHeight )
     background.id = "background"
     background:setFillColor( unpack(themeData.colorBackground) )
     background:addEventListener( "touch", function () return true end )
 
 
-    local widthUIButton = display.safeActualContentWidth / 9
+    local widthUIButton = screenWidthSafe / 9
     local heightUIButton = widthUIButton
 
     local colorButtonOver = themeData.colorButtonOver
@@ -885,8 +892,8 @@ local function createMenuElements()
     }
     buttonShare = widget.newButton( optionsButtonShare )
     buttonShare:setFillColor( unpack(colorButtonDefault) )
-    buttonShare.x = display.safeActualContentWidth - buttonShare.width / 1.2
-    buttonShare.y = display.safeActualContentHeight - buttonShare.height / 1.2
+    buttonShare.x = screenWidthSafe - buttonShare.width / 1.2
+    buttonShare.y = screenHeightSafe - buttonShare.height / 1.2
     menuGroup:insert(buttonShare)
 
     local optionsButtonRate = 
@@ -900,7 +907,7 @@ local function createMenuElements()
     local buttonRate = widget.newButton( optionsButtonRate )
     buttonRate:setFillColor( unpack(colorButtonDefault) )
     buttonRate.x = display.contentCenterX
-    buttonRate.y = display.safeActualContentHeight - buttonRate.height / 1.2
+    buttonRate.y = screenHeightSafe - buttonRate.height / 1.2
     menuGroup:insert(buttonRate)
 
     -- A rate game button will be displayed if we asked player to rate the game
@@ -919,11 +926,11 @@ local function createMenuElements()
     local buttonStats = widget.newButton( optionsButtonStats )
     buttonStats:setFillColor( unpack(colorButtonDefault) )
     buttonStats.x = buttonStats.width / 1.2
-    buttonStats.y = display.safeActualContentHeight - buttonStats.height / 1.2
+    buttonStats.y = screenHeightSafe - buttonStats.height / 1.2
     menuGroup:insert(buttonStats)
 
-    local widthMenuButtons = display.safeActualContentWidth / 1.5
-    local fontSizeButtons = display.safeActualContentHeight / 30
+    local widthMenuButtons = screenWidthSafe / 1.5
+    local fontSizeButtons = screenHeightSafe / 30
 
     frameButtonCredits = display.newRoundedRect( display.contentCenterX, 0, widthMenuButtons, 0, cornerRadiusButtons )
     frameButtonCredits.id = "credits"
@@ -996,7 +1003,7 @@ local function createMenuElements()
 
     
     local optionsTitleText = { text = "?", 
-        height = 0, align = "center", font = fontLogo, fontSize = display.safeActualContentHeight / 5 }
+        height = 0, align = "center", font = fontLogo, fontSize = screenHeightSafe / 5 }
     local logoTitle = display.newText( optionsTitleText )
     logoTitle:setFillColor( unpack(themeData.colorButtonFillTrue) )
     logoTitle.x = display.contentCenterX
@@ -1038,7 +1045,7 @@ local function createMenuElements()
     frameButtonConvert.textLabel.x, frameButtonConvert.textLabel.y = frameButtonConvert.x, frameButtonConvert.y
     menuGroup:insert(frameButtonConvert.textLabel)
 
-    frameButtonConvert.width = display.safeActualContentWidth
+    frameButtonConvert.width = screenWidthSafe
     frameButtonConvert.height = frameButtonConvert.textLabel.height
 
 
@@ -1135,19 +1142,19 @@ end
 local function showPermissionRequest()
     infoGroup.alpha = 0
 
-    local backgroundShade = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
+    local backgroundShade = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, screenWidth, screenHeight )
     backgroundShade:setFillColor( unpack(themeData.colorBackground) )
     backgroundShade.alpha = 1
     backgroundShade.id = "backgroundShade"
     backgroundShade:addEventListener( "touch", function () return true end )
 
-    local frameTermsPrivacyRequest = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth / 1.1, 0 )
+    local frameTermsPrivacyRequest = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, screenWidthSafe / 1.1, 0 )
     frameTermsPrivacyRequest:setFillColor( unpack(themeData.colorBackgroundPopup) )
 
-    local heightPermissionButton = display.safeActualContentHeight / 14
+    local heightPermissionButton = screenHeightSafe / 14
     local widthPermissionButton = heightPermissionButton
     local yDistanceElements = heightPermissionButton / 2
-    local fontSizeInformation = display.safeActualContentHeight / 30
+    local fontSizeInformation = screenHeightSafe / 30
     
     local fontSizePolicy = heightPermissionButton / 3
     local colorHyperlink = themeData.colorHyperlink
