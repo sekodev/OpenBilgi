@@ -22,7 +22,7 @@ local mainGroup, menuGroup, scoreGroup, mapGroup, rateGroup, shareGroup, infoGro
 local timeTransitionScene = composer.getVariable( "timeTransitionScene" )
 local fontIngame = composer.getVariable( "fontIngame" )
 local fontLogo = composer.getVariable( "fontLogo" )
-local fontSize = display.safeActualContentHeight / 15
+local fontSize = contentHeightSafe / 15
 
 local priceLockCoins = composer.getVariable( "priceLockCoins" )
 local coinsAvailable = composer.getVariable( "coinsAvailable" )
@@ -111,14 +111,16 @@ end
 -- Currently links to Google Play page
 -- Replace QR code assets to change the link
 local function showShareQR()
-    local backgroundShade = display.newRect( shareGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
+    local backgroundShade = display.newRect( shareGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
     backgroundShade:setFillColor( unpack(themeData.colorBackground) )
     backgroundShade.id = "shareCancel"
     backgroundShade:addEventListener( "touch", handleShareTouch )
 
     local fileQRCode = "assets/other/QRCode.png"
 
-    local qrCode = display.newImageRect( shareGroup, fileQRCode, display.safeActualContentHeight / 2, display.safeActualContentHeight / 2 )
+    local widthQRCode = contentHeightSafe / 2
+    local heightQRCode = widthQRCode
+    local qrCode = display.newImageRect( shareGroup, fileQRCode, widthQRCode, heightQRCode )
     qrCode.x, qrCode.y = display.contentCenterX, display.contentCenterY
 end
 
@@ -168,19 +170,19 @@ function handleShareTouch(event)
 end
 -- Create share UI that shows two options - QR code or system(OS) share UI
 local function showShareUI()
-    local backgroundShade = display.newRect( shareGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
+    local backgroundShade = display.newRect( shareGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
     backgroundShade:setFillColor( unpack(themeData.colorBackground) )
     backgroundShade.alpha = .8
     backgroundShade.id = "backgroundShade"
     backgroundShade:addEventListener( "touch", function () return true end )
 
-    local frameShareOptions = display.newRect( shareGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth / 1.1, 0 )
+    local frameShareOptions = display.newRect( shareGroup, display.contentCenterX, display.contentCenterY, contentWidthSafe / 1.1, 0 )
     frameShareOptions:setFillColor( unpack(themeData.colorBackgroundPopup) )
 
     local widthShareButtons = frameShareOptions.width / 1.1
-    local heightShareButtons = display.safeActualContentHeight / 10
+    local heightShareButtons = contentHeightSafe / 10
     local distanceChoices = heightShareButtons / 5
-    local fontSizeChoices = (display.safeActualContentHeight / 25) / 1.1
+    local fontSizeChoices = (contentHeightSafe / 25) / 1.1
 
     local colorButtonFillDefault = themeData.colorButtonFillDefault
     local colorButtonFillOver = themeData.colorButtonFillOver
@@ -262,19 +264,19 @@ end
 local function showLockInformation()
     infoGroup.alpha = 0
     
-    local backgroundShade = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
+    local backgroundShade = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
     backgroundShade:setFillColor( unpack(themeData.colorBackground) )
     backgroundShade.alpha = 1
     backgroundShade.id = "backgroundShade"
     backgroundShade:addEventListener( "touch", function () return true end )
 
-    local frameLockInformation = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth / 1.1, 0 )
+    local frameLockInformation = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, contentWidthSafe / 1.1, 0 )
     frameLockInformation:setFillColor( unpack(themeData.colorBackgroundPopup) )
 
     local widthLockInfoButtons = frameLockInformation.width / 1.1
-    local heightLockInfoButtons = display.safeActualContentHeight / 10
+    local heightLockInfoButtons = contentHeightSafe / 10
     local yDistanceElements = heightLockInfoButtons / 3
-    local fontSizeInformation = display.safeActualContentHeight / 30
+    local fontSizeInformation = contentHeightSafe / 30
 
     local colorButtonFillDefault = themeData.colorButtonFillDefault
     local colorButtonFillOver = themeData.colorButtonFillOver
@@ -321,7 +323,7 @@ local function showLockInformation()
     infoGroup:insert( buttonBack )
 
 
-    local widthUIButton = display.safeActualContentWidth / 9
+    local widthUIButton = contentWidthSafe / 9
     local heightUIButton = widthUIButton
 
     local imageLock = display.newImageRect( infoGroup, "assets/menu/padlock.png", widthUIButton / 1.5, heightUIButton / 1.5 )
@@ -417,7 +419,7 @@ local function showCoinsNeeded()
     local colorTextDefault = themeData.colorTextDefault
     local colorPadlock = themeData.colorPadlock
 
-    local widthUIButton = display.safeActualContentWidth / 9
+    local widthUIButton = contentWidthSafe / 9
     local heightUIButton = widthUIButton
 
     infoGroup.alpha = 0
@@ -456,7 +458,7 @@ local function showCoinsNeeded()
 
 
     local widthWarningElements = (textNumCoins.x + textNumCoins.width / 2) - (imageLock.x - imageLock.width / 2)
-    local xDistanceSides = (display.safeActualContentWidth - widthWarningElements) / 2
+    local xDistanceSides = (contentWidthSafe - widthWarningElements) / 2
 
     imageLock.x = xDistanceSides + imageLock.width / 2
     textNumLocks.x = imageLock.x + imageLock.width + textNumLocks.width / 2
@@ -490,7 +492,7 @@ local function showCoinsConverted( buttonConverter, locksConverted, coinsConvert
     local colorButtonDefault = themeData.colorButtonDefault
     local colorTextDefault = themeData.colorTextDefault
 
-    local widthUIButton = display.safeActualContentWidth / 9
+    local widthUIButton = contentWidthSafe / 9
     local heightUIButton = widthUIButton
 
     menuGroup.textCoinsConverted.text = "- " .. coinsConverted
@@ -572,8 +574,8 @@ end
 
 -- Handle touch events for every visible UI element
 function handleTouch(event)
-	if (event.phase == "began") then
-		if (isInteractionAvailable) then
+    if (event.phase == "began") then
+        if (isInteractionAvailable) then
             local colorButtonOver = themeData.colorButtonOver
             local colorButtonFillTrue = themeData.colorButtonFillTrue
             local colorButtonFillWrong = themeData.colorButtonFillWrong
@@ -700,7 +702,7 @@ function handleTouch(event)
                         end })
                 end
             end
-		end
+        end
     elseif (event.phase == "ended" or "cancelled" == event.phase) then
         if (isInteractionAvailable) then
             if (event.target.id == "shareSocial") then
@@ -767,8 +769,8 @@ local function shootFireworks()
     for i = 1, numFireworks do
         local timerFire = timer.performWithDelay( 1000 * (i - 1), function () 
                 local emitterFireworks = particleDesigner.newEmitter( "assets/particleFX/fireworks.json" )
-                emitterFireworks.x = random(display.safeActualContentWidth)
-                emitterFireworks.y = random(display.safeActualContentHeight)
+                emitterFireworks.x = random(contentWidthSafe)
+                emitterFireworks.y = random(contentHeightSafe)
                 scoreGroup:insert(emitterFireworks)
 
                 audio.play( tableSoundFiles["fireworks"], {channel = 2, loops = numFireworks} )
@@ -925,7 +927,7 @@ local function createProgressMap(yButtonTop)
 
     local colorTextDefault = themeData.colorTextDefault
 
-    local mapLine = display.newRect( mapGroup, display.contentCenterX, 0, display.safeActualContentWidth / 1.2, 15 )
+    local mapLine = display.newRect( mapGroup, display.contentCenterX, 0, contentWidthSafe / 1.2, 15 )
     mapLine:setFillColor( unpack(colorTextDefault) )
     mapLine.y = yButtonTop - mapLine.height
 
@@ -982,7 +984,7 @@ local function createScoreElements()
 
 
     if (isRecordBroken) then
-        textScore.xScale, textScore.yScale = display.safeActualContentHeight / 3, textScore.xScale
+        textScore.xScale, textScore.yScale = contentHeightSafe / 3, textScore.xScale
 
         labelScore.text = sozluk.getString("highScore")
         labelScore.alpha = 0
@@ -991,15 +993,15 @@ local function createScoreElements()
 end
 
 local function createMenuElements()
-    local background = display.newRect( menuGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
+    local background = display.newRect( menuGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
     background:setFillColor( unpack(themeData.colorBackground) )
 
 
-    local widthUIButton = display.safeActualContentWidth / 9
+    local widthUIButton = contentWidthSafe / 9
     local heightUIButton = widthUIButton
 
-    local widthMenuButtons = display.safeActualContentWidth / 1.5
-    local fontSizeButtons = display.safeActualContentHeight / 30
+    local widthMenuButtons = contentWidthSafe / 1.5
+    local fontSizeButtons = contentHeightSafe / 30
     local cornerRadiusButtons = themeData.cornerRadiusButtons
     local strokeWidthButtons = themeData.strokeWidthButtons
     local colorButtonDefault = themeData.colorButtonDefault
@@ -1019,8 +1021,8 @@ local function createMenuElements()
     }
     local buttonShare = widget.newButton( optionsButtonShare )
     buttonShare:setFillColor( unpack(colorButtonDefault) )
-    buttonShare.x = display.safeActualContentWidth - buttonShare.width / 1.2
-    buttonShare.y = display.safeActualContentHeight - buttonShare.height / 1.2
+    buttonShare.x = contentWidthSafe - buttonShare.width / 1.2
+    buttonShare.y = contentHeightSafe - buttonShare.height / 1.2
     menuGroup:insert(buttonShare)
 
     local optionsButtonStats = 
@@ -1034,7 +1036,7 @@ local function createMenuElements()
     local buttonStats = widget.newButton( optionsButtonStats )
     buttonStats:setFillColor( unpack(colorButtonDefault) )
     buttonStats.x = buttonStats.width / 1.2
-    buttonStats.y = display.safeActualContentHeight - buttonStats.height / 1.2
+    buttonStats.y = contentHeightSafe - buttonStats.height / 1.2
     menuGroup:insert(buttonStats)
 
     frameButtonMainMenu = display.newRoundedRect( display.contentCenterX, 0, widthMenuButtons, 0, cornerRadiusButtons )
@@ -1133,7 +1135,7 @@ local function createMenuElements()
     frameButtonConvert.textLabel.x, frameButtonConvert.textLabel.y = frameButtonConvert.x, frameButtonConvert.y
     menuGroup:insert(frameButtonConvert.textLabel)
 
-    frameButtonConvert.width = display.safeActualContentWidth
+    frameButtonConvert.width = contentWidthSafe
     frameButtonConvert.height = frameButtonConvert.textLabel.height
 
 
@@ -1240,60 +1242,60 @@ end
 
 -- Show rating UI depending on the operating system
 local function showRateUI()
-	if (system.getInfo("platform") == "ios" or system.getInfo("platform") == "macos" or system.getInfo("platform") == "tvos") then
-		-- local idAppStore = "1234567890" -- placeholder
+    if (system.getInfo("platform") == "ios" or system.getInfo("platform") == "macos" or system.getInfo("platform") == "tvos") then
+        -- local idAppStore = "1234567890" -- placeholder
         -- https://solar2dmarketplace.com/plugins?ReviewPopUp_tech-scotth
-	else
-	    local namePackage = composer.getVariable( "packageName" )
-	    local storeSupported = { "google" }
+    else
+        local namePackage = composer.getVariable( "packageName" )
+        local storeSupported = { "google" }
 
-	    local optionsRateGame = {
-	        --iOSAppId = idAppStore,
-	        androidAppPackageName = namePackage,
-	        supportedAndroidStores = storeSupported
-	    }
-	    native.showPopup( "appStore", optionsRateGame )
-	end
+        local optionsRateGame = {
+            --iOSAppId = idAppStore,
+            androidAppPackageName = namePackage,
+            supportedAndroidStores = storeSupported
+        }
+        native.showPopup( "appStore", optionsRateGame )
+    end
 end
 
 local function handleRatingTouch(event)
     if (event.phase == "ended") then
-		if (event.target.id == "rateOK") then
-			composer.setVariable( "askedRateGame", true )
+        if (event.target.id == "rateOK") then
+            composer.setVariable( "askedRateGame", true )
             savePreferences()
 
             clearDisplayGroup(rateGroup)
-			showRateUI()
-		elseif (event.target.id == "rateLater") then
+            showRateUI()
+        elseif (event.target.id == "rateLater") then
             -- This option is NOT used to ask for ratings later
-			composer.setVariable( "askedRateGame", true )
+            composer.setVariable( "askedRateGame", true )
             savePreferences()
 
             clearDisplayGroup(rateGroup)
-		elseif (event.target.id == "sendFeedback") then
+        elseif (event.target.id == "sendFeedback") then
             composer.setVariable( "askedRateGame", true )
             savePreferences()
 
             clearDisplayGroup(rateGroup)
             showMailUI()
-		end
-	end
-	return true
+        end
+    end
+    return true
 end
 
 -- Show a dialog box asking to rate the game
 -- This is only shown once. After that, game only shows a rate button and leaves it up to the player
 function createAskRatingElements()
-    local backgroundShade = display.newRect( rateGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
+    local backgroundShade = display.newRect( rateGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
     backgroundShade:setFillColor( unpack(themeData.colorBackground) )
     backgroundShade.alpha = .9
     backgroundShade.id = "backgroundShade"
     backgroundShade:addEventListener( "touch", function () return true end )
 
 
-    local fontSizeQuestion = display.safeActualContentHeight / 30
+    local fontSizeQuestion = contentHeightSafe / 30
 
-    local frameQuestionRating = display.newRect( rateGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth / 1.1, 0 )
+    local frameQuestionRating = display.newRect( rateGroup, display.contentCenterX, display.contentCenterY, contentWidthSafe / 1.1, 0 )
     frameQuestionRating:setFillColor( unpack(themeData.colorBackgroundPopup) )
 
     local optionsTextRating = { text = sozluk.getString("ratingAsk"), 
@@ -1305,8 +1307,8 @@ function createAskRatingElements()
 
 
     local widthRateButtons = frameQuestionRating.width / 1.1
-    local heightRateButtons = display.safeActualContentHeight / 10
-	local distanceChoices = heightRateButtons / 5
+    local heightRateButtons = contentHeightSafe / 10
+    local distanceChoices = heightRateButtons / 5
     local fontSizeChoices = fontSizeQuestion / 1.1
 
     local colorButtonFillDefault = themeData.colorButtonFillDefault

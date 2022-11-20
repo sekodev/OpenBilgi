@@ -71,15 +71,15 @@ end
 
 -- Create dialog box to ask if user confirms question reset
 local function showResetConfirmation()
-    local backgroundShade = display.newRect( resetGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
+    local backgroundShade = display.newRect( resetGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
     backgroundShade:setFillColor( unpack(themeData.colorBackground) )
     backgroundShade.alpha = .9
     backgroundShade.id = "backgroundShade"
     backgroundShade:addEventListener( "touch", function () return true end )
 
-    local fontSizeQuestion = display.safeActualContentHeight / 30
+    local fontSizeQuestion = contentHeightSafe / 30
 
-    local frameQuestionReset = display.newRect( resetGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth / 1.1, 0 )
+    local frameQuestionReset = display.newRect( resetGroup, display.contentCenterX, display.contentCenterY, contentWidthSafe / 1.1, 0 )
     frameQuestionReset:setFillColor( unpack(themeData.colorBackgroundPopup) )
 
     local optionsTextReset = { text = sozluk.getString("resetQuestionsAsk"), 
@@ -90,7 +90,7 @@ local function showResetConfirmation()
     resetGroup:insert(frameQuestionReset.textLabel)
 
     local widthRateButtons = frameQuestionReset.width / 1.1
-    local heightRateButtons = display.safeActualContentHeight / 10
+    local heightRateButtons = contentHeightSafe / 10
     local distanceChoices = heightRateButtons / 5
     local fontSizeChoices = fontSizeQuestion / 1.1
 
@@ -318,8 +318,8 @@ local function handleTouch(event)
 end
 
 function createSettingsElements()
-    local xDistanceSides = display.safeActualContentWidth / 10
-    local widthButtonSettings = display.safeActualContentWidth / 8
+    local xDistanceSides = contentWidthSafe / 10
+    local widthButtonSettings = contentWidthSafe / 8
     local heightButtonSettings = widthButtonSettings
 
     local colorButtonFillDefault = themeData.colorButtonFillDefault
@@ -329,19 +329,19 @@ function createSettingsElements()
     local colorButtonFillWrong = themeData.colorButtonFillWrong
     local colorButtonStroke = themeData.colorButtonStroke
 
-    local background = display.newRect( menuGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
+    local background = display.newRect( menuGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
     background:setFillColor( unpack(themeData.colorBackground) )
 
     local optionsButtonBack = 
     {
         shape = "rect",
         fillColor = { default = colorButtonFillDefault, over = colorButtonFillDefault },
-        width = display.safeActualContentWidth / 6,
-        height = display.safeActualContentHeight / 10,
+        width = contentWidthSafe / 6,
+        height = contentHeightSafe / 10,
         label = "<",
         labelColor = { default = colorButtonDefault, over = colorButtonOver },
         font = fontLogo,
-        fontSize = display.safeActualContentHeight / 15,
+        fontSize = contentHeightSafe / 15,
         id = "buttonBack",
         onEvent = handleTouch,
     }
@@ -351,11 +351,11 @@ function createSettingsElements()
     menuGroup:insert( buttonBack )
 
     local optionsLabelVersion = { text = composer.getVariable("currentVersion"), 
-        height = 0, align = "center", font = fontLogo, fontSize = display.safeActualContentHeight / 40 }
+        height = 0, align = "center", font = fontLogo, fontSize = contentHeightSafe / 40 }
     local labelVersionNumber = display.newText( optionsLabelVersion )
     labelVersionNumber:setFillColor( unpack(colorTextDefault) )
     labelVersionNumber.anchorX = 1
-    labelVersionNumber.x = display.safeActualContentWidth - buttonBack.width / 2
+    labelVersionNumber.x = contentWidthSafe - buttonBack.width / 2
     labelVersionNumber.y = buttonBack.y
     menuGroup:insert(labelVersionNumber)
 
@@ -379,7 +379,7 @@ function createSettingsElements()
     imageMusic.y = imageSound.y + imageSound.height / 2 + imageMusic.height * 1.2
     imageMusic:addEventListener( "touch", handleTouch )
 
-    local widthLineSound = display.safeActualContentWidth - xDistanceSides * 2 - imageSound.width * 1.5
+    local widthLineSound = contentWidthSafe - xDistanceSides * 2 - imageSound.width * 1.5
     local heightLineSound = imageSound.height / 12
     local xLineSound = imageSound.x + imageSound.width * 1.5
     local yLineSound = imageSound.y
@@ -427,8 +427,8 @@ function createSettingsElements()
     imageMusic.buttonControl:toFront( )
 
 
-    local widthMenuButtons = display.safeActualContentWidth / 1.5
-    local fontSizeButtons = display.safeActualContentHeight / 30
+    local widthMenuButtons = contentWidthSafe / 1.5
+    local fontSizeButtons = contentHeightSafe / 30
 
     local colorTextOver = themeData.colorTextOver
     local cornerRadiusButtons = themeData.cornerRadiusButtons
@@ -451,7 +451,7 @@ function createSettingsElements()
 
     frameButtonReset.width = frameButtonReset.textLabel.width * 1.2
     frameButtonReset.height = frameButtonReset.textLabel.height * 2
-    frameButtonReset.y = display.safeActualContentHeight - frameButtonReset.height
+    frameButtonReset.y = contentHeightSafe - frameButtonReset.height
     frameButtonReset.textLabel.y = frameButtonReset.y
 
     local themeName

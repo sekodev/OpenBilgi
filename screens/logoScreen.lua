@@ -30,7 +30,7 @@ end
 function scene:create( event )
     mainGroup = self.view
 
-    local background = display.newRect( mainGroup, display.contentCenterX, display.contentCenterY, display.contentWidth, display.contentHeight )
+    local background = display.newRect( mainGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
     background:setFillColor( unpack(themeData.colorBackground) ) -- themeData is global, main.lua
 
     -- This is included because of low asset quality

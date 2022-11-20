@@ -55,12 +55,12 @@ local function createBonfire()
     local heightWoodFire = 30
 
     for i = 1, 5 do
-        local woodHorizontal = display.newRect( successGroup, 0, 0, display.safeActualContentWidth / 2, heightWoodFire )
+        local woodHorizontal = display.newRect( successGroup, 0, 0, contentWidthSafe / 2, heightWoodFire )
         woodHorizontal:setFillColor( .52, .37, .26 )
         woodHorizontal.x = display.contentCenterX
 
         if (i == 1) then
-            woodHorizontal.y = display.safeActualContentHeight - woodHorizontal.height * 2
+            woodHorizontal.y = contentHeightSafe - woodHorizontal.height * 2
         else
             woodHorizontal.y = tableWoods[i - 1].y - woodHorizontal.height * 1.5
         end
@@ -68,7 +68,7 @@ local function createBonfire()
         table.insert( tableWoods, woodHorizontal )
     end
 
-    local woodFire = display.newRect( successGroup, 0, 0, display.safeActualContentWidth / 2, heightWoodFire )
+    local woodFire = display.newRect( successGroup, 0, 0, contentWidthSafe / 2, heightWoodFire )
     woodFire.rotation = 120
     woodFire.x = display.contentCenterX - woodFire.width / 2
     woodFire.y = tableWoods[3].y - tableWoods[3].height / 2 - woodFire.height / 2
@@ -80,7 +80,7 @@ local function createBonfire()
     woodFire2.alpha = woodFire.alpha
     woodFire2.y = woodFire.y
 
-    local woodFire3 = display.newRect( successGroup, 0, 0, display.safeActualContentWidth / 2, heightWoodFire )
+    local woodFire3 = display.newRect( successGroup, 0, 0, contentWidthSafe / 2, heightWoodFire )
     woodFire3.rotation = 110
     woodFire3.x = display.contentCenterX - woodFire.width / 4
     woodFire3.y = woodFire.y
@@ -128,14 +128,14 @@ local function handleTouch(event)
 end
 
 local function createScreenElements()
-    local backgroundSuccess = display.newRect( successGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
+    local backgroundSuccess = display.newRect( successGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
     backgroundSuccess:setFillColor( unpack(themeData.colorBackground) )
     backgroundSuccess:addEventListener( "touch", handleTouch )
 
-    local fontSizeSuccessTitle = display.safeActualContentHeight / 20
-    local fontSizeSuccessMessage = display.safeActualContentHeight / 35
+    local fontSizeSuccessTitle = contentHeightSafe / 20
+    local fontSizeSuccessMessage = contentHeightSafe / 35
 
-    local optionsTextSuccessTitle = { text = sozluk.getString("successCongrats"), width = display.safeActualContentWidth / 1.1, height = 0,
+    local optionsTextSuccessTitle = { text = sozluk.getString("successCongrats"), width = contentWidthSafe / 1.1, height = 0,
         font = fontLogo, fontSize = fontSizeSuccessTitle, align = "center" }
     local textMessageSuccessTitle = display.newText( optionsTextSuccessTitle )
     textMessageSuccessTitle:setFillColor( unpack( themeData.colorTextDefault ) )
@@ -154,7 +154,7 @@ local function createScreenElements()
         messageSuccess = sozluk.getString("successEndgame")
     end
 
-    local optionsTextSuccessMessage = { text = messageSuccess, width = display.safeActualContentWidth / 1.1, height = 0,
+    local optionsTextSuccessMessage = { text = messageSuccess, width = contentWidthSafe / 1.1, height = 0,
         font = fontLogo, fontSize = fontSizeSuccessMessage, align = "center" }
     textMessageSuccess = display.newText( optionsTextSuccessMessage )
     textMessageSuccess:setFillColor( unpack( themeData.colorTextDefault ) )

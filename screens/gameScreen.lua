@@ -54,7 +54,7 @@ local isInteractionAvailable = false
 local isSaveAvailable = false
 local isSetCompletedBefore = false
 
-local fontSizeQuestion = display.safeActualContentHeight / 25
+local fontSizeQuestion = contentHeightSafe / 25
 
 local random = math.random
 local roundNumber = math.round
@@ -90,10 +90,10 @@ end
 local function shuffleTable(tableUnshuffled)
     math.randomseed( os.time() )
 
-	for i = #tableUnshuffled, 2, -1 do
-		local rand = random(i)
-		tableUnshuffled[i], tableUnshuffled[rand] = tableUnshuffled[rand], tableUnshuffled[i]
-	end
+    for i = #tableUnshuffled, 2, -1 do
+        local rand = random(i)
+        tableUnshuffled[i], tableUnshuffled[rand] = tableUnshuffled[rand], tableUnshuffled[i]
+    end
 end
 
 local function cancelTimers()
@@ -104,9 +104,9 @@ local function cancelTimers()
 end
 
 local function resumeTimers()
-	for i = #tableTimers, 1, -1 do
-	    timer.resume( tableTimers[i] )
-	end
+    for i = #tableTimers, 1, -1 do
+        timer.resume( tableTimers[i] )
+    end
 end
 
 local function pauseTimers()
@@ -246,7 +246,7 @@ local function endGame(statusGame)
 
     if (statusGame == "success") then
         -- Delete current random seed to prevent player from locking down this successful session
-    	composer.setVariable( "lastRandomSeed", 0 )
+        composer.setVariable( "lastRandomSeed", 0 )
 
         local runsCompleted = composer.getVariable( "runsCompleted" ) + 1
         composer.setVariable( "runsCompleted", runsCompleted )
@@ -390,14 +390,14 @@ function startGameTimer(targetGroup)
             else
                 -- When player is out of time, show the answer
                 isInteractionAvailable = false
-            	showAnswer(targetGroup)
+                showAnswer(targetGroup)
             end
         end} )
 end
 
 -- Create display elements for a single(1) question
 local function createFrameQuestion(targetGroup)
-    targetGroup.frameQuestion = display.newRoundedRect( display.contentCenterX, 0, display.safeActualContentWidth / 1.1, 0, 10 )
+    targetGroup.frameQuestion = display.newRoundedRect( display.contentCenterX, 0, contentWidthSafe / 1.1, 0, 10 )
     targetGroup.frameQuestion:setFillColor( unpack(themeData.colorBackground) )
     targetGroup:insert(targetGroup.frameQuestion)
 
@@ -425,10 +425,10 @@ local function createGameTimer(targetGroup)
     -- This allows us to experiment with different time remaining values for different difficulties
     intervalTimer = (tableQuestions[questionIndex].timeRemaining / numElementsTimer) * 1000
 
-    local widthElementTimer = display.safeActualContentWidth / 30
-    local heightElementTimer = display.safeActualContentHeight / 50
-    local distanceTimerElements = (display.safeActualContentWidth / 1.1 - widthElementTimer * numElementsTimer) / (numElementsTimer + 1)
-    local marginFirstElement = (display.safeActualContentWidth - display.safeActualContentWidth / 1.1) / 2
+    local widthElementTimer = contentWidthSafe / 30
+    local heightElementTimer = contentHeightSafe / 50
+    local distanceTimerElements = (contentWidthSafe / 1.1 - widthElementTimer * numElementsTimer) / (numElementsTimer + 1)
+    local marginFirstElement = (contentWidthSafe - contentWidthSafe / 1.1) / 2
 
     for i = 1, numElementsTimer do
         local elementTimer = display.newRoundedRect( 0, 0, widthElementTimer, heightElementTimer, 5 )
@@ -458,7 +458,7 @@ end
 local function createFramesChoices(targetGroup)
     targetGroup.choices = {}
 
-    local widthFrameChoice = display.safeActualContentWidth / 1.1
+    local widthFrameChoice = contentWidthSafe / 1.1
     local cornerRadiusButtons = themeData.cornerRadiusButtons
     local choicesPossible = {1, 2, 3, 4}
     local fontSizeChoices = fontSizeQuestion / 1.1
@@ -506,28 +506,28 @@ local function createFramesChoices(targetGroup)
 
     -- Create rectangular frames to surround every single choice
     for i = 1, #targetGroup.choices do
-    	frameChoice = targetGroup.choices[i]
+        frameChoice = targetGroup.choices[i]
 
-    	local distanceChoices = frameChoice.height / 3
+        local distanceChoices = frameChoice.height / 3
         if (numChoices == 2) then
-        	frameChoice.height = display.safeActualContentHeight / 8
+            frameChoice.height = contentHeightSafe / 8
             distanceChoices = frameChoice.height / 3
             if (i == 1) then
-                frameChoice.y = display.safeActualContentHeight - frameChoice.height * 1.2
+                frameChoice.y = contentHeightSafe - frameChoice.height * 1.2
             else
                 frameChoice.y = targetGroup.choices[i - 1].y - targetGroup.choices[i - 1].height - distanceChoices
             end
         else
             if (numChoices == 3) then
-            	frameChoice.height = display.safeActualContentHeight / 9
+                frameChoice.height = contentHeightSafe / 9
                 distanceChoices = frameChoice.height / 3
             elseif (numChoices == 4) then
-            	frameChoice.height = display.safeActualContentHeight / 11
+                frameChoice.height = contentHeightSafe / 11
                 distanceChoices = frameChoice.height / 3
             end
 
             if (i == 1) then
-                frameChoice.y = display.safeActualContentHeight - distanceChoices - frameChoice.height / 2
+                frameChoice.y = contentHeightSafe - distanceChoices - frameChoice.height / 2
             else
                 frameChoice.y = targetGroup.choices[i - 1].y - targetGroup.choices[i - 1].height - distanceChoices
             end
@@ -538,9 +538,9 @@ end
 
 -- Create dialog box that asks player 'Are you sure?'
 local function createQuitConfirmationMenu(targetGroup)
-	local fontSizeQuestion = display.safeActualContentHeight / 30
+    local fontSizeConfirmation = contentHeightSafe / 30
 
-	local colorButtonFillDefault = themeData.colorButtonFillDefault
+    local colorButtonFillDefault = themeData.colorButtonFillDefault
     local colorButtonFillOver = themeData.colorButtonFillOver
     local colorButtonDefault = themeData.colorButtonDefault
     local colorTextDefault = themeData.colorTextDefault
@@ -551,14 +551,14 @@ local function createQuitConfirmationMenu(targetGroup)
     local strokeWidthButtons = themeData.strokeWidthButtons
 
 
-	targetGroup.backgroundQuit = display.newRect( targetGroup, display.contentCenterX, 0, display.safeActualContentWidth, display.safeActualContentHeight - yStartingPlacement )
+    targetGroup.backgroundQuit = display.newRect( targetGroup, display.contentCenterX, 0, contentWidth, contentHeight - yStartingPlacement )
     targetGroup.backgroundQuit.anchorY = 0
     targetGroup.backgroundQuit:setFillColor( unpack(themeData.colorBackground) )
     targetGroup.backgroundQuit:addEventListener( "touch", function () return true end )
 
 
     local optionsQuestionQuitLabel = { text = sozluk.getString("quitAsk"), 
-        width = targetGroup.backgroundQuit.width / 1.1, height = 0, align = "center", font = fontLogo, fontSize = fontSizeQuestion }
+        width = targetGroup.backgroundQuit.width / 1.1, height = 0, align = "center", font = fontLogo, fontSize = fontSizeConfirmation }
     targetGroup.questionQuitLabel = display.newText( optionsQuestionQuitLabel )
     targetGroup.questionQuitLabel:setFillColor( unpack(colorTextDefault) )
     targetGroup.questionQuitLabel.x = targetGroup.backgroundQuit.x
@@ -566,9 +566,9 @@ local function createQuitConfirmationMenu(targetGroup)
 
 
     local widthQuitButtons = targetGroup.questionQuitLabel.width / 1.1
-    local heightQuitButtons = display.safeActualContentHeight / 10
-	local distanceChoices = heightQuitButtons / 3
-	local fontSizeChoices = fontSizeQuestion / 1.1
+    local heightQuitButtons = contentHeightSafe / 10
+    local distanceChoices = heightQuitButtons / 3
+    local fontSizeChoices = fontSizeConfirmation / 1.1
 
     local optionsButtonQuitAccept = 
     {
@@ -625,8 +625,8 @@ end
 
 -- Create settings menu that opens up when player clicks gear(settings) icon
 local function createSettingsMenu(targetGroup)
-    local xDistanceSides = display.safeActualContentWidth / 10
-    local widthButtonSettings = display.safeActualContentWidth / 10
+    local xDistanceSides = contentWidthSafe / 10
+    local widthButtonSettings = contentWidthSafe / 10
     local heightButtonSettings = widthButtonSettings
     
     yStartingPlacement = targetGroup.menuSeparator.y + targetGroup.menuSeparator.height / 2
@@ -652,7 +652,7 @@ local function createSettingsMenu(targetGroup)
     targetGroup.imageMusic:addEventListener( "touch", handleUITouch )
 
     
-    local widthLineSound = display.safeActualContentWidth - xDistanceSides * 2 - targetGroup.imageSound.width * 1.5
+    local widthLineSound = contentWidthSafe - xDistanceSides * 2 - targetGroup.imageSound.width * 1.5
     local heightLineSound = targetGroup.imageSound.height / 12
     local xLineSound = targetGroup.imageSound.x + targetGroup.imageSound.width * 1.5
     local yLineSound = targetGroup.imageSound.y
@@ -722,7 +722,7 @@ local function createUIElements(targetGroup)
     local colorTextDefault = themeData.colorTextDefault
     local cornerRadiusButtons = themeData.cornerRadiusButtons
 
-    local background = display.newRect( targetGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
+    local background = display.newRect( targetGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
     background:setFillColor( unpack(colorBackground) )
     background:addEventListener( "touch", function () return true end )
 
@@ -730,12 +730,12 @@ local function createUIElements(targetGroup)
     {
         shape = "rect",
         fillColor = { default = colorButtonFillDefault, over = colorButtonFillDefault },
-        width = display.safeActualContentWidth / 6,
-        height = display.safeActualContentHeight / 10,
+        width = contentWidthSafe / 6,
+        height = contentHeightSafe / 10,
         label = "<",
         labelColor = { default = colorButtonDefault, over = colorButtonOver },
         font = fontLogo,
-        fontSize = display.safeActualContentHeight / 15,
+        fontSize = contentHeightSafe / 15,
         id = "buttonBack",
         onEvent = handleUITouch,
     }
@@ -746,7 +746,7 @@ local function createUIElements(targetGroup)
     targetGroup:insert( targetGroup.buttonBack )
 
     local optionsNumberQuestion = { text = questionCurrent .. "/" .. amountQuestionSingleGame, height = 0, 
-         font = fontLogo, fontSize = display.safeActualContentHeight / 30 }
+         font = fontLogo, fontSize = contentHeightSafe / 30 }
     local numberQuestion = display.newText( optionsNumberQuestion )
     numberQuestion:setFillColor( unpack(colorTextDefault) )
     numberQuestion.y = targetGroup.buttonBack.y
@@ -764,7 +764,7 @@ local function createUIElements(targetGroup)
 
 
     local currencyShort, currencyAbbreviation = formatCurrencyString(coinsEarned)
-    local optionsNumCoins = { text = currencyShort .. currencyAbbreviation, font = fontLogo, fontSize = display.safeActualContentHeight / 30 }
+    local optionsNumCoins = { text = currencyShort .. currencyAbbreviation, font = fontLogo, fontSize = contentHeightSafe / 30 }
     targetGroup.textNumCoins = display.newText( optionsNumCoins )
     targetGroup.textNumCoins:setFillColor( unpack(colorTextDefault) )
     targetGroup.textNumCoins.x = imageCoin.x + imageCoin.width + targetGroup.textNumCoins.width / 2
@@ -775,15 +775,15 @@ local function createUIElements(targetGroup)
     local optionsButtonSettings = 
     {
         defaultFile = "assets/menu/settings.png",
-        width = display.safeActualContentHeight / 15,
-        height = display.safeActualContentHeight / 15,
+        width = contentHeightSafe / 15,
+        height = contentHeightSafe / 15,
         id = "settings",
         onEvent = handleUITouch,
     }
     targetGroup.buttonSettings = widget.newButton( optionsButtonSettings )
     targetGroup.buttonSettings:setFillColor( unpack(colorButtonDefault) )
     targetGroup.buttonSettings.isActivated = false
-    targetGroup.buttonSettings.x, targetGroup.buttonSettings.y = display.safeActualContentWidth - targetGroup.buttonBack.width / 2, targetGroup.buttonBack.y
+    targetGroup.buttonSettings.x, targetGroup.buttonSettings.y = contentWidthSafe - targetGroup.buttonBack.width / 2, targetGroup.buttonBack.y
     targetGroup:insert(targetGroup.buttonSettings)
 
     targetGroup.menuSeparator = display.newRect( targetGroup, background.x, 0, background.width, 10 )
@@ -806,7 +806,7 @@ local function createUIElements(targetGroup)
     local colorVisualCue = themeData.colorVisualCue
     local strokeWidthVisualCue = themeData.strokeWidthVisualCue
 
-    targetGroup.cueVisual = display.newRoundedRect( targetGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth - strokeWidthVisualCue, display.safeActualContentHeight - strokeWidthVisualCue, cornerRadiusButtons )
+    targetGroup.cueVisual = display.newRoundedRect( targetGroup, display.contentCenterX, display.contentCenterY, contentWidth - strokeWidthVisualCue, contentHeight - strokeWidthVisualCue, cornerRadiusButtons )
     targetGroup.cueVisual:setFillColor( unpack(colorVisualCue), 0 )
     targetGroup.cueVisual.alpha = 0
     targetGroup.cueVisual.strokeWidth = strokeWidthVisualCue
@@ -827,7 +827,7 @@ end
 local function createProgressMap(targetGroup, yPositionReference)
     local colorTextDefault = themeData.colorTextDefault
 
-    local mapLine = display.newRect( targetGroup, display.contentCenterX, 0, display.safeActualContentWidth / 1.2, 15 )
+    local mapLine = display.newRect( targetGroup, display.contentCenterX, 0, contentWidthSafe / 1.2, 15 )
     mapLine:setFillColor( unpack(colorTextDefault) )
     mapLine.y = (yPositionReference - display.safeScreenOriginY) / 3
 
@@ -881,21 +881,21 @@ end
 
 -- Create break card(campfire) or revival card
 local function createSpecialCard(targetGroup, typeCard)
-    local background = display.newRect( display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
+    local background = display.newRect( display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
     background:setFillColor( unpack(themeData.colorBackground) )
     background:addEventListener( "touch", function () return true end )
     targetGroup:insert( background )
 
-    local widthMenuButtons = display.safeActualContentWidth / 1.5
-	local fontSizeButtons = display.safeActualContentHeight / 30
-	local colorButtonFillDefault = themeData.colorButtonFillDefault
-	local colorButtonDefault = themeData.colorButtonDefault
-	local colorButtonOver = themeData.colorButtonOver
-	local cornerRadiusButtons = themeData.cornerRadiusButtons
-	local colorTextDefault = themeData.colorTextDefault
-	local colorTextOver = themeData.colorTextOver
-	local strokeWidthButtons = themeData.strokeWidthButtons
-	local colorButtonStroke = themeData.colorButtonStroke
+    local widthMenuButtons = contentWidthSafe / 1.5
+    local fontSizeButtons = contentHeightSafe / 30
+    local colorButtonFillDefault = themeData.colorButtonFillDefault
+    local colorButtonDefault = themeData.colorButtonDefault
+    local colorButtonOver = themeData.colorButtonOver
+    local cornerRadiusButtons = themeData.cornerRadiusButtons
+    local colorTextDefault = themeData.colorTextDefault
+    local colorTextOver = themeData.colorTextOver
+    local strokeWidthButtons = themeData.strokeWidthButtons
+    local colorButtonStroke = themeData.colorButtonStroke
 
     targetGroup.frameButtonContinue = display.newRoundedRect( display.contentCenterX, 0, widthMenuButtons, 0, cornerRadiusButtons )
     targetGroup.frameButtonContinue:setFillColor( unpack(colorButtonFillDefault) )
@@ -913,25 +913,25 @@ local function createSpecialCard(targetGroup, typeCard)
     targetGroup:insert(targetGroup.frameButtonContinue.textLabel)
 
     targetGroup.frameButtonContinue.height = targetGroup.frameButtonContinue.textLabel.height * 2
-    targetGroup.frameButtonContinue.y = display.safeActualContentHeight - targetGroup.frameButtonContinue.height
+    targetGroup.frameButtonContinue.y = contentHeightSafe - targetGroup.frameButtonContinue.height
     targetGroup.frameButtonContinue.textLabel.y = targetGroup.frameButtonContinue.y
 
 
     --local labelSpecial
     if (typeCard == "breakCard") then
-    	targetGroup.frameButtonContinue.id = "breakCardContinue"
-    	--labelSpecial = sozluk.getString("breakCardLabel")
+        targetGroup.frameButtonContinue.id = "breakCardContinue"
+        --labelSpecial = sozluk.getString("breakCardLabel")
     elseif (typeCard == "revivalCard") then
-    	targetGroup.frameButtonContinue.id = "revivalCardContinue"
-    	--labelSpecial = sozluk.getString("revivalCardLabel")
+        targetGroup.frameButtonContinue.id = "revivalCardContinue"
+        --labelSpecial = sozluk.getString("revivalCardLabel")
         targetGroup.frameButtonContinue.textLabel.text = sozluk.getString("revivalCardContinue")
     end
 
 --[[
     -- This code piece can be used to add tips about the game in later builds
 
-    local optionsBreakText = { text = labelSpecial, width = display.safeActualContentWidth / 1.1, height = 0, 
-        align = "center", font = fontIngame, fontSize = display.safeActualContentHeight / 20 }
+    local optionsBreakText = { text = labelSpecial, width = contentWidthSafe / 1.1, height = 0, 
+        align = "center", font = fontIngame, fontSize = contentHeightSafe / 20 }
     targetGroup.textSpecial = display.newText( optionsBreakText )
     targetGroup.textSpecial:setFillColor( unpack(themeData.colorTextDefault) )
     targetGroup.textSpecial.x = display.contentCenterX
@@ -960,26 +960,26 @@ local function createSpecialCard(targetGroup, typeCard)
         targetGroup.frameButtonSaveExit.y = targetGroup.frameButtonContinue.y - targetGroup.frameButtonContinue.height / 2 - targetGroup.frameButtonSaveExit.height
         targetGroup.frameButtonSaveExit.textLabel.y = targetGroup.frameButtonSaveExit.y
 
-    	local woodFire = display.newRect( targetGroup, display.contentCenterX, 0, display.safeActualContentWidth / 4, 15 )
-    	woodFire.rotation = 30
-    	woodFire.alpha = 1
-    	woodFire.y = targetGroup.frameButtonSaveExit.y - targetGroup.frameButtonSaveExit.height * 1.5 - woodFire.height * 2
+        local woodFire = display.newRect( targetGroup, display.contentCenterX, 0, contentWidthSafe / 4, 15 )
+        woodFire.rotation = 30
+        woodFire.alpha = 1
+        woodFire.y = targetGroup.frameButtonSaveExit.y - targetGroup.frameButtonSaveExit.height * 1.5 - woodFire.height * 2
 
-    	local woodFire2 = display.newRect( targetGroup, display.contentCenterX, 0, woodFire.width, woodFire.height )
-    	woodFire2.rotation = 150
-    	woodFire2.alpha = woodFire.alpha
-    	woodFire2.y = woodFire.y
+        local woodFire2 = display.newRect( targetGroup, display.contentCenterX, 0, woodFire.width, woodFire.height )
+        woodFire2.rotation = 150
+        woodFire2.alpha = woodFire.alpha
+        woodFire2.y = woodFire.y
 
 
-    	local fileParticleFX = "assets/particleFX/campfire.json"
-    	if (themeData.themeSelected == "light") then
-    		fileParticleFX = "assets/particleFX/campfire-light.json"
-    	end
+        local fileParticleFX = "assets/particleFX/campfire.json"
+        if (themeData.themeSelected == "light") then
+            fileParticleFX = "assets/particleFX/campfire-light.json"
+        end
 
         woodFire:setFillColor( .52, .37, .26 )
         woodFire2:setFillColor( .52, .37, .26 )
 
-    	targetGroup.emitterFX = particleDesigner.newEmitter( fileParticleFX )
+        targetGroup.emitterFX = particleDesigner.newEmitter( fileParticleFX )
         targetGroup.emitterFX.x, targetGroup.emitterFX.y = woodFire.x, woodFire.y + woodFire.height
         targetGroup:insert(targetGroup.emitterFX)
 
@@ -987,19 +987,19 @@ local function createSpecialCard(targetGroup, typeCard)
         -- Revival needs to feel very important
         createProgressMap(targetGroup, targetGroup.frameButtonSaveExit.y - targetGroup.frameButtonSaveExit.height / 2)
     elseif (typeCard == "revivalCard") then
-    	targetGroup.frameButtonContinue.alpha = 0
-    	targetGroup.frameButtonContinue.textLabel.alpha = 0
-    	--targetGroup.textSpecial.alpha = 0
+        targetGroup.frameButtonContinue.alpha = 0
+        targetGroup.frameButtonContinue.textLabel.alpha = 0
+        --targetGroup.textSpecial.alpha = 0
 
         --targetGroup.textSpecial.y = display.safeScreenOriginY + targetGroup.frameButtonContinue.height + targetGroup.textSpecial.height
 
 
-    	local fileParticleFX = "assets/particleFX/revival.json"
-    	if (themeData.themeSelected == "light") then
-    		fileParticleFX = "assets/particleFX/revival-light.json"
-    	end
+        local fileParticleFX = "assets/particleFX/revival.json"
+        if (themeData.themeSelected == "light") then
+            fileParticleFX = "assets/particleFX/revival-light.json"
+        end
 
-    	targetGroup.emitterFX = particleDesigner.newEmitter( fileParticleFX )
+        targetGroup.emitterFX = particleDesigner.newEmitter( fileParticleFX )
         targetGroup.emitterFX.x = display.contentCenterX
         targetGroup.emitterFX.y = display.contentCenterY - targetGroup.frameButtonContinue.height * 1.5
         targetGroup:insert(targetGroup.emitterFX)
@@ -1007,10 +1007,10 @@ local function createSpecialCard(targetGroup, typeCard)
 end
 
 local function hideQuitConfirmationMenu(targetGroup)
-	transition.to( targetGroup.backgroundQuit, {time = 250, alpha = 0} )
-	transition.to( targetGroup.questionQuitLabel, {time = 250, alpha = 0} )
-	transition.to( targetGroup.buttonQuitAccept, {time = 250, alpha = 0} )
-	transition.to( targetGroup.buttonQuitDecline, {time = 250, alpha = 0} )
+    transition.to( targetGroup.backgroundQuit, {time = 250, alpha = 0} )
+    transition.to( targetGroup.questionQuitLabel, {time = 250, alpha = 0} )
+    transition.to( targetGroup.buttonQuitAccept, {time = 250, alpha = 0} )
+    transition.to( targetGroup.buttonQuitDecline, {time = 250, alpha = 0} )
 
     targetGroup.buttonBack:setLabel( "<" )
     targetGroup.buttonBack.id = "buttonBack"
@@ -1018,15 +1018,15 @@ local function hideQuitConfirmationMenu(targetGroup)
 end
 
 local function showQuitConfirmationMenu(targetGroup)
-	targetGroup.backgroundQuit:toFront( )
-	targetGroup.questionQuitLabel:toFront( )
-	targetGroup.buttonQuitAccept:toFront( )
-	targetGroup.buttonQuitDecline:toFront( )
+    targetGroup.backgroundQuit:toFront( )
+    targetGroup.questionQuitLabel:toFront( )
+    targetGroup.buttonQuitAccept:toFront( )
+    targetGroup.buttonQuitDecline:toFront( )
 
-	transition.to( targetGroup.backgroundQuit, {time = 250, alpha = 1} )
-	transition.to( targetGroup.questionQuitLabel, {time = 250, alpha = 1} )
-	transition.to( targetGroup.buttonQuitAccept, {time = 250, alpha = 1} )
-	transition.to( targetGroup.buttonQuitDecline, {time = 250, alpha = 1} )
+    transition.to( targetGroup.backgroundQuit, {time = 250, alpha = 1} )
+    transition.to( targetGroup.questionQuitLabel, {time = 250, alpha = 1} )
+    transition.to( targetGroup.buttonQuitAccept, {time = 250, alpha = 1} )
+    transition.to( targetGroup.buttonQuitDecline, {time = 250, alpha = 1} )
 
     targetGroup.buttonBack:setLabel( "x" )
     targetGroup.buttonBack.id = "quitDecline"
@@ -1082,12 +1082,12 @@ end
 
 -- Roll the dice to see if the player can be revived
 local function decideContinueEnd()
-	local timerEndGame = timer.performWithDelay(2000, function () 
+    local timerEndGame = timer.performWithDelay(2000, function () 
             -- For revival, player should have at least answered a set of questions(amountQuestionSingleSet)
             -- Also, should NOT have been revived earlier in this run or NOT have locked the set
-			if (questionCurrent > amountQuestionSingleSet and not isRevived) then
+            if (questionCurrent > amountQuestionSingleSet and not isRevived) then
                 --if (questionCurrent > 0 and not isRevived) then   -- test line
-				local percentageRevival = composer.getVariable( "percentageRevival" )
+                local percentageRevival = composer.getVariable( "percentageRevival" )
                 local chanceRevival = random(100)
 
 
@@ -1095,39 +1095,39 @@ local function decideContinueEnd()
                 -- Else, game over.
 
                 --percentageRevival = 100 -- test line
-				if (chanceRevival <= percentageRevival) then
-					local activeGroup, passiveGroup
+                if (chanceRevival <= percentageRevival) then
+                    local activeGroup, passiveGroup
 
-					if (frontGroup.numChildren > 0) then
-					    activeGroup, passiveGroup = frontGroup, backGroup
-					else
-					    activeGroup, passiveGroup = backGroup, frontGroup
-					end
+                    if (frontGroup.numChildren > 0) then
+                        activeGroup, passiveGroup = frontGroup, backGroup
+                    else
+                        activeGroup, passiveGroup = backGroup, frontGroup
+                    end
 
-					createSpecialCard(passiveGroup, "revivalCard")
+                    createSpecialCard(passiveGroup, "revivalCard")
 
-					local timerHide = timer.performWithDelay(1000, function () 
-					        hideActiveCard("hideBeforeSpecialCard", activeGroup, passiveGroup)
+                    local timerHide = timer.performWithDelay(1000, function () 
+                            hideActiveCard("hideBeforeSpecialCard", activeGroup, passiveGroup)
 
-					        audio.setVolume( composer.getVariable("soundLevel"), {channel = 3} )
-					        audio.play( tableSoundFiles["revival"], {channel = 3, loops = -1} )
-					        
-					        local timerRequest = timer.performWithDelay(2000, function ()
+                            audio.setVolume( composer.getVariable("soundLevel"), {channel = 3} )
+                            audio.play( tableSoundFiles["revival"], {channel = 3, loops = -1} )
+                            
+                            local timerRequest = timer.performWithDelay(2000, function ()
                                     -- Player will see the effects first, revival text and button later
                                     -- This is to make this rare occassion feel different than other screens
-					        		showContinueEndElements(passiveGroup)
-					            end, 1)
-					        table.insert( tableTimers, timerRequest )
-					    end, 1)
-					table.insert( tableTimers, timerHide )
-				else
-					endGame("fail")
-				end
-			else
-				endGame("fail")
-			end
-		end, 1)
-	table.insert( tableTimers, timerEndGame )
+                                    showContinueEndElements(passiveGroup)
+                                end, 1)
+                            table.insert( tableTimers, timerRequest )
+                        end, 1)
+                    table.insert( tableTimers, timerHide )
+                else
+                    endGame("fail")
+                end
+            else
+                endGame("fail")
+            end
+        end, 1)
+    table.insert( tableTimers, timerEndGame )
 end
 
 -- Save the questions player viewed so far in the current run
@@ -1157,18 +1157,18 @@ function showAnswer(targetGroup, choiceSelected, textCoinAward)
     -- If player made a choice, see if it's true or false and act on it
     -- Else, highlight the correct answer
     if (choiceSelected) then
-    	for i = 1, #choices do
-    	    if (choices[i].isSelected) then
+        for i = 1, #choices do
+            if (choices[i].isSelected) then
                 -- Check the selected choice to see the answer
                 -- If selected choice is the answer - !) To next question, 2) Show campfire or 3) End game
                 -- Else: 1) Decide if player will be revived or 2) Game over
-    	        if (choices[i].isAnswer) then
+                if (choices[i].isAnswer) then
                     -- Total number of questions answered is kept for statistics
-    	            local questionsAnsweredTotal = composer.getVariable( "questionsAnsweredTotal" ) + 1
-    	            composer.setVariable( "questionsAnsweredTotal", questionsAnsweredTotal )
+                    local questionsAnsweredTotal = composer.getVariable( "questionsAnsweredTotal" ) + 1
+                    composer.setVariable( "questionsAnsweredTotal", questionsAnsweredTotal )
 
 
-    	            audio.play( tableSoundFiles["answerRight"], {channel = 2} )
+                    audio.play( tableSoundFiles["answerRight"], {channel = 2} )
 
 
                     -- Calculate and add coins to total
@@ -1190,124 +1190,124 @@ function showAnswer(targetGroup, choiceSelected, textCoinAward)
                     transition.to( textCoinAward.symbolCurrency, {time = timeTransAward, x = xTargetCoinImage, y = yTargetCoinImage, alpha = 0} )
 
 
-    	            choiceSelected:setFillColor( unpack(colorButtonFillTrue) )
-    	            choiceSelected.textLabel:setFillColor( unpack(colorTextTrue) )
-    	            choiceSelected:setStrokeColor( unpack(colorButtonFillTrue) )
+                    choiceSelected:setFillColor( unpack(colorButtonFillTrue) )
+                    choiceSelected.textLabel:setFillColor( unpack(colorTextTrue) )
+                    choiceSelected:setStrokeColor( unpack(colorButtonFillTrue) )
 
-    	            questionCurrent = questionCurrent + 1
-    	            questionIndex = questionIndex + 1
+                    questionCurrent = questionCurrent + 1
+                    questionIndex = questionIndex + 1
 
                     -- If there are loaded questions(amountQuestionSingleSet) left, pick one more
                     -- Else, check for success(end of run) or show break card(campfire)
-    	            if (questionIndex <= #tableQuestions) then
-    	                local activeGroup, passiveGroup
-    	                if (frontGroup.numChildren > 0) then
-    	                    activeGroup, passiveGroup = frontGroup, backGroup
-    	                else
-    	                    activeGroup, passiveGroup = backGroup, frontGroup
-    	                end
+                    if (questionIndex <= #tableQuestions) then
+                        local activeGroup, passiveGroup
+                        if (frontGroup.numChildren > 0) then
+                            activeGroup, passiveGroup = frontGroup, backGroup
+                        else
+                            activeGroup, passiveGroup = backGroup, frontGroup
+                        end
 
-    	                createGameArea(passiveGroup)
+                        createGameArea(passiveGroup)
 
-    	                local timerHide = timer.performWithDelay(1000, function () 
+                        local timerHide = timer.performWithDelay(1000, function () 
                                 hideActiveCard("hideQuestionCard", activeGroup, passiveGroup ) 
                             end, 1)
-    	                table.insert( tableTimers, timerHide )
-    	            else
-    	            	if (questionCurrent >= amountQuestionSingleGame) then
-    	            		-- The case of successfully completing the game
-    	            		local timerEndGame = timer.performWithDelay( 1500, function () 
+                        table.insert( tableTimers, timerHide )
+                    else
+                        if (questionCurrent >= amountQuestionSingleGame) then
+                            -- The case of successfully completing the game
+                            local timerEndGame = timer.performWithDelay( 1500, function () 
                                     endGame("success")
                                 end, 1 )
                             table.insert( tableTimers, timerEndGame )
-    	            	else
+                        else
                             -- No questions left for that set(amountQuestionSingleSet) but game is not over yet(amountQuestionSingleGame)
-    	            		local activeGroup, passiveGroup
+                            local activeGroup, passiveGroup
 
-	    	                if (frontGroup.numChildren > 0) then
-	    	                    activeGroup, passiveGroup = frontGroup, backGroup
-	    	                else
-	    	                    activeGroup, passiveGroup = backGroup, frontGroup
-	    	                end
+                            if (frontGroup.numChildren > 0) then
+                                activeGroup, passiveGroup = frontGroup, backGroup
+                            else
+                                activeGroup, passiveGroup = backGroup, frontGroup
+                            end
 
                             -- Load break card in the background. Will be visible after hideActiveCard
-	    	                createSpecialCard(passiveGroup, "breakCard")
+                            createSpecialCard(passiveGroup, "breakCard")
 
                             -- Save questions asked before clearing the table
                             -- Used for auto-save and 'save and exit' function
                             -- If player leaves the game for something else, game uses this save to continue
-	    	                saveQuestionsAsked()
+                            saveQuestionsAsked()
                             clearTableQuestions()
 
                             questionCurrentSet = questionCurrentSet + 1
                             initQuestions(amountQuestionSingleSet)
 
-	    	                local timerHide = timer.performWithDelay(1000, function () 
-	    	                        hideActiveCard("hideBeforeSpecialCard", activeGroup, passiveGroup)
-	    	                        
-	    	                        audio.setVolume( composer.getVariable("soundLevel"), {channel = 3} )
-	    	                        audio.play( tableSoundFiles["campfire"], {channel = 3, loops = -1} )
+                            local timerHide = timer.performWithDelay(1000, function () 
+                                    hideActiveCard("hideBeforeSpecialCard", activeGroup, passiveGroup)
+                                    
+                                    audio.setVolume( composer.getVariable("soundLevel"), {channel = 3} )
+                                    audio.play( tableSoundFiles["campfire"], {channel = 3, loops = -1} )
 
                                     savePlayerProgress()
-	    	                    end, 1)
-	    	                table.insert( tableTimers, timerHide )
-    	            	end
-    	            end
-    	        else
+                                end, 1)
+                            table.insert( tableTimers, timerHide )
+                        end
+                    end
+                else
                     -- Chosen answer is wrong
                     -- Audio and visual feedback is provided to the player
                     -- There is also a chance of 'revival'
-    	            audio.play( tableSoundFiles["answerWrong"], {channel = 2} )
+                    audio.play( tableSoundFiles["answerWrong"], {channel = 2} )
 
 
                     textCoinAward:setFillColor( unpack(colorButtonFillWrong) )
 
                     local timeTransAward = 1500
 
-                    transition.to( textCoinAward, {time = timeTransAward, y = display.safeActualContentHeight, alpha = 0} )
-                    transition.to( textCoinAward.imageCoin, {time = timeTransAward, y = display.safeActualContentHeight, alpha = 0} )
-                    transition.to( textCoinAward.symbolCurrency, {time = timeTransAward, y = display.safeActualContentHeight, alpha = 0} )
+                    transition.to( textCoinAward, {time = timeTransAward, y = contentHeightSafe, alpha = 0} )
+                    transition.to( textCoinAward.imageCoin, {time = timeTransAward, y = contentHeightSafe, alpha = 0} )
+                    transition.to( textCoinAward.symbolCurrency, {time = timeTransAward, y = contentHeightSafe, alpha = 0} )
 
 
-    	            choiceSelected:setFillColor( unpack(colorButtonFillWrong) )
-    	            choiceSelected.textLabel:setFillColor( unpack(colorTextWrong) )
-    	            choiceSelected:setStrokeColor( unpack(colorButtonFillWrong) )
+                    choiceSelected:setFillColor( unpack(colorButtonFillWrong) )
+                    choiceSelected.textLabel:setFillColor( unpack(colorTextWrong) )
+                    choiceSelected:setStrokeColor( unpack(colorButtonFillWrong) )
 
-    	            for i = 1, #choices do
-    	                if (choices[i].isAnswer) then
-    	                    choices[i]:setFillColor( unpack(colorButtonFillTrue) )
-    	                    choices[i].textLabel:setFillColor( unpack(colorTextTrue) )
-    	                    choices[i]:setStrokeColor( unpack(colorButtonFillTrue) )
-    	                end
-    	            end
+                    for i = 1, #choices do
+                        if (choices[i].isAnswer) then
+                            choices[i]:setFillColor( unpack(colorButtonFillTrue) )
+                            choices[i].textLabel:setFillColor( unpack(colorTextTrue) )
+                            choices[i]:setStrokeColor( unpack(colorButtonFillTrue) )
+                        end
+                    end
 
                     -- See if player can be revived
-    	            decideContinueEnd()
-    	        end
-    	    end
-    	end
+                    decideContinueEnd()
+                end
+            end
+        end
     else
         -- If the player didn't choose any answer, highlight the correct choice
-    	if (frontGroup.numChildren > 0) then
-    	    hideSettingsMenu(frontGroup)
-    	    hideQuitConfirmationMenu(frontGroup)
-    	else
-    	    hideSettingsMenu(backGroup)
-    	    hideQuitConfirmationMenu(backGroup)
-    	end
+        if (frontGroup.numChildren > 0) then
+            hideSettingsMenu(frontGroup)
+            hideQuitConfirmationMenu(frontGroup)
+        else
+            hideSettingsMenu(backGroup)
+            hideQuitConfirmationMenu(backGroup)
+        end
 
-    	audio.play( tableSoundFiles["answerWrong"], {channel = 2} )
+        audio.play( tableSoundFiles["answerWrong"], {channel = 2} )
 
-    	for i = 1, #choices do
-    	    if (choices[i].isAnswer) then
-    	        choices[i]:setFillColor( unpack(colorButtonFillTrue) )
-    	        choices[i].textLabel:setFillColor( unpack(colorTextTrue) )
-    	        choices[i]:setStrokeColor( unpack(colorButtonFillTrue) )
-    	    end
-    	end
-    	
+        for i = 1, #choices do
+            if (choices[i].isAnswer) then
+                choices[i]:setFillColor( unpack(colorButtonFillTrue) )
+                choices[i].textLabel:setFillColor( unpack(colorTextTrue) )
+                choices[i]:setStrokeColor( unpack(colorButtonFillTrue) )
+            end
+        end
+        
         -- See if player can be revived
-    	decideContinueEnd()
+        decideContinueEnd()
     end
 end
 
@@ -1801,11 +1801,11 @@ end
 
 local function loadSoundFX()
     tableSoundFiles["warning"] = audio.loadSound( "assets/soundFX/warning.wav" )
-	tableSoundFiles["answerChosen"] = audio.loadSound( "assets/soundFX/answerChosen.wav" )
-	tableSoundFiles["answerRight"] = audio.loadSound( "assets/soundFX/answerRight.wav" )
-	tableSoundFiles["answerWrong"] = audio.loadSound( "assets/soundFX/answerWrong.wav" )
-	tableSoundFiles["campfire"] = audio.loadSound( "assets/soundFX/campfire.mp3" )
-	tableSoundFiles["revival"] = audio.loadSound( "assets/soundFX/revival.mp3" )
+    tableSoundFiles["answerChosen"] = audio.loadSound( "assets/soundFX/answerChosen.wav" )
+    tableSoundFiles["answerRight"] = audio.loadSound( "assets/soundFX/answerRight.wav" )
+    tableSoundFiles["answerWrong"] = audio.loadSound( "assets/soundFX/answerWrong.wav" )
+    tableSoundFiles["campfire"] = audio.loadSound( "assets/soundFX/campfire.mp3" )
+    tableSoundFiles["revival"] = audio.loadSound( "assets/soundFX/revival.mp3" )
 end
 
 local function handleAudioTransition()
@@ -1820,18 +1820,18 @@ function onSystemEvent(event)
     if( event.type == "applicationResume" ) then
         -- Calculate time spent between suspending(backgrounding) and resuming the game
         -- This is done to prevent cheating over web search
-    	local timeSuspend = composer.getVariable( "timeSuspend" )
+        local timeSuspend = composer.getVariable( "timeSuspend" )
 
-    	local timeElapsed = os.difftime( os.time(), timeSuspend )
-    	adjustGameTimer(timeElapsed)
+        local timeElapsed = os.difftime( os.time(), timeSuspend )
+        adjustGameTimer(timeElapsed)
 
-    	resumeTimers()
-    	transition.resume()
+        resumeTimers()
+        transition.resume()
     elseif( event.type == "applicationSuspend" ) then
-    	composer.setVariable( "timeSuspend", os.time() )
+        composer.setVariable( "timeSuspend", os.time() )
 
-    	pauseTimers()
-    	transition.pause( )
+        pauseTimers()
+        transition.pause( )
     elseif( event.type == "applicationExit" ) then
         
     end

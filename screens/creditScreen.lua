@@ -47,9 +47,9 @@ end
 
 -- Reset y position of credits container to move everything back to starting point
 local function resetCreditsPosition()
-	for i = 1, containerCredits.numChildren do
-		containerCredits[i].y = containerCredits[i].y0
-	end
+    for i = 1, containerCredits.numChildren do
+        containerCredits[i].y = containerCredits[i].y0
+    end
 end
 
 -- Move every credits element
@@ -60,11 +60,11 @@ local function moveCredits()
     end
 
     for i = 1, containerCredits.numChildren do
-    	containerCredits[i].y = containerCredits[i].y - containerCredits.moveSpeed
+        containerCredits[i].y = containerCredits[i].y - containerCredits.moveSpeed
 
-    	if (i == containerCredits.numChildren and containerCredits[i].y + containerCredits[i].height < 0) then
-    		resetCreditsPosition()
-    	end
+        if (i == containerCredits.numChildren and containerCredits[i].y + containerCredits[i].height < 0) then
+            resetCreditsPosition()
+        end
     end
 end
 
@@ -91,7 +91,7 @@ end
 
 -- Create buttons for contact information that stay on top, below the screen
 local function createContactButtons()
-    local heightContactButton = display.safeActualContentHeight / 14
+    local heightContactButton = contentHeightSafe / 14
     local widthContactButton = heightContactButton
     local fontSizePolicy = heightContactButton / 3
     local colorHyperlink = themeData.colorHyperlink
@@ -112,7 +112,7 @@ local function createContactButtons()
     local buttonPrivacyPolicy = widget.newButton( optionsButtonPrivacyPolicy )
     buttonPrivacyPolicy.URL = "https://sekodev.github.io/games/privacy/privacyPolicy-" .. currentLanguage .. ".html"
     buttonPrivacyPolicy.x = display.contentCenterX
-    buttonPrivacyPolicy.y = display.safeActualContentHeight - buttonPrivacyPolicy.height * 1.5
+    buttonPrivacyPolicy.y = contentHeightSafe - buttonPrivacyPolicy.height * 1.5
     creditsGroup:insert(buttonPrivacyPolicy)
 
     buttonPrivacyPolicy.underline = display.newRect( creditsGroup, buttonPrivacyPolicy.x, 0, buttonPrivacyPolicy.width, 5 )
@@ -199,10 +199,11 @@ local function createContactButtons()
     creditsGroup:insert(buttonSendMail)
 ]]
 
-    local distanceButtons = (display.safeActualContentWidth - (widthContactButton * 3) ) / 4
+    local distanceButtons = (contentWidthSafe - (widthContactButton * 3) ) / 4
 
     buttonFacebook.x = buttonFacebook.width / 2 + distanceButtons
     buttonTwitter.x = buttonFacebook.x + widthContactButton + distanceButtons
+    --buttonSendMail.x = buttonTwitter.x + widthContactButton + distanceButtons
     buttonGithub.x = buttonTwitter.x + widthContactButton + distanceButtons
 
     yLimitBottom = buttonTwitter.y - buttonTwitter.height / 1.5
@@ -210,8 +211,8 @@ end
 
 -- Create scrolling elements, names and links for credits
 local function createCreditsElements()
-    local sizeTitles = display.safeActualContentHeight / 25
-    local sizeNames = display.safeActualContentHeight / 30
+    local sizeTitles = contentHeightSafe / 25
+    local sizeNames = contentHeightSafe / 30
 
     local colorButtonFillDefault = themeData.colorButtonFillDefault
     local colorButtonDefault = themeData.colorButtonDefault
@@ -220,19 +221,19 @@ local function createCreditsElements()
     local colorTitle = themeData.colorButtonFillWrong
     local colorHyperlink = themeData.colorHyperlink
 
-    local background = display.newRect( creditsGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
+    local background = display.newRect( creditsGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
     background:setFillColor( unpack(themeData.colorBackground) )
 
     local optionsButtonBack = 
     {
         shape = "rect",
         fillColor = { default = colorButtonFillDefault, over = colorButtonFillDefault },
-        width = display.safeActualContentWidth / 6,
-        height = display.safeActualContentHeight / 10,
+        width = contentWidthSafe / 6,
+        height = contentHeightSafe / 10,
         label = "<",
         labelColor = { default = colorButtonDefault, over = colorButtonOver },
         font = fontLogo,
-        fontSize = display.safeActualContentHeight / 15,
+        fontSize = contentHeightSafe / 15,
         id = "mainMenu",
         onEvent = handleTouch,
     }
@@ -318,7 +319,7 @@ local function createCreditsElements()
     titleMusic.linkComposer:addEventListener( "touch", handleTouch )
     creditsGroup:insert(titleMusic.linkComposer)
 
-    local optionsMusicTheme = { text = "Automation", font = fontIngame, width = display.safeActualContentWidth / 1.1, fontSize = sizeNames / 1.2, align = "center" }
+    local optionsMusicTheme = { text = "Automation", font = fontIngame, width = contentWidthSafe / 1.1, fontSize = sizeNames / 1.2, align = "center" }
     titleMusic.nameTheme = display.newText( optionsMusicTheme )
     titleMusic.nameTheme:setFillColor( unpack(colorHyperlink) )
     titleMusic.nameTheme.x = display.contentCenterX
@@ -328,7 +329,7 @@ local function createCreditsElements()
     titleMusic.nameTheme:addEventListener( "touch", handleTouch )
     creditsGroup:insert(titleMusic.nameTheme)
 
-    local optionsMusicIngame = { text = "Safe Cracking", font = fontIngame, width = display.safeActualContentWidth / 1.1, fontSize = sizeNames / 1.2, align = "center" }
+    local optionsMusicIngame = { text = "Safe Cracking", font = fontIngame, width = contentWidthSafe / 1.1, fontSize = sizeNames / 1.2, align = "center" }
     titleMusic.nameIngame = display.newText( optionsMusicIngame )
     titleMusic.nameIngame:setFillColor( unpack(colorHyperlink) )
     titleMusic.nameIngame.x = display.contentCenterX
@@ -353,7 +354,7 @@ local function createCreditsElements()
     titleSoundFX.nameComposerChoose.y = titleSoundFX.y + titleSoundFX.height + titleSoundFX.nameComposerChoose.height / 2
     creditsGroup:insert(titleSoundFX.nameComposerChoose)
 
-    local optionsLinkSoundChoose = { text = "freesound.org/404151/", width = display.safeActualContentWidth / 1.1, font = fontIngame, fontSize = sizeNames / 1.2, align = "center" }
+    local optionsLinkSoundChoose = { text = "freesound.org/404151/", width = contentWidthSafe / 1.1, font = fontIngame, fontSize = sizeNames / 1.2, align = "center" }
     titleSoundFX.linkSoundChoose = display.newText( optionsLinkSoundChoose )
     titleSoundFX.linkSoundChoose:setFillColor( unpack(colorHyperlink) )
     titleSoundFX.linkSoundChoose.x = display.contentCenterX
@@ -370,7 +371,7 @@ local function createCreditsElements()
     titleSoundFX.nameComposerWrong.y = titleSoundFX.linkSoundChoose.y + titleSoundFX.linkSoundChoose.height + titleSoundFX.nameComposerWrong.height
     creditsGroup:insert(titleSoundFX.nameComposerWrong)
 
-    local optionsLinkSoundWrong = { text = "freesound.org/216090/", width = display.safeActualContentWidth / 1.1, font = fontIngame, fontSize = sizeNames / 1.2, align = "center" }
+    local optionsLinkSoundWrong = { text = "freesound.org/216090/", width = contentWidthSafe / 1.1, font = fontIngame, fontSize = sizeNames / 1.2, align = "center" }
     titleSoundFX.linkSoundWrong = display.newText( optionsLinkSoundWrong )
     titleSoundFX.linkSoundWrong:setFillColor( unpack(colorHyperlink) )
     titleSoundFX.linkSoundWrong.x = display.contentCenterX
@@ -387,7 +388,7 @@ local function createCreditsElements()
     titleSoundFX.nameComposerRight.y = titleSoundFX.linkSoundWrong.y + titleSoundFX.linkSoundWrong.height + titleSoundFX.nameComposerRight.height
     creditsGroup:insert(titleSoundFX.nameComposerRight)
 
-    local optionsLinkSoundRight = { text = "freesound.org/264981/", width = display.safeActualContentWidth / 1.1, font = fontIngame, fontSize = sizeNames / 1.2, align = "center" }
+    local optionsLinkSoundRight = { text = "freesound.org/264981/", width = contentWidthSafe / 1.1, font = fontIngame, fontSize = sizeNames / 1.2, align = "center" }
     titleSoundFX.linkSoundRight = display.newText( optionsLinkSoundRight )
     titleSoundFX.linkSoundRight:setFillColor( unpack(colorHyperlink) )
     titleSoundFX.linkSoundRight.x = display.contentCenterX
@@ -404,7 +405,7 @@ local function createCreditsElements()
     titleSoundFX.nameComposerLock.y = titleSoundFX.linkSoundRight.y + titleSoundFX.linkSoundRight.height + titleSoundFX.nameComposerLock.height
     creditsGroup:insert(titleSoundFX.nameComposerLock)
 
-    local optionsLinkSoundLock = { text = "freesound.org/387713/", width = display.safeActualContentWidth / 1.1, font = fontIngame, fontSize = sizeNames / 1.2, align = "center" }
+    local optionsLinkSoundLock = { text = "freesound.org/387713/", width = contentWidthSafe / 1.1, font = fontIngame, fontSize = sizeNames / 1.2, align = "center" }
     titleSoundFX.linkSoundLock = display.newText( optionsLinkSoundLock )
     titleSoundFX.linkSoundLock:setFillColor( unpack(colorHyperlink) )
     titleSoundFX.linkSoundLock.x = display.contentCenterX
@@ -421,7 +422,7 @@ local function createCreditsElements()
     titleSoundFX.nameComposerWarning.y = titleSoundFX.linkSoundLock.y + titleSoundFX.linkSoundLock.height + titleSoundFX.nameComposerWarning.height
     creditsGroup:insert(titleSoundFX.nameComposerWarning)
 
-    local optionsLinkSoundWarning = { text = "freesound.org/80600/", width = display.safeActualContentWidth / 1.1, font = fontIngame, fontSize = sizeNames / 1.2, align = "center" }
+    local optionsLinkSoundWarning = { text = "freesound.org/80600/", width = contentWidthSafe / 1.1, font = fontIngame, fontSize = sizeNames / 1.2, align = "center" }
     titleSoundFX.linkSoundWarning = display.newText( optionsLinkSoundWarning )
     titleSoundFX.linkSoundWarning:setFillColor( unpack(colorHyperlink) )
     titleSoundFX.linkSoundWarning.x = display.contentCenterX
@@ -438,7 +439,7 @@ local function createCreditsElements()
     titleSoundFX.nameComposerIntro.y = titleSoundFX.linkSoundWarning.y + titleSoundFX.linkSoundWarning.height + titleSoundFX.nameComposerIntro.height
     creditsGroup:insert(titleSoundFX.nameComposerIntro)
 
-    local optionsLinkIntro = { text = "freesound.org/392465/\n" .. sozluk.getString("shortenedUse"), width = display.safeActualContentWidth / 1.1, font = fontIngame, fontSize = sizeNames / 1.2, align = "center" }
+    local optionsLinkIntro = { text = "freesound.org/392465/\n" .. sozluk.getString("shortenedUse"), width = contentWidthSafe / 1.1, font = fontIngame, fontSize = sizeNames / 1.2, align = "center" }
     titleSoundFX.linkSoundIntro = display.newText( optionsLinkIntro )
     titleSoundFX.linkSoundIntro:setFillColor( unpack(colorHyperlink) )
     titleSoundFX.linkSoundIntro.x = display.contentCenterX
@@ -449,7 +450,7 @@ local function createCreditsElements()
     creditsGroup:insert(titleSoundFX.linkSoundIntro)
 
 
-    local optionsDisclaimer = { text = sozluk.getString("disclaimerSoundLicense"), width = display.safeActualContentWidth / 1.1, font = fontIngame, fontSize = sizeNames / 1.1, align = "center" }
+    local optionsDisclaimer = { text = sozluk.getString("disclaimerSoundLicense"), width = contentWidthSafe / 1.1, font = fontIngame, fontSize = sizeNames / 1.1, align = "center" }
     local textDisclaimer = display.newText( optionsDisclaimer )
     textDisclaimer:setFillColor( unpack(colorTextDefault) )
     textDisclaimer.x = display.contentCenterX
@@ -477,7 +478,7 @@ local function createCreditsElements()
     titleFont.nameFont.y = titleFont.nameAuthor.y + titleFont.nameAuthor.height + titleFont.nameFont.height / 2
     creditsGroup:insert(titleFont.nameFont)
 
-    local optionsLinkFont = { text = "dafont.com/russo-one.font", width = display.safeActualContentWidth / 1.1, font = fontIngame, fontSize = sizeNames / 1.2, align = "center" }
+    local optionsLinkFont = { text = "dafont.com/russo-one.font", width = contentWidthSafe / 1.1, font = fontIngame, fontSize = sizeNames / 1.2, align = "center" }
     titleFont.linkFont = display.newText( optionsLinkFont )
     titleFont.linkFont:setFillColor( unpack(colorHyperlink) )
     titleFont.linkFont.x = display.contentCenterX
@@ -487,7 +488,7 @@ local function createCreditsElements()
     titleFont.linkFont:addEventListener( "touch", handleTouch )
     creditsGroup:insert(titleFont.linkFont)
 
-    local optionsDisclaimerFont = { text = sozluk.getString("disclaimerFont"), width = display.safeActualContentWidth / 1.1, font = fontIngame, fontSize = sizeNames / 1.2, align = "center" }
+    local optionsDisclaimerFont = { text = sozluk.getString("disclaimerFont"), width = contentWidthSafe / 1.1, font = fontIngame, fontSize = sizeNames / 1.2, align = "center" }
     titleFont.disclaimer = display.newText( optionsDisclaimerFont )
     titleFont.disclaimer:setFillColor( unpack(colorTextDefault) )
     titleFont.disclaimer.x = display.contentCenterX
@@ -520,7 +521,7 @@ local function createCreditsElements()
 
     -- I used a container so elements are not rendered outside of the specified bounds
     -- https://docs.coronalabs.com/guide/graphics/container.html#groups-vs.-containers
-    containerCredits = display.newContainer( display.safeActualContentWidth, yLimitBottom - menuSeparator.y )
+    containerCredits = display.newContainer( contentWidthSafe, yLimitBottom - menuSeparator.y )
     containerCredits.anchorX, containerCredits.anchorY = 0, 0
     containerCredits.x, containerCredits.y = 0, menuSeparator.y + menuSeparator.height / 2
     containerCredits.anchorChildren = false

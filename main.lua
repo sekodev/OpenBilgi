@@ -21,6 +21,11 @@ local composer = require ( "libs.composer_alt" ) -- Modified version is used for
 preference = require ( "libs.preference" ) -- Used to save player-related variables
 themeSettings = require ( "libs.themeSettings" ) -- Contains theme data
 
+contentWidthSafe = display.safeActualContentWidth
+contentHeightSafe = display.safeActualContentHeight
+contentWidth = display.contentWidth
+contentHeight = display.contentHeight
+
 math.randomseed( os.time() )
 
 
@@ -122,7 +127,7 @@ end
 -- Loads previously saved settings and variables
 local function loadPreferences()
     if ( preference.getValue("settings") ) then
-    	composer.setVariable( "userToken", preference.getValue("settings")[1] )
+        composer.setVariable( "userToken", preference.getValue("settings")[1] )
         composer.setVariable( "askedConsent", preference.getValue("settings")[2] )
         composer.setVariable( "analyticsConsent", preference.getValue("settings")[3] )
         composer.setVariable( "soundLevel", preference.getValue("settings")[4] )
@@ -334,9 +339,9 @@ local timeTransitionScene = composer.getVariable( "timeTransitionScene" )
 
 -- Back button behavior for Android
 local function onKeyEvent( event )
-	 if ( event.keyName == "back" and event.phase == "up" ) then
-	 	local currentAppScene = composer.getVariable( "currentAppScene" )
-	 	
+     if ( event.keyName == "back" and event.phase == "up" ) then
+        local currentAppScene = composer.getVariable( "currentAppScene" )
+        
         if ( currentAppScene == "menuScreen" ) then
             native.requestExit()
         elseif ( currentAppScene == "gameScreen" ) then
