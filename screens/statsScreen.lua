@@ -109,15 +109,15 @@ end
 
 -- Show confirmation warning for statistics reset
 local function showResetConfirmation()
-    local backgroundShade = display.newRect( resetGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
+    local backgroundShade = display.newRect( resetGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
     backgroundShade:setFillColor( unpack(themeData.colorBackground) )
     backgroundShade.alpha = .9
     backgroundShade.id = "backgroundShade"
     backgroundShade:addEventListener( "touch", function () return true end )
 
-    local fontSizeQuestion = display.safeActualContentHeight / 30
+    local fontSizeQuestion = contentHeightSafe / 30
 
-    local frameQuestionReset = display.newRect( resetGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth / 1.1, 0 )
+    local frameQuestionReset = display.newRect( resetGroup, display.contentCenterX, display.contentCenterY, contentWidthSafe / 1.1, 0 )
     frameQuestionReset:setFillColor( unpack(themeData.colorBackgroundPopup) )
 
     local optionsTextReset = { text = sozluk.getString("resetStatsAsk"), 
@@ -128,7 +128,7 @@ local function showResetConfirmation()
     resetGroup:insert(frameQuestionReset.textLabel)
 
     local widthRateButtons = frameQuestionReset.width / 1.1
-    local heightRateButtons = display.safeActualContentHeight / 10
+    local heightRateButtons = contentHeightSafe / 10
     local distanceChoices = heightRateButtons / 5
     local fontSizeChoices = fontSizeQuestion / 1.1
 
@@ -242,8 +242,8 @@ local function createStatisticsElements()
     local cornerRadiusButtons = themeData.cornerRadiusButtons
     local strokeWidthButtons = themeData.strokeWidthButtons
 
-    local widthMenuButtons = display.safeActualContentWidth / 1.5
-    local fontSizeButtons = display.safeActualContentHeight / 30
+    local widthMenuButtons = contentWidthSafe / 1.5
+    local fontSizeButtons = contentHeightSafe / 30
 
     
     local optionsLabelScoreValue = { text = composer.getVariable( "scoreHigh" ), 
@@ -358,7 +358,7 @@ local function createStatisticsElements()
     labelRevivalTitle.y = labelRevivalValue.y + labelRevivalValue.height / 2 + labelRevivalTitle.height / 2
     statsGroup:insert(labelRevivalTitle)
 
-    containerStats = display.newContainer( display.safeActualContentWidth, yLimitBottom - menuSeparator.y )
+    containerStats = display.newContainer( contentWidthSafe, yLimitBottom - menuSeparator.y )
     containerStats.anchorX, containerStats.anchorY = 0, 0
     containerStats.x, containerStats.y = 0, menuSeparator.y + menuSeparator.height / 2
     containerStats.anchorChildren = false
@@ -384,8 +384,8 @@ end
 
 -- Create UI elements like back button etc.
 local function createUIElements()
-    local xDistanceSides = display.safeActualContentWidth / 10
-    local widthButtonSettings = display.safeActualContentWidth / 8
+    local xDistanceSides = contentWidthSafe / 10
+    local widthButtonSettings = contentWidthSafe / 8
     local heightButtonSettings = widthButtonSettings
 
     local colorButtonFillDefault = themeData.colorButtonFillDefault
@@ -395,24 +395,24 @@ local function createUIElements()
     local colorButtonFillWrong = themeData.colorButtonFillWrong
     local colorButtonStroke = themeData.colorButtonStroke
 
-    local widthMenuButtons = display.safeActualContentWidth / 1.5
-    local fontSizeButtons = display.safeActualContentHeight / 30
+    local widthMenuButtons = contentWidthSafe / 1.5
+    local fontSizeButtons = contentHeightSafe / 30
     local cornerRadiusButtons = themeData.cornerRadiusButtons
     local strokeWidthButtons = themeData.strokeWidthButtons
 
-    local background = display.newRect( statsGroup, display.contentCenterX, display.contentCenterY, display.safeActualContentWidth, display.safeActualContentHeight )
+    local background = display.newRect( statsGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
     background:setFillColor( unpack(themeData.colorBackground) )
 
     local optionsButtonBack = 
     {
         shape = "rect",
         fillColor = { default = colorButtonFillDefault, over = colorButtonFillDefault },
-        width = display.safeActualContentWidth / 6,
-        height = display.safeActualContentHeight / 10,
+        width = contentWidthSafe / 6,
+        height = contentHeightSafe / 10,
         label = "<",
         labelColor = { default = colorButtonDefault, over = colorButtonOver },
         font = fontLogo,
-        fontSize = display.safeActualContentHeight / 15,
+        fontSize = contentHeightSafe / 15,
         id = "buttonBack",
         onEvent = handleTouch,
     }
@@ -442,7 +442,7 @@ local function createUIElements()
 
     frameButtonReset.width = frameButtonReset.textLabel.width * 1.2
     frameButtonReset.height = frameButtonReset.textLabel.height * 2
-    frameButtonReset.y = display.safeActualContentHeight - frameButtonReset.height
+    frameButtonReset.y = contentHeightSafe - frameButtonReset.height
     frameButtonReset.textLabel.y = frameButtonReset.y
 
     yLimitBottom = frameButtonReset.y - frameButtonReset.height
