@@ -161,13 +161,8 @@ local function handleTouch(event)
                 isInteractionAvailable = false
 
                 local colorButtonOver = themeData.colorButtonOver
-                local colorButtonFillTrue = themeData.colorButtonFillTrue
-                local colorTextOver = themeData.colorTextOver
-                local colorTextSelected = themeData.colorTextSelected
 
-                --event.target:setFillColor( unpack(colorButtonOver) )
                 event.target.textLabel:setFillColor( unpack(colorButtonOver) )
-                --event.target:setStrokeColor( unpack(colorButtonOver) )
 
                 audio.play( tableSoundFiles["answerChosen"], {channel = 2} )
 
@@ -181,10 +176,31 @@ local function handleTouch(event)
                 end
 
                 composer.setVariable( "currentTheme" , themeSelected )
-                savePreferences()
 
                 themeData = themeSettings.getData(themeSelected)
 
+                clearDisplayGroup(menuGroup)
+                createSettingsElements()
+
+                isInteractionAvailable = true
+            elseif (event.target.id == "controlFullScreen") then
+                -- Changing full screen support happens in the same screen
+                
+                isInteractionAvailable = false
+
+                local colorButtonOver = themeData.colorButtonOver
+
+                event.target.textLabel:setFillColor( unpack(colorButtonOver) )
+
+                audio.play( tableSoundFiles["answerChosen"], {channel = 2} )
+
+                local fullScreen = composer.getVariable( "fullScreen" )
+
+                fullScreen = not fullScreen
+
+                composer.setVariable( "fullScreen" , fullScreen )
+
+                adjustScreenDimensions(fullScreen)
                 clearDisplayGroup(menuGroup)
                 createSettingsElements()
 
@@ -273,8 +289,6 @@ local function handleTouch(event)
     elseif (event.phase == "ended") then
         if (isInteractionAvailable) then
             if (event.target.id == "buttonBack") then
-                savePreferences()
-
                 -- Return player to the screen where they pressed "Settings"
                 -- Player can reach settings from either menuScreen or endScreen
                 if (callSource == "endScreen") then
@@ -469,7 +483,7 @@ function createSettingsElements()
     frameButtonTheme:addEventListener( "touch", handleTouch )
     menuGroup:insert( frameButtonTheme )
 
-    local optionsLabelTheme = { text = "<< " .. sozluk.getString("themeSelected") .. " " .. themeName .. " >>", 
+    local optionsLabelTheme = { text = "< " .. sozluk.getString("themeSelected") .. " " .. themeName .. " >", 
         height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
     frameButtonTheme.textLabel = display.newText( optionsLabelTheme )
     frameButtonTheme.textLabel:setFillColor( unpack(colorTextDefault) )
@@ -479,6 +493,33 @@ function createSettingsElements()
     frameButtonTheme.height = frameButtonTheme.textLabel.height * 2
     frameButtonTheme.y = frameButtonReset.y - frameButtonReset.height / 2 - frameButtonTheme.height
     frameButtonTheme.textLabel.y = frameButtonTheme.y
+
+
+    local statusFullScreen
+    if (composer.getVariable( "fullScreen" ) == true) then
+        statusFullScreen = sozluk.getString("fullScreenOn")
+    else
+        statusFullScreen = sozluk.getString("fullScreenOff")
+    end
+
+    local frameButtonFullScreen = display.newRoundedRect( display.contentCenterX, 0, widthMenuButtons, 0, cornerRadiusButtons )
+    frameButtonFullScreen.id = "controlFullScreen"
+    frameButtonFullScreen:setFillColor( unpack(colorButtonFillDefault) )
+    frameButtonFullScreen.strokeWidth = strokeWidthButtons
+    frameButtonFullScreen:setStrokeColor( unpack(colorButtonFillDefault) )
+    frameButtonFullScreen:addEventListener( "touch", handleTouch )
+    menuGroup:insert( frameButtonFullScreen )
+
+    local optionsLabelFullScreen = { text = "< " .. sozluk.getString("fullScreen") .. " " .. statusFullScreen .. " >", 
+        height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
+    frameButtonFullScreen.textLabel = display.newText( optionsLabelFullScreen )
+    frameButtonFullScreen.textLabel:setFillColor( unpack(colorTextDefault) )
+    frameButtonFullScreen.textLabel.x = frameButtonFullScreen.x
+    menuGroup:insert(frameButtonFullScreen.textLabel)
+
+    frameButtonFullScreen.height = frameButtonFullScreen.textLabel.height * 2
+    frameButtonFullScreen.y = frameButtonTheme.y - frameButtonTheme.height / 2 - frameButtonFullScreen.height / 2
+    frameButtonFullScreen.textLabel.y = frameButtonFullScreen.y
 end
 
 local function unloadSoundFX()

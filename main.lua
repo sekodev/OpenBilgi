@@ -62,8 +62,9 @@ local function assignVariables()
     composer.setVariable( "urlLandingPage" , "https://sekodev.github.io/bilgiWeb/" ) -- Required for sharing landing page on social media
     composer.setVariable( "pathIconFile" , "assets/menu/iconQuiz.png" ) -- Required for share UI
 
-    composer.setVariable( "currentTheme" , "dark") -- dark, light(inactive)
+    composer.setVariable( "currentTheme" , "dark") -- dark/light
     composer.setVariable( "currentLanguage" , "tr") -- Default: Turkish
+    composer.setVariable( "fullScreen" , true) -- Full screen support - Default: true
     composer.setVariable( "currentAppScene" , "menuScreen") -- Required for back button on Android
     composer.setVariable( "timeTransitionScene", 250 ) -- Used in every scene change
 
@@ -115,7 +116,7 @@ local function assignVariables()
 
     composer.setVariable( "isTermsPrivacyAccepted", false ) -- Privacy policy & terms of use information flag
 
-    -- statistics variables
+    -- Statistics variables
     composer.setVariable( "scoreHigh", 0 )
     composer.setVariable( "gamesPlayed", 0 )
     composer.setVariable( "questionsAnsweredTotal", 0 )
@@ -161,6 +162,7 @@ local function loadPreferences()
         composer.setVariable( "savedPlayerScore", preference.getValue("settings")[32] )
         composer.setVariable( "savedIsRevived", preference.getValue("settings")[33] )
         composer.setVariable( "isTermsPrivacyAccepted", preference.getValue("settings")[34] )
+        composer.setVariable( "fullScreen", preference.getValue("settings")[35] )
     end
 end
 
@@ -200,7 +202,8 @@ function savePreferences()
         composer.getVariable( "savedQuestionCurrent" ),
         composer.getVariable( "savedPlayerScore" ),
         composer.getVariable( "savedIsRevived" ),
-        composer.getVariable( "isTermsPrivacyAccepted" ), } }
+        composer.getVariable( "isTermsPrivacyAccepted" ),
+        composer.getVariable( "fullScreen" ), } }
 end
 
 -- Reset preferences file
@@ -281,6 +284,17 @@ function resetQuestions()
     resetFaultyVariables()
 end
 
+-- Adjust screen dimensions depending on full screen option
+function adjustScreenDimensions(fullScreen)
+    if (fullScreen == false) then
+        contentWidth = contentWidthSafe
+        contentHeight = contentHeightSafe
+    else
+        contentWidth = display.contentWidth
+        contentHeight = display.contentHeight
+    end
+end
+
 
 assignVariables()
 
@@ -309,11 +323,14 @@ else
     composer.setVariable( "currentLanguage", "en" )
 end
 
---composer.setVariable( "currentLanguage", "tr" )
+composer.setVariable( "currentLanguage", "tr" )
 sozluk.setSelectedTranslation( composer.getVariable("currentLanguage") )
 
 -- Load preferences file and initialize variables
 loadPreferences()
+
+-- Adjust screen dimensions depending on full screen option
+adjustScreenDimensions(composer.getVariable( "fullScreen" ))
 
 -- Pick starting set and handle bugs caused by previous versions
 pickStartingQuestionSet()
