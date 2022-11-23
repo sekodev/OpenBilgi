@@ -377,76 +377,17 @@ function createSettingsElements()
     menuSeparator.y = buttonBack.y + buttonBack.height / 2
     menuSeparator:setFillColor( unpack(colorButtonOver) )
 
-    local imageSound = display.newImageRect( menuGroup, "assets/menu/sound.png", widthButtonSettings, heightButtonSettings )
-    imageSound.id = "muteSound"
-    imageSound:setFillColor( unpack(colorButtonDefault) )
-    imageSound.anchorX = 0
-    imageSound.x = xDistanceSides
-    imageSound.y = display.contentCenterY - imageSound.height
-    imageSound:addEventListener( "touch", handleTouch )
 
-    local imageMusic = display.newImageRect( menuGroup, "assets/menu/music.png", widthButtonSettings, heightButtonSettings )
-    imageMusic.id = "muteMusic"
-    imageMusic:setFillColor( unpack(colorButtonDefault) )
-    imageMusic.anchorX = 0
-    imageMusic.x = xDistanceSides
-    imageMusic.y = imageSound.y + imageSound.height / 2 + imageMusic.height * 1.2
-    imageMusic:addEventListener( "touch", handleTouch )
-
-    local widthLineSound = contentWidthSafe - xDistanceSides * 2 - imageSound.width * 1.5
-    local heightLineSound = imageSound.height / 12
-    local xLineSound = imageSound.x + imageSound.width * 1.5
-    local yLineSound = imageSound.y
-
-    imageSound.buttonControl = display.newCircle( menuGroup, xLineSound + widthLineSound / 2, yLineSound, imageSound.height / 4 )
-    imageSound.buttonControl:setStrokeColor( unpack(colorButtonStroke) )
-    imageSound.buttonControl.strokeWidth = 10
-    imageSound.buttonControl:setFillColor( unpack(colorButtonFillWrong) )
-    imageSound.buttonControl.id = "controlSound"
-    imageSound.buttonControl.levelCurrent = composer.getVariable("soundLevel")
-    imageSound.buttonControl.levelBeforeMute = imageSound.buttonControl.levelCurrent -- Used to keep last sound level before mute is pressed
-    imageSound.buttonControl:addEventListener( "touch", handleTouch )
-
-    imageSound.buttonControl.line = display.newRect( menuGroup, 0, imageSound.buttonControl.y, 0, heightLineSound )
-    imageSound.buttonControl.line:setFillColor( unpack(colorButtonDefault) )
-    imageSound.buttonControl.line.anchorX = 0
-    imageSound.buttonControl.line.x = xLineSound
-    imageSound.buttonControl.line.width = widthLineSound
-
-
-    local widthLineMusic = widthLineSound
-    local heightLineMusic = heightLineSound
-    local xLineMusic = xLineSound
-    local yLineMusic = imageMusic.y
-
-    imageMusic.buttonControl = display.newCircle( menuGroup, xLineMusic + widthLineMusic / 2, yLineMusic, imageMusic.height / 4 )
-    imageMusic.buttonControl:setStrokeColor( unpack(colorButtonStroke) )
-    imageMusic.buttonControl.strokeWidth = 10
-    imageMusic.buttonControl:setFillColor( unpack(colorButtonFillWrong) )
-    imageMusic.buttonControl.id = "controlMusic"
-    imageMusic.buttonControl.levelCurrent = composer.getVariable("musicLevel")
-    imageMusic.buttonControl.levelBeforeMute = imageMusic.buttonControl.levelCurrent -- Used to keep last music level before mute is pressed
-    imageMusic.buttonControl:addEventListener( "touch", handleTouch )
-
-    imageMusic.buttonControl.line = display.newRect( menuGroup, 0, imageMusic.y, 0, imageMusic.height / 12 )
-    imageMusic.buttonControl.line:setFillColor( unpack(colorButtonDefault) )
-    imageMusic.buttonControl.line.anchorX = 0
-    imageMusic.buttonControl.line.x = xLineMusic
-    imageMusic.buttonControl.line.width = widthLineMusic
-
-    imageSound.buttonControl.x = imageSound.buttonControl.line.x + (imageSound.buttonControl.line.width * imageSound.buttonControl.levelCurrent)
-    imageMusic.buttonControl.x = imageMusic.buttonControl.line.x + (imageMusic.buttonControl.line.width * imageMusic.buttonControl.levelCurrent)
-
-    imageSound.buttonControl:toFront( )
-    imageMusic.buttonControl:toFront( )
-
-
+    -- Create settings elements from bottom to top so player can easily reach those options on touch screen
     local widthMenuButtons = contentWidthSafe / 1.5
     local fontSizeButtons = contentHeightSafe / 30
 
     local colorTextOver = themeData.colorTextOver
     local cornerRadiusButtons = themeData.cornerRadiusButtons
     local strokeWidthButtons = themeData.strokeWidthButtons
+
+    local yButtonPlacementNextElement
+
 
     local frameButtonReset = display.newRoundedRect( display.contentCenterX, 0, widthMenuButtons, 0, cornerRadiusButtons )
     frameButtonReset.id = "resetQuestions"
@@ -494,7 +435,12 @@ function createSettingsElements()
     frameButtonTheme.y = frameButtonReset.y - frameButtonReset.height / 2 - frameButtonTheme.height
     frameButtonTheme.textLabel.y = frameButtonTheme.y
 
+    -- This will keep track of the latest element created, in case full screen toggle is not available
+    yButtonPlacementNextElement = frameButtonTheme.y - frameButtonTheme.height * 2
 
+
+    -- Show full screen toggle based on device resolution
+    -- If device doesn't have a notch / carved out camera etc. toggle is unnecessary
     if (display.contentHeight > display.safeActualContentHeight) then
         local statusFullScreen
         if (composer.getVariable( "fullScreen" ) == true) then
@@ -521,7 +467,75 @@ function createSettingsElements()
         frameButtonFullScreen.height = frameButtonFullScreen.textLabel.height * 2
         frameButtonFullScreen.y = frameButtonTheme.y - frameButtonTheme.height / 2 - frameButtonFullScreen.height / 2
         frameButtonFullScreen.textLabel.y = frameButtonFullScreen.y
+
+        -- This will keep track of the latest element created
+        yButtonPlacementNextElement = frameButtonFullScreen.y - frameButtonFullScreen.height * 2
     end
+
+
+    local imageMusic = display.newImageRect( menuGroup, "assets/menu/music.png", widthButtonSettings, heightButtonSettings )
+    imageMusic.id = "muteMusic"
+    imageMusic:setFillColor( unpack(colorButtonDefault) )
+    imageMusic.anchorX = 0
+    imageMusic.x = xDistanceSides
+    imageMusic.y = yButtonPlacementNextElement
+    imageMusic:addEventListener( "touch", handleTouch )
+
+    local widthLineMusic = contentWidthSafe - xDistanceSides * 2 - imageMusic.width * 1.5
+    local heightLineMusic = imageMusic.height / 12
+    local xLineMusic = imageMusic.x + imageMusic.width * 1.5
+    local yLineMusic = imageMusic.y
+
+    imageMusic.buttonControl = display.newCircle( menuGroup, xLineMusic + widthLineMusic / 2, yLineMusic, imageMusic.height / 4 )
+    imageMusic.buttonControl:setStrokeColor( unpack(colorButtonStroke) )
+    imageMusic.buttonControl.strokeWidth = 10
+    imageMusic.buttonControl:setFillColor( unpack(colorButtonFillWrong) )
+    imageMusic.buttonControl.id = "controlMusic"
+    imageMusic.buttonControl.levelCurrent = composer.getVariable("musicLevel")
+    imageMusic.buttonControl.levelBeforeMute = imageMusic.buttonControl.levelCurrent -- Used to keep last music level before mute is pressed
+    imageMusic.buttonControl:addEventListener( "touch", handleTouch )
+
+    imageMusic.buttonControl.line = display.newRect( menuGroup, 0, imageMusic.y, 0, imageMusic.height / 12 )
+    imageMusic.buttonControl.line:setFillColor( unpack(colorButtonDefault) )
+    imageMusic.buttonControl.line.anchorX = 0
+    imageMusic.buttonControl.line.x = xLineMusic
+    imageMusic.buttonControl.line.width = widthLineMusic
+
+
+    local imageSound = display.newImageRect( menuGroup, "assets/menu/sound.png", widthButtonSettings, heightButtonSettings )
+    imageSound.id = "muteSound"
+    imageSound:setFillColor( unpack(colorButtonDefault) )
+    imageSound.anchorX = 0
+    imageSound.x = xDistanceSides
+    imageSound.y = imageMusic.y - imageMusic.height / 2 - imageMusic.height * 1.2
+    imageSound:addEventListener( "touch", handleTouch )
+
+    local widthLineSound = widthLineMusic
+    local heightLineSound = heightLineMusic
+    local xLineSound = xLineMusic
+    local yLineSound = imageSound.y
+
+    imageSound.buttonControl = display.newCircle( menuGroup, xLineSound + widthLineSound / 2, yLineSound, imageSound.height / 4 )
+    imageSound.buttonControl:setStrokeColor( unpack(colorButtonStroke) )
+    imageSound.buttonControl.strokeWidth = 10
+    imageSound.buttonControl:setFillColor( unpack(colorButtonFillWrong) )
+    imageSound.buttonControl.id = "controlSound"
+    imageSound.buttonControl.levelCurrent = composer.getVariable("soundLevel")
+    imageSound.buttonControl.levelBeforeMute = imageSound.buttonControl.levelCurrent -- Used to keep last sound level before mute is pressed
+    imageSound.buttonControl:addEventListener( "touch", handleTouch )
+
+    imageSound.buttonControl.line = display.newRect( menuGroup, 0, imageSound.buttonControl.y, 0, heightLineSound )
+    imageSound.buttonControl.line:setFillColor( unpack(colorButtonDefault) )
+    imageSound.buttonControl.line.anchorX = 0
+    imageSound.buttonControl.line.x = xLineSound
+    imageSound.buttonControl.line.width = widthLineSound
+
+
+    imageSound.buttonControl.x = imageSound.buttonControl.line.x + (imageSound.buttonControl.line.width * imageSound.buttonControl.levelCurrent)
+    imageMusic.buttonControl.x = imageMusic.buttonControl.line.x + (imageMusic.buttonControl.line.width * imageMusic.buttonControl.levelCurrent)
+
+    imageSound.buttonControl:toFront( )
+    imageMusic.buttonControl:toFront( )
 end
 
 local function unloadSoundFX()
