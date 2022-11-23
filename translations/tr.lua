@@ -86,6 +86,7 @@ function translationSetup.getData()
     translationData["shortenedUse"] = "(kısaltılmış sürümdür.)"
     translationData["disclaimerSoundLicense"] = "Bu oyundaki müzik ve ses efektleri farklı lisanslarla koruma altındadır. Daha fazla bilgi için ilgili siteleri ziyaret edin."
     translationData["disclaimerFont"] = "SIL Open Font License version 1.1. Daha fazla bilgi için https://scripts.sil.org/OFL adresini ziyaret edin."
+    translationData["disclaimerCopyright"] = "Tüm ticari markalar, logolar ve marka isimleri ilgili sahiplerine aittir."
     translationData["poweredBy"] = "Oyun motoru"
     translationData["sendSupportMailSubject"] = "Öneri - bilgi"
     translationData["sendSupportMailBody"] = "Mesajınızı buraya yazabilirsiniz."
