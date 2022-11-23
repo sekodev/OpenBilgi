@@ -495,31 +495,33 @@ function createSettingsElements()
     frameButtonTheme.textLabel.y = frameButtonTheme.y
 
 
-    local statusFullScreen
-    if (composer.getVariable( "fullScreen" ) == true) then
-        statusFullScreen = sozluk.getString("fullScreenOn")
-    else
-        statusFullScreen = sozluk.getString("fullScreenOff")
+    if (display.contentHeight > display.safeActualContentHeight) then
+        local statusFullScreen
+        if (composer.getVariable( "fullScreen" ) == true) then
+            statusFullScreen = sozluk.getString("fullScreenOn")
+        else
+            statusFullScreen = sozluk.getString("fullScreenOff")
+        end
+
+        local frameButtonFullScreen = display.newRoundedRect( display.contentCenterX, 0, widthMenuButtons, 0, cornerRadiusButtons )
+        frameButtonFullScreen.id = "controlFullScreen"
+        frameButtonFullScreen:setFillColor( unpack(colorButtonFillDefault) )
+        frameButtonFullScreen.strokeWidth = strokeWidthButtons
+        frameButtonFullScreen:setStrokeColor( unpack(colorButtonFillDefault) )
+        frameButtonFullScreen:addEventListener( "touch", handleTouch )
+        menuGroup:insert( frameButtonFullScreen )
+
+        local optionsLabelFullScreen = { text = "< " .. sozluk.getString("fullScreen") .. " " .. statusFullScreen .. " >", 
+            height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
+        frameButtonFullScreen.textLabel = display.newText( optionsLabelFullScreen )
+        frameButtonFullScreen.textLabel:setFillColor( unpack(colorTextDefault) )
+        frameButtonFullScreen.textLabel.x = frameButtonFullScreen.x
+        menuGroup:insert(frameButtonFullScreen.textLabel)
+
+        frameButtonFullScreen.height = frameButtonFullScreen.textLabel.height * 2
+        frameButtonFullScreen.y = frameButtonTheme.y - frameButtonTheme.height / 2 - frameButtonFullScreen.height / 2
+        frameButtonFullScreen.textLabel.y = frameButtonFullScreen.y
     end
-
-    local frameButtonFullScreen = display.newRoundedRect( display.contentCenterX, 0, widthMenuButtons, 0, cornerRadiusButtons )
-    frameButtonFullScreen.id = "controlFullScreen"
-    frameButtonFullScreen:setFillColor( unpack(colorButtonFillDefault) )
-    frameButtonFullScreen.strokeWidth = strokeWidthButtons
-    frameButtonFullScreen:setStrokeColor( unpack(colorButtonFillDefault) )
-    frameButtonFullScreen:addEventListener( "touch", handleTouch )
-    menuGroup:insert( frameButtonFullScreen )
-
-    local optionsLabelFullScreen = { text = "< " .. sozluk.getString("fullScreen") .. " " .. statusFullScreen .. " >", 
-        height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
-    frameButtonFullScreen.textLabel = display.newText( optionsLabelFullScreen )
-    frameButtonFullScreen.textLabel:setFillColor( unpack(colorTextDefault) )
-    frameButtonFullScreen.textLabel.x = frameButtonFullScreen.x
-    menuGroup:insert(frameButtonFullScreen.textLabel)
-
-    frameButtonFullScreen.height = frameButtonFullScreen.textLabel.height * 2
-    frameButtonFullScreen.y = frameButtonTheme.y - frameButtonTheme.height / 2 - frameButtonFullScreen.height / 2
-    frameButtonFullScreen.textLabel.y = frameButtonFullScreen.y
 end
 
 local function unloadSoundFX()
