@@ -518,6 +518,13 @@ local function createCreditsElements()
     titleEngine.imageLogo:addEventListener( "touch", handleTouch )
     creditsGroup:insert(titleEngine.imageLogo)
 
+    local optionsDisclaimerCopyright = { text = sozluk.getString("disclaimerCopyright"), width = contentWidthSafe / 1.1, font = fontIngame, fontSize = sizeNames / 1.1, align = "center" }
+    local textDisclaimerCopyright = display.newText( optionsDisclaimerCopyright )
+    textDisclaimerCopyright:setFillColor( unpack(colorTextDefault) )
+    textDisclaimerCopyright.x = display.contentCenterX
+    textDisclaimerCopyright.y = titleEngine.imageLogo.y + titleEngine.imageLogo.height + textDisclaimerCopyright.height / 1.5
+    creditsGroup:insert( textDisclaimerCopyright )
+
 
     -- I used a container so elements are not rendered outside of the specified bounds
     -- https://docs.coronalabs.com/guide/graphics/container.html#groups-vs.-containers
@@ -561,6 +568,7 @@ local function createCreditsElements()
     containerCredits:insert(titleFont.disclaimer)
     containerCredits:insert(titleEngine)
     containerCredits:insert(titleEngine.imageLogo)
+    containerCredits:insert(textDisclaimerCopyright)
 
 
     -- Store initial y coordinates so you can move them back to their starting point after each moved out of the screen
@@ -597,6 +605,7 @@ local function createCreditsElements()
     titleFont.disclaimer.y0 = titleFont.disclaimer.y
     titleEngine.y0 = titleEngine.y
     titleEngine.imageLogo.y0 = titleEngine.imageLogo.y
+    textDisclaimerCopyright.y0 = textDisclaimerCopyright.y
 end
 
 local function cleanUp()
