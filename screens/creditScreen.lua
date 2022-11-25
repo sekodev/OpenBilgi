@@ -35,16 +35,6 @@ local yLimitBottom
     I didn't have enough time to make it better.
 ]]--
 
-local function showMailUI()
-    local mailAddress = "info.sleepybug@gmail.com"
-    local mailSubject = sozluk.getString("sendSupportMailSubject")
-    local mailBody = sozluk.getString("sendSupportMailBody")
-
-    local mailOptions = { to = mailAddress, subject = mailSubject, body = mailBody }
-
-    native.showPopup( "mail", mailOptions )
-end
-
 -- Reset y position of credits container to move everything back to starting point
 local function resetCreditsPosition()
     for i = 1, containerCredits.numChildren do
@@ -72,7 +62,11 @@ end
 local function handleTouch(event)
     if (event.phase == "ended") then
         if (event.target.id == "sendMail") then
-            showMailUI()
+            local mailAddress = composer.getVariable("emailSupport")
+            local mailSubject = sozluk.getString("sendSupportMailSubject")
+            local mailBody = sozluk.getString("sendSupportMailBody")
+
+            utils.showMailUI(mailAddress, mailSubject, mailBody)
         elseif (event.target.id == "openURL") then
             if (event.target.underline) then
                 event.target.underline:setFillColor( unpack( themeData.colorHyperlinkVisited ) )

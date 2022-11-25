@@ -84,41 +84,6 @@ local function clearDisplayGroup(targetGroup)
     end
 end
 
--- Show share UI based on the operating system
-local function showShareSystemUI()
-    local urlLandingPage = composer.getVariable( "urlLandingPage" ) -- You can change landing page URL from main.lua
-    local pathShareAsset = composer.getVariable( "pathIconFile" ) -- You can change pathIconFile from main.lua
-
-    if (system.getInfo("platform") == "ios" or system.getInfo("platform") == "macos" or system.getInfo("platform") == "tvos") then
-        -- You need to use Activity Popup for iOS
-        -- https://docs.coronalabs.com/plugin/CoronaProvider_native_popup_activity/index.html
-    else
-        local itemsSocial = {
-            image = { filename = pathShareAsset, baseDir = system.resourceDirectory },
-            url = { urlLandingPage }
-        }
-
-        native.showPopup( "social", itemsSocial )
-    end
-end
-
--- Show QR code that contains the link to the game
--- Currently links to Google Play page
--- Replace QR code assets to change the link
-local function showShareQR()
-    local backgroundShade = display.newRect( shareGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
-    backgroundShade:setFillColor( unpack(themeData.colorBackground) )
-    backgroundShade.id = "shareCancel"
-    backgroundShade:addEventListener( "touch", handleShareTouch )
-
-    local fileQRCode = "assets/other/QRCode.png"
-
-    local widthQRCode = contentHeightSafe / 2
-    local heightQRCode = widthQRCode
-    local qrCode = display.newImageRect( shareGroup, fileQRCode, widthQRCode, heightQRCode )
-    qrCode.x, qrCode.y = display.contentCenterX, display.contentCenterY
-end
-
 -- Handles touch events when in-game share UI is shown
 function handleShareTouch(event)
     if (event.phase == "ended") then
@@ -140,7 +105,9 @@ function handleShareTouch(event)
             end
 
             clearDisplayGroup(shareGroup)
-            showShareQR()
+            
+            local pathQRCode = "assets/other/QRCode.png"
+            utils.showShareQR(shareGroup, pathQRCode)
         elseif (event.target.id == "shareStoreLink") then
             if (not sharedGame) then
                 sharedGame = true
@@ -156,7 +123,12 @@ function handleShareTouch(event)
             end
 
             clearDisplayGroup(shareGroup)
-            showShareSystemUI()
+            
+
+            local urlLandingPage = composer.getVariable( "urlLandingPage" ) -- You can change landing page URL from main.lua
+            local pathShareAsset = composer.getVariable( "pathIconFile" ) -- You can change pathIconFile from main.lua
+            
+            utils.showSystemShareUI(pathShareAsset, urlLandingPage)
         elseif (event.target.id == "shareCancel") then
             clearDisplayGroup(shareGroup)
         end

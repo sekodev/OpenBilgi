@@ -20,6 +20,7 @@ local composer = require ( "libs.composer_alt" ) -- Modified version is used for
 
 preference = require ( "libs.preference" ) -- Used to save player-related variables
 themeSettings = require ( "libs.themeSettings" ) -- Contains theme data
+utils = require ( "libs.utils" ) -- Contains universally usable code
 
 contentWidthSafe = display.safeActualContentWidth
 contentHeightSafe = display.safeActualContentHeight
@@ -57,6 +58,7 @@ local function assignVariables()
     composer.setVariable( "userName" , "asd" )
     composer.setVariable( "userToken", "" )
 
+    composer.setVariable( "emailSupport", "info.sleepybug@gmail.com" ) -- Used to show player a way to get in contact
     composer.setVariable( "currentVersion" , "OpenBilgi, v0.7.3 (53)" ) -- Visible in Settings screen
     composer.setVariable( "packageName" , "io.sleepybug.OpenBilgi" ) -- Required to show rating pop-ups
     composer.setVariable( "urlLandingPage" , "https://sekodev.github.io/bilgiWeb/" ) -- Required for sharing landing page on social media
