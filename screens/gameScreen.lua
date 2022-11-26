@@ -103,18 +103,6 @@ local function cancelTimers()
     end
 end
 
-local function resumeTimers()
-    for i = #tableTimers, 1, -1 do
-        timer.resume( tableTimers[i] )
-    end
-end
-
-local function pauseTimers()
-    for i = #tableTimers, 1, -1 do
-        timer.pause( tableTimers[i] )
-    end
-end
-
 local function stopGameTimer(targetGroup)
     transition.cancel( "gameTimer" )
 
@@ -124,13 +112,6 @@ local function stopGameTimer(targetGroup)
     end
 
     targetGroup.timerElements = {}
-end
-
-local function destroyActiveCard(activeGroup)
-    for i = activeGroup.numChildren, 1, -1 do
-        display.remove( activeGroup[i] )
-        activeGroup[i] = nil
-    end
 end
 
 local function cleanUp()
@@ -209,7 +190,7 @@ local function hideActiveCard(typeHide, activeGroup, passiveGroup, statusGame, s
                     end
                 end
 
-                destroyActiveCard(activeGroup)
+                utils.clearDisplayGroup(activeGroup)
 
                 activeGroup:toBack( )
                 activeGroup.x = 0
@@ -221,7 +202,7 @@ local function hideActiveCard(typeHide, activeGroup, passiveGroup, statusGame, s
 
                 audio.setVolume(0, {channel = channelMusicBackground})
 
-                destroyActiveCard(activeGroup)
+                utils.clearDisplayGroup(activeGroup)
 
                 activeGroup:toBack( )
                 activeGroup.x = 0
@@ -1825,12 +1806,12 @@ function onSystemEvent(event)
         local timeElapsed = os.difftime( os.time(), timeSuspend )
         adjustGameTimer(timeElapsed)
 
-        resumeTimers()
+        utils.resumeTimers(tableTimers)
         transition.resume()
     elseif( event.type == "applicationSuspend" ) then
         composer.setVariable( "timeSuspend", os.time() )
 
-        pauseTimers()
+        utils.pauseTimers(tableTimers)
         transition.pause( )
     elseif( event.type == "applicationExit" ) then
         

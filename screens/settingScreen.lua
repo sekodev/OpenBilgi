@@ -22,7 +22,6 @@ local timeTransitionScene = composer.getVariable( "timeTransitionScene" )
 local mainGroup, menuGroup, resetGroup
 
 local tableSoundFiles = {}
-local tableTimers = {}
 
 local callSource
 local scoreCurrent = 0
@@ -30,25 +29,10 @@ local scoreCurrent = 0
 local isInteractionAvailable = true
 
 
-local function cancelTimers()
-    for i = #tableTimers, 1, -1 do
-        timer.cancel( tableTimers[i] )
-        tableTimers[i] = nil
-    end
-end
-
 local function cleanUp()
     -- Save changes before the player leaves settings
     -- This is called here to avoid discarding changes when Android user presses OS back button
     savePreferences()
-    cancelTimers()
-end
-
-local function clearDisplayGroup(targetGroup)
-    for i = targetGroup.numChildren, 1, -1 do
-        display.remove( targetGroup[i] )
-        targetGroup[i] = nil
-    end
 end
 
 -- Handle touch events on question reset box
@@ -63,7 +47,7 @@ local function handleConfirmationTouch(event)
             local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene}
             composer.gotoScene( "screens.logoScreen", optionsChangeScene )
         elseif (event.target.id == "resetQuestionsDeny") then
-            clearDisplayGroup(resetGroup)
+            utils.clearDisplayGroup(resetGroup)
         end
     end
     return true
@@ -179,7 +163,7 @@ local function handleTouch(event)
 
                 themeData = themeSettings.getData(themeSelected)
 
-                clearDisplayGroup(menuGroup)
+                utils.clearDisplayGroup(menuGroup)
                 createSettingsElements()
 
                 isInteractionAvailable = true
@@ -201,7 +185,7 @@ local function handleTouch(event)
                 composer.setVariable( "fullScreen" , fullScreen )
 
                 adjustScreenDimensions(fullScreen)
-                clearDisplayGroup(menuGroup)
+                utils.clearDisplayGroup(menuGroup)
                 createSettingsElements()
 
                 isInteractionAvailable = true

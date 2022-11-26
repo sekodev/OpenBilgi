@@ -13,6 +13,25 @@
 local utils = {}
 
 
+function utils.resumeTimers(tableTimers)
+    for i = #tableTimers, 1, -1 do
+        timer.resume( tableTimers[i] )
+    end
+end
+
+function utils.pauseTimers(tableTimers)
+    for i = #tableTimers, 1, -1 do
+        timer.pause( tableTimers[i] )
+    end
+end
+
+function utils.clearDisplayGroup(targetGroup)
+    for i = targetGroup.numChildren, 1, -1 do
+        display.remove( targetGroup[i] )
+        targetGroup[i] = nil
+    end
+end
+
 -- Show share UI based on the operating system
 function utils.showSystemShareUI(pathShareAsset, urlLandingPage)
     if (system.getInfo("platform") == "ios" or system.getInfo("platform") == "macos" or system.getInfo("platform") == "tvos") then

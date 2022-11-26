@@ -72,13 +72,6 @@ local function cleanUp()
     end
 end
 
-local function clearDisplayGroup(targetGroup)
-    for i = targetGroup.numChildren, 1, -1 do
-        display.remove( targetGroup[i] )
-        targetGroup[i] = nil
-    end
-end
-
 -- Handles touch events when in-game share UI is shown
 function handleShareTouch(event)
     if (event.phase == "ended") then
@@ -99,7 +92,7 @@ function handleShareTouch(event)
                 savePreferences()
             end
 
-            clearDisplayGroup(shareGroup)
+            utils.clearDisplayGroup(shareGroup)
             
             local pathQRCode = "assets/other/QRCode.png"
             utils.showShareQR(shareGroup, pathQRCode)
@@ -117,15 +110,15 @@ function handleShareTouch(event)
                 savePreferences()
             end
 
-            clearDisplayGroup(shareGroup)
-            
+            utils.clearDisplayGroup(shareGroup)
 
+            
             local urlLandingPage = composer.getVariable( "urlLandingPage" ) -- You can change landing page URL from main.lua
             local pathShareAsset = composer.getVariable( "pathIconFile" ) -- You can change pathIconFile from main.lua
 
             utils.showSystemShareUI(pathShareAsset, urlLandingPage)
         elseif (event.target.id == "shareCancel") then
-            clearDisplayGroup(shareGroup)
+            utils.clearDisplayGroup(shareGroup)
         end
     end
     return true
@@ -370,7 +363,7 @@ end
 -- Hide tooltip for coins needed
 local function hideCoinsNeeded()
     transition.to( infoGroup, { time = 100, alpha = 0, onComplete = function() 
-            clearDisplayGroup(infoGroup)
+            utils.clearDisplayGroup(infoGroup)
         end })
 end
 
@@ -670,7 +663,7 @@ function handleTouch(event)
             if (event.target.id == "shareSocial") then
                 event.target:setFillColor( unpack(themeData.colorButtonDefault) )
             elseif (event.target.id == "closeLockInfo") then
-                clearDisplayGroup(infoGroup)
+                utils.clearDisplayGroup(infoGroup)
             elseif (event.target.id == "hideLockInfoForever") then
                 -- If player chose note to see the warning about lock system, don't show again
                 if (event.target.isActivated) then
@@ -1226,20 +1219,20 @@ local function handleRatingTouch(event)
             composer.setVariable( "askedRateGame", true )
             savePreferences()
 
-            clearDisplayGroup(rateGroup)
+            utils.clearDisplayGroup(rateGroup)
             showRateUI()
         elseif (event.target.id == "rateLater") then
             -- This option is NOT used to ask for ratings later
             composer.setVariable( "askedRateGame", true )
             savePreferences()
 
-            clearDisplayGroup(rateGroup)
+            utils.clearDisplayGroup(rateGroup)
         elseif (event.target.id == "sendFeedback") then
             composer.setVariable( "askedRateGame", true )
             savePreferences()
 
-            clearDisplayGroup(rateGroup)
-            
+            utils.clearDisplayGroup(rateGroup)
+
 
             local mailAddress = composer.getVariable("emailSupport")
             local mailSubject = sozluk.getString("sendSupportMailSubject")

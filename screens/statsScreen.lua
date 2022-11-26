@@ -73,13 +73,6 @@ local function moveStats()
     end
 end
 
-local function clearDisplayGroup(targetGroup)
-    for i = targetGroup.numChildren, 1, -1 do
-        display.remove( targetGroup[i] )
-        targetGroup[i] = nil
-    end
-end
-
 -- Reverts statistics variables to starting values
 local function resetStatistics()
     composer.setVariable( "scoreHigh", 0 )
@@ -101,7 +94,7 @@ local function handleConfirmationTouch(event)
             local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene}
             composer.gotoScene( "screens.logoScreen", optionsChangeScene )
         elseif (event.target.id == "resetStatsDeny") then
-            clearDisplayGroup(resetGroup)
+            utils.clearDisplayGroup(resetGroup)
         end
     end
     return true

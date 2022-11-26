@@ -44,18 +44,6 @@ local function cancelTimers()
     end
 end
 
-local function resumeTimers()
-    for i = #tableTimers, 1, -1 do
-        timer.resume( tableTimers[i] )
-    end
-end
-
-local function pauseTimers()
-    for i = #tableTimers, 1, -1 do
-        timer.pause( tableTimers[i] )
-    end
-end
-
 local function cleanUp()
     Runtime:removeEventListener( "system", onSystemEvent )
     
@@ -75,13 +63,6 @@ local function hideActiveCard()
     local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, 
     params = {callSource = "menuScreen", isSetLocked = frameLockQuestionSet.isActivated, isSaveAvailable = isSaveAvailable}}
     composer.gotoScene( "screens.gameScreen", optionsChangeScene )
-end
-
-local function clearDisplayGroup(targetGroup)
-    for i = targetGroup.numChildren, 1, -1 do
-        display.remove( targetGroup[i] )
-        targetGroup[i] = nil
-    end
 end
 
 -- Handles touch events when in-game share UI is shown
@@ -104,8 +85,8 @@ function handleShareTouch(event)
                 savePreferences()
             end
 
-            clearDisplayGroup(shareGroup)
-            
+            utils.clearDisplayGroup(shareGroup)
+
             local pathQRCode = "assets/other/QRCode.png"
             utils.showShareQR(shareGroup, pathQRCode)
         elseif (event.target.id == "shareStoreLink") then
@@ -122,15 +103,15 @@ function handleShareTouch(event)
                 savePreferences()
             end
 
-            clearDisplayGroup(shareGroup)
-            
+            utils.clearDisplayGroup(shareGroup)
+
 
             local urlLandingPage = composer.getVariable( "urlLandingPage" ) -- You can change landing page URL from main.lua
             local pathShareAsset = composer.getVariable( "pathIconFile" ) -- You can change pathIconFile from main.lua
-            
+
             utils.showSystemShareUI(pathShareAsset, urlLandingPage)
         elseif (event.target.id == "shareCancel") then
-            clearDisplayGroup(shareGroup)
+            utils.clearDisplayGroup(shareGroup)
         end
     end
     return true
@@ -395,7 +376,7 @@ end
 -- Hide tooltip for coins needed
 local function hideCoinsNeeded()
     transition.to( infoGroup, { time = 100, alpha = 0, onComplete = function() 
-            clearDisplayGroup(infoGroup)
+            utils.clearDisplayGroup(infoGroup)
         end })
 end
 
@@ -775,7 +756,7 @@ function handleTouch(event)
             if (event.target.id == "shareSocial" or "rateGame" == event.target.id) then
                 event.target:setFillColor( unpack(themeData.colorButtonDefault) )
             elseif (event.target.id == "closeLockInfo") then
-                clearDisplayGroup(infoGroup)
+                utils.clearDisplayGroup(infoGroup)
             elseif (event.target.id == "hideLockInfoForever") then
                 -- If player chose note to see the warning about lock system, don't show again
                 if (event.target.isActivated) then
@@ -1098,7 +1079,7 @@ local function handlePermissionTouch(event)
 
             savePreferences()
 
-            clearDisplayGroup(infoGroup)
+            utils.clearDisplayGroup(infoGroup)
         end
     end
     return true
@@ -1236,9 +1217,9 @@ end
 -- Handle system events such as resuming/suspending the game/application
 function onSystemEvent(event)
     if( event.type == "applicationResume" ) then
-        resumeTimers()
+        utils.resumeTimers(tableTimers)
     elseif( event.type == "applicationSuspend" ) then
-        pauseTimers()
+        utils.pauseTimers(tableTimers)
     elseif( event.type == "applicationExit" ) then
         
     end
