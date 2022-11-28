@@ -96,13 +96,6 @@ local function shuffleTable(tableUnshuffled)
     end
 end
 
-local function cancelTimers()
-    for i = #tableTimers, 1, -1 do
-        timer.cancel( tableTimers[i] )
-        tableTimers[i] = nil
-    end
-end
-
 local function stopGameTimer(targetGroup)
     transition.cancel( "gameTimer" )
 
@@ -118,7 +111,7 @@ local function cleanUp()
     Runtime:removeEventListener( "system", onSystemEvent )
     
     transition.cancel( )
-    cancelTimers()
+    tableTimers = utils.cancelTimers(tableTimers)
 end
 
 local function playBackgroundMusic(fadeTime)

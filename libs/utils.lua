@@ -25,6 +25,15 @@ function utils.pauseTimers(tableTimers)
     end
 end
 
+function utils.cancelTimers(tableTimers)
+    for i = #tableTimers, 1, -1 do
+        timer.cancel( tableTimers[i] )
+        tableTimers[i] = nil
+    end
+
+    return tableTimers
+end
+
 function utils.clearDisplayGroup(targetGroup)
     for i = targetGroup.numChildren, 1, -1 do
         display.remove( targetGroup[i] )

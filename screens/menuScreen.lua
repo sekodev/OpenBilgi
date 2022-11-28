@@ -37,17 +37,10 @@ local tableTimers = {}
 local isInteractionAvailable = true
 
 
-local function cancelTimers()
-    for i = #tableTimers, 1, -1 do
-        timer.cancel( tableTimers[i] )
-        tableTimers[i] = nil
-    end
-end
-
 local function cleanUp()
     Runtime:removeEventListener( "system", onSystemEvent )
     
-    cancelTimers()
+    tableTimers = utils.cancelTimers(tableTimers)
     transition.cancel( )
 end
 

@@ -53,15 +53,8 @@ local tableTimers = {}
 local tableCheckpoints = {}
 
 
-local function cancelTimers()
-    for i = #tableTimers, 1, -1 do
-        timer.cancel( tableTimers[i] )
-        tableTimers[i] = nil
-    end
-end
-
 local function cleanUp()
-    cancelTimers()
+    tableTimers = utils.cancelTimers(tableTimers)
     transition.cancel( )
 
     if (#tableCheckpoints > 0) then
