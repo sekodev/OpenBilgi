@@ -12,6 +12,27 @@
 
 local utils = {}
 
+function utils.closeDatabases(tableDatabases)
+    for i = #tableDatabases, 1, -1 do
+        if (tableDatabases[i] and tableDatabases[i]:isopen()) then
+            tableDatabases[i]:close()
+            tableDatabases[i] = nil
+        end
+    end
+
+    return tableDatabases
+end
+
+function utils.closeFiles(tableFiles)
+    for i = #tableFiles, 1, -1 do
+        if (tableFiles[i]) then
+            tableFiles[i]:close()
+            tableFiles[i] = nil
+        end
+    end
+
+    return tableFiles
+end
 
 function utils.resumeTimers(tableTimers)
     for i = #tableTimers, 1, -1 do
@@ -41,8 +62,17 @@ function utils.clearDisplayGroup(targetGroup)
     end
 end
 
-function utils.loadSoundFX()
+function utils.loadSoundFX(tableSoundFiles, pathFolder, tableFileNames)
+    -- File names come with extension in case we use different file types
+    for i = 1, #tableFileNames do
+        local nameFile = tableFileNames[i]
+        local keyFile = string.sub(nameFile, 1, -5) -- Strip file extension to use file name as key value
+        local pathFile = pathFolder .. nameFile
 
+        tableSoundFiles[keyFile] = audio.loadSound( pathFile )
+    end
+
+    return tableSoundFiles
 end
 
 function utils.unloadSoundFX(tableSoundFiles)
