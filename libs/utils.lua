@@ -41,6 +41,23 @@ function utils.clearDisplayGroup(targetGroup)
     end
 end
 
+function utils.loadSoundFX()
+
+end
+
+function utils.unloadSoundFX(tableSoundFiles)
+    for i = 2, audio.totalChannels do
+        audio.stop(i)
+    end 
+
+    for k, v in pairs ( tableSoundFiles ) do
+        audio.dispose( tableSoundFiles[k] )
+        tableSoundFiles[k] = nil
+    end
+
+    return tableSoundFiles
+end
+
 -- Show share UI based on the operating system
 function utils.showSystemShareUI(pathShareAsset, urlLandingPage)
     if (system.getInfo("platform") == "ios" or system.getInfo("platform") == "macos" or system.getInfo("platform") == "tvos") then

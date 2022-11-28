@@ -445,17 +445,6 @@ local function cleanUp()
     Runtime:removeEventListener( "enterFrame", moveStats )
 end
 
-local function unloadSoundFX()
-    for i = 2, audio.totalChannels do
-        audio.stop(i)
-    end 
-
-    for k, v in pairs ( tableSoundFiles ) do
-        audio.dispose( tableSoundFiles[k] )
-        tableSoundFiles[k] = nil
-    end
-end
-
 local function loadSoundFX()
     tableSoundFiles["answerChosen"] = audio.loadSound( "assets/soundFX/answerChosen.wav" )
 end
@@ -509,7 +498,7 @@ function scene:hide( event )
     if ( phase == "will" ) then
         cleanUp()
     elseif ( phase == "did" ) then
-        unloadSoundFX()
+        utils.unloadSoundFX(tableSoundFiles)
     end
 end
 

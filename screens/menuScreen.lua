@@ -1218,17 +1218,6 @@ function onSystemEvent(event)
     end
 end
 
-local function unloadSoundFX()
-    for i = 2, audio.totalChannels do
-        audio.stop(i)
-    end 
-
-    for k, v in pairs ( tableSoundFiles ) do
-        audio.dispose( tableSoundFiles[k] )
-        tableSoundFiles[k] = nil
-    end
-end
-
 -- Load short, frequently used sound effects into memory
 local function loadSoundFX()
     tableSoundFiles["answerChosen"] = audio.loadSound( "assets/soundFX/answerChosen.wav" )
@@ -1322,8 +1311,7 @@ function scene:hide( event )
     if ( phase == "will" ) then
         cleanUp()
     elseif ( phase == "did" ) then
-        -- Manually unload sound effects
-        unloadSoundFX()
+        utils.unloadSoundFX(tableSoundFiles)
     end
 end
 
