@@ -1922,7 +1922,7 @@ function scene:hide( event )
     if ( phase == "will" ) then
         cleanUp()
     elseif ( phase == "did" ) then
-        utils.unloadSoundFX(tableSoundFiles)
+        tableSoundFiles = utils.unloadSoundFX(tableSoundFiles)
     end
 end
 

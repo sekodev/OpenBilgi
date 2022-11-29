@@ -32,7 +32,7 @@ local textMessageSuccess
 local emitterFX
 local tableWoods = {}
 
-local soundCampfire, soundWisp
+local tableSoundFiles = {}
 
 
 local function cleanUp()
@@ -48,7 +48,8 @@ local function createWisp()
         fileParticleFX = "assets/particleFX/wisp-light.json"
     end
 
-    soundWisp = audio.loadSound( "assets/soundFX/revival.mp3" )
+    local tableFileNames = { "revival.mp3" }
+    tableSoundFiles = utils.loadSoundFX(tableSoundFiles, "assets/soundFX/", tableFileNames)
 end
 
 local function createBonfire()
@@ -109,7 +110,8 @@ local function createBonfire()
     woodFire4:setFillColor( .52, .37, .26 )
     woodFire5:setFillColor( .52, .37, .26 )
 
-    soundCampfire = audio.loadSound( "assets/soundFX/campfire.mp3" )
+    local tableFileNames = { "campfire.mp3" }
+    tableSoundFiles = utils.loadSoundFX(tableSoundFiles, "assets/soundFX/", tableFileNames)
 end
 
 local function handleTouch(event)
@@ -161,22 +163,6 @@ local function createScreenElements()
     textMessageSuccess.x = display.contentCenterX
     textMessageSuccess.y = textMessageSuccessTitle.y + textMessageSuccessTitle.height / 2 + textMessageSuccess.height
     successGroup:insert(textMessageSuccess)
-end
-
-local function unloadSoundFX()
-    for i = 2, audio.totalChannels do
-        audio.stop(i)
-    end
-
-    if (soundWisp) then
-        audio.dispose( soundWisp )
-        soundWisp = nil
-    end
-
-    if (soundCampfire) then
-        audio.dispose( soundCampfire )
-        soundCampfire = nil
-    end
 end
 
 function scene:create( event )
@@ -233,11 +219,12 @@ function scene:show( event )
         -- Show different success messages depending on new question set availability
         if (statusGame == "successSetUnlocked" or "successSetCompletedBefore" == statusGame) then
             emitterFX.y = tableWoods[1].y + tableWoods[1].height
-            audio.play( soundCampfire, {channel = 3, loops = -1} )
+            
+            audio.play( tableSoundFiles["campfire"], {channel = 3, loops = -1} )
         elseif(statusGame == "successSetNA" or "successEndgame" == statusGame) then
             emitterFX.y = textMessageSuccess.y + textMessageSuccess.height * 1.5
 
-            audio.play( soundWisp, {channel = 3, loops = -1} )
+            audio.play( tableSoundFiles["revival"], {channel = 3, loops = -1} )
         end
         successGroup:insert(emitterFX)
     end
@@ -249,7 +236,7 @@ function scene:hide( event )
     if ( phase == "will" ) then
         cleanUp()
     elseif ( phase == "did" ) then
-        unloadSoundFX()
+        tableSoundFiles = utils.unloadSoundFX(tableSoundFiles)
     end
 end
 
