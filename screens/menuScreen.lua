@@ -1218,15 +1218,6 @@ function onSystemEvent(event)
     end
 end
 
--- Load short, frequently used sound effects into memory
-local function loadSoundFX()
-    tableSoundFiles["answerChosen"] = audio.loadSound( "assets/soundFX/answerChosen.wav" )
-    tableSoundFiles["answerRight"] = audio.loadSound( "assets/soundFX/answerRight.wav" )
-    tableSoundFiles["answerWrong"] = audio.loadSound( "assets/soundFX/answerWrong.wav" )
-    tableSoundFiles["lockQuestionSet"] = audio.loadSound( "assets/soundFX/lockSet.wav" )
-    tableSoundFiles["campfire"] = audio.loadSound( "assets/soundFX/campfire.mp3" )
-end
-
 -- Transition from ingame music to menu theme
 local function handleAudioTransition()
     local fadeTime = 500
@@ -1251,7 +1242,10 @@ function scene:create( event )
     infoGroup = display.newGroup( )
 
     calculateLockPrice()
-    loadSoundFX()
+    
+    local tableFileNames = { "answerChosen.wav", "answerRight.wav", "answerWrong.wav", "lockQuestionSet.wav", "campfire.mp3" }
+    tableSoundFiles = utils.loadSoundFX(tableSoundFiles, "assets/soundFX/", tableFileNames)
+
     createMenuElements()
 
     mainGroup:insert(loadingGroup)

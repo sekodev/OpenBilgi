@@ -522,17 +522,14 @@ function createSettingsElements()
     imageMusic.buttonControl:toFront( )
 end
 
-local function loadSoundFX()
-    tableSoundFiles["answerChosen"] = audio.loadSound( "assets/soundFX/answerChosen.wav" )
-    tableSoundFiles["answerRight"] = audio.loadSound( "assets/soundFX/answerRight.wav" )
-end
-
 function scene:create( event )
     mainGroup = self.view
     menuGroup = display.newGroup( )
     resetGroup = display.newGroup( )
 
-    loadSoundFX()
+    local tableFileNames = { "answerChosen.wav", "answerRight.wav" }
+    tableSoundFiles = utils.loadSoundFX(tableSoundFiles, "assets/soundFX/", tableFileNames)
+    
     createSettingsElements()
 
     mainGroup:insert(menuGroup)

@@ -1762,15 +1762,6 @@ local function loadQuestionSet(indexSetRequested)
     end
 end
 
-local function loadSoundFX()
-    tableSoundFiles["warning"] = audio.loadSound( "assets/soundFX/warning.wav" )
-    tableSoundFiles["answerChosen"] = audio.loadSound( "assets/soundFX/answerChosen.wav" )
-    tableSoundFiles["answerRight"] = audio.loadSound( "assets/soundFX/answerRight.wav" )
-    tableSoundFiles["answerWrong"] = audio.loadSound( "assets/soundFX/answerWrong.wav" )
-    tableSoundFiles["campfire"] = audio.loadSound( "assets/soundFX/campfire.mp3" )
-    tableSoundFiles["revival"] = audio.loadSound( "assets/soundFX/revival.mp3" )
-end
-
 local function handleAudioTransition()
     audio.dispose( streamMusicBackground )
 
@@ -1850,7 +1841,8 @@ function scene:create( event )
     frontGroup = display.newGroup( )
     backGroup = display.newGroup( )
 
-    loadSoundFX()
+    local tableFileNames = { "warning.wav", "answerChosen.wav", "answerRight.wav", "answerWrong.wav", "campfire.mp3", "revival.mp3" }
+    tableSoundFiles = utils.loadSoundFX(tableSoundFiles, "assets/soundFX/", tableFileNames)
 
 
     if (isSetLocked) then

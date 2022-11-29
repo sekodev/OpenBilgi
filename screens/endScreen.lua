@@ -1354,15 +1354,6 @@ local function calculateLockPrice()
     end
 end
 
--- Load short, frequently used sound effects into memory
-local function loadSoundFX()
-    tableSoundFiles["answerChosen"] = audio.loadSound( "assets/soundFX/answerChosen.wav" )
-    tableSoundFiles["answerRight"] = audio.loadSound( "assets/soundFX/answerRight.wav" )
-    tableSoundFiles["answerWrong"] = audio.loadSound( "assets/soundFX/answerWrong.wav" )
-    tableSoundFiles["fireworks"] = audio.loadSound( "assets/soundFX/fireworks.wav" )
-    tableSoundFiles["lockQuestionSet"] = audio.loadSound( "assets/soundFX/lockSet.wav" )
-end
-
 local function handleAudioTransition()
     audio.dispose( streamMusicBackground )
 
@@ -1400,7 +1391,10 @@ function scene:create( event )
     end
 
     calculateLockPrice()
-    loadSoundFX()
+    
+    local tableFileNames = { "answerChosen.wav", "answerRight.wav", "answerWrong.wav", "fireworks.wav", "lockQuestionSet.wav" }
+    tableSoundFiles = utils.loadSoundFX(tableSoundFiles, "assets/soundFX/", tableFileNames)
+    
     checkHighScore()
 --isRecordBroken = true
     createMenuElements()

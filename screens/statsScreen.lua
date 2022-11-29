@@ -445,17 +445,14 @@ local function cleanUp()
     Runtime:removeEventListener( "enterFrame", moveStats )
 end
 
-local function loadSoundFX()
-    tableSoundFiles["answerChosen"] = audio.loadSound( "assets/soundFX/answerChosen.wav" )
-end
-
 function scene:create( event )
     mainGroup = self.view
 
     statsGroup = display.newGroup( )
     resetGroup = display.newGroup( )
 
-    loadSoundFX()
+    local tableFileNames = { "answerChosen.wav" }
+    tableSoundFiles = utils.loadSoundFX(tableSoundFiles, "assets/soundFX/", tableFileNames)
 
     createUIElements()
     createStatisticsElements()

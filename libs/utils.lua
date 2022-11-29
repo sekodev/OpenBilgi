@@ -62,6 +62,7 @@ function utils.clearDisplayGroup(targetGroup)
     end
 end
 
+-- Load short, frequently used sound effects into memory
 function utils.loadSoundFX(tableSoundFiles, pathFolder, tableFileNames)
     -- File names come with extension in case we use different file types
     for i = 1, #tableFileNames do
