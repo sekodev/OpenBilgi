@@ -62,6 +62,21 @@ function utils.clearDisplayGroup(targetGroup)
     end
 end
 
+function utils.showDialogBox()
+    -- Create and show dialog box that is used to ask for consent
+end
+
+function utils.showInformationBox()
+    -- Create and show dialog box that is used to display information
+end
+
+function utils.openURL(urlHyperlink)
+    -- Ask for consent to take player out of the app
+    -- Show two options: OK or Cancel
+    -- If 'OK' -> system.openURL( urlHyperlink )
+    -- If 'Cancel' -> close dialog box
+end
+
 -- Load short, frequently used sound effects into memory
 function utils.loadSoundFX(tableSoundFiles, pathFolder, tableFileNames)
     -- File names come with extension in case we use different file types
