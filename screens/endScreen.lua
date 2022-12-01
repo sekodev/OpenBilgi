@@ -43,7 +43,8 @@ local statusGame = ""
 local coinsEarned = 0
 local coinsCompletedSet = composer.getVariable( "coinsCompletedSet" )
 
-local frameButtonPlay, frameButtonSettings, frameButtonMainMenu, frameButtonConvert, frameLockQuestionSet
+local frameButtonPlay, frameButtonSettings, frameButtonMainMenu, frameButtonConvert
+local buttonLockQuestionSet
 local textScore, labelScore
 local textAwardCoinSet, textAwardCoinEarned, textAwardLock
 local mapPin
@@ -559,7 +560,7 @@ function handleTouch(event)
                     audio.fadeOut( { channel = channelMusicBackground, time = timeWaitChoice } )
 
                     -- if lock is enabled, show player that a lock is used
-                    if (frameLockQuestionSet.isActivated) then
+                    if (buttonLockQuestionSet.isActivated) then
                         useLock()
                     end
                 elseif (event.target.id == "settings") then
@@ -581,7 +582,7 @@ function handleTouch(event)
                         local timerChangeScene = timer.performWithDelay( timeWaitChoice, function () 
                                 local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, 
                                     params = {callSource = "endScreen", scoreCurrent = scoreCurrent,
-                                     isSetLocked = frameLockQuestionSet.isActivated, statusGame = statusGame}}
+                                     isSetLocked = buttonLockQuestionSet.isActivated, statusGame = statusGame}}
                                 composer.gotoScene( "screens." .. targetScreen, optionsChangeScene )
                             end, 1 )
                         table.insert( tableTimers, timerChangeScene )
@@ -1054,15 +1055,15 @@ local function createMenuElements()
     end
 
 
-    frameLockQuestionSet = display.newImageRect( menuGroup, "assets/menu/padlock.png", widthUIButton, heightUIButton )
-    frameLockQuestionSet:setFillColor( unpack(colorPadlock) )
-    frameLockQuestionSet.id = "lockQuestionSet"
-    frameLockQuestionSet.isActivated = false
-    frameLockQuestionSet.x = frameButtonPlay.x + frameButtonPlay.width / 2 + frameLockQuestionSet.width / 1.5
-    frameLockQuestionSet.y = frameButtonPlay.y
-    frameLockQuestionSet.alpha = 0.3
-    frameLockQuestionSet.alphaInactive = frameLockQuestionSet.alpha
-    frameLockQuestionSet:addEventListener( "touch", handleTouch )
+    buttonLockQuestionSet = display.newImageRect( menuGroup, "assets/menu/padlock.png", widthUIButton, heightUIButton )
+    buttonLockQuestionSet:setFillColor( unpack(colorPadlock) )
+    buttonLockQuestionSet.id = "lockQuestionSet"
+    buttonLockQuestionSet.isActivated = false
+    buttonLockQuestionSet.x = frameButtonPlay.x + frameButtonPlay.width / 2 + buttonLockQuestionSet.width / 1.5
+    buttonLockQuestionSet.y = frameButtonPlay.y
+    buttonLockQuestionSet.alpha = 0.3
+    buttonLockQuestionSet.alphaInactive = buttonLockQuestionSet.alpha
+    buttonLockQuestionSet:addEventListener( "touch", handleTouch )
 
 
     --coinsAvailable = 250
@@ -1184,7 +1185,7 @@ local function createMenuElements()
     -- Show lock icon if a save file is available
     local lastRandomSeed = composer.getVariable( "lastRandomSeed" )
     if (lastRandomSeed == 0 or savedRandomSeed ~= 0) then
-        frameLockQuestionSet.alpha = 0
+        buttonLockQuestionSet.alpha = 0
     end
 end
 
