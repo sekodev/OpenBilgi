@@ -104,6 +104,15 @@ function utils.unloadSoundFX(tableSoundFiles)
     return tableSoundFiles
 end
 
+local function handleShareTouch(event)
+    if (event.phase == "ended") then
+        if (event.target.id == "shareCancel") then
+            utils.clearDisplayGroup(event.target.refGroup)
+        end
+    end
+    return true
+end
+
 -- Show share UI based on the operating system
 function utils.showSystemShareUI(pathShareAsset, urlLandingPage)
     if (system.getInfo("platform") == "ios" or system.getInfo("platform") == "macos" or system.getInfo("platform") == "tvos") then
@@ -126,6 +135,7 @@ function utils.showShareQR(shareGroup, pathQRCode)
     local backgroundShade = display.newRect( shareGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
     backgroundShade:setFillColor( unpack(themeData.colorBackground) )
     backgroundShade.id = "shareCancel"
+    backgroundShade.refGroup = shareGroup
     backgroundShade:addEventListener( "touch", handleShareTouch )
 
     local widthQRCode = contentHeightSafe / 2
