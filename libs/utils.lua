@@ -12,6 +12,9 @@
 
 local utils = {}
 
+local widget = require ( "widget" )
+
+
 function utils.closeDatabases(tableDatabases)
     for i = #tableDatabases, 1, -1 do
         if (tableDatabases[i] and tableDatabases[i]:isopen()) then
@@ -62,12 +65,161 @@ function utils.clearDisplayGroup(targetGroup)
     end
 end
 
-function utils.showDialogBox()
-    -- Create and show dialog box that is used to ask for consent
+local function handleInfoBoxTouch(event)
+    if (event.phase == "ended" or "cancelled" == event.phase) then
+        if (event.target.id == "closeInfoBox") then
+            utils.clearDisplayGroup(event.target.refGroup)
+        elseif (event.target.id == "hideInfoForever") then
+            -- If player chose note to see the warning about lock system, don't show again
+            if (event.target.markerPrompt.isActivated) then
+                event.target.markerPrompt.isActivated = false
+                event.target.markerPrompt.alpha = 0
+
+                local stringPromptPreference = event.target.markerPrompt.stringPromptPreference
+                composer.setVariable( stringPromptPreference, true )
+
+                savePreferences()
+            else
+                event.target.markerPrompt.isActivated = true
+                event.target.markerPrompt.alpha = 1
+
+                local stringPromptPreference = event.target.markerPrompt.stringPromptPreference
+                composer.setVariable( stringPromptPreference, false )
+
+                savePreferences()
+            end
+        end
+    end
+
+    return true
 end
 
-function utils.showInformationBox()
-    -- Create and show dialog box that is used to display information
+-- Create and show dialog box that is used to display information
+function utils.showInformationBox(infoGroup, infoText, infoFont, isPromptAvailable, stringPromptPreference)
+    infoGroup.alpha = 0
+
+    local backgroundShade = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
+    backgroundShade:setFillColor( unpack(themeData.colorBackground) )
+    backgroundShade.alpha = 1
+    backgroundShade.id = "backgroundShade"
+    backgroundShade:addEventListener( "touch", function () return true end )
+
+    frameInformation = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, contentWidthSafe / 1.1, 0 )
+    frameInformation:setFillColor( unpack(themeData.colorBackgroundPopup) )
+
+    local widthButton = frameInformation.width / 1.1
+    local heightButton = contentHeightSafe / 10
+    local yDistanceElements = heightButton / 2
+    local fontSizeInformation = contentHeightSafe / 30
+
+    local colorButtonFillDefault = themeData.colorButtonFillDefault
+    local colorButtonFillOver = themeData.colorButtonFillOver
+    local colorButtonDefault = themeData.colorButtonDefault
+    local colorButtonOver = themeData.colorButtonOver
+    local colorTextDefault = themeData.colorTextDefault
+    local colorTextOver = themeData.colorTextOver
+    local colorButtonStroke = themeData.colorButtonStroke
+
+    local cornerRadiusButtons = themeData.cornerRadiusButtons
+    local strokeWidthButtons = themeData.strokeWidthButtons
+
+
+    local optionsLockInformation = { text = infoText, font = infoFont, fontSize = fontSizeInformation,
+                                width = widthButton, height = 0, align = "center" }
+    local textLockInformation = display.newText( optionsLockInformation )
+    textLockInformation:setFillColor( unpack(themeData.colorBackground) )
+    textLockInformation.x = display.contentCenterX
+    infoGroup:insert(textLockInformation)
+
+    local optionsButtonBack = 
+    {
+        shape = "rect",
+        fillColor = { default = colorButtonFillOver, over = colorButtonFillOver },
+        width = frameInformation.width / 6,
+        height = heightButton / 1.5,
+        label = "x",
+        labelColor = { default = colorButtonFillDefault, over = colorButtonOver },
+        font = infoFont,
+        fontSize = heightButton / 2,
+        id = "closeInfoBox",
+        onEvent = handleInfoBoxTouch,
+    }
+    local buttonBack = widget.newButton( optionsButtonBack )
+    buttonBack.anchorX = 0
+    buttonBack.x = frameInformation.x + frameInformation.width / 2 - buttonBack.width
+    infoGroup:insert( buttonBack )
+
+    -- Add a reference to display group so we can remove it in handleInfoBoxTouch
+    buttonBack.refGroup = infoGroup
+
+
+    --isPromptAvailable = true
+    if (isPromptAvailable) then
+        local rectHideInformation = display.newRoundedRect( infoGroup, 0, 0, 1, 1, 5 )
+        rectHideInformation.id = "hideInfoForever"
+        rectHideInformation:setFillColor( unpack(themeData.colorBackgroundPopup) )
+        rectHideInformation.strokeWidth = 5
+        rectHideInformation:setStrokeColor( unpack(themeData.colorBackground) )
+        rectHideInformation:addEventListener( "touch", handleInfoBoxTouch )
+
+        local optionsTextNotShowAgain = { text = sozluk.getString("lockInformationHide"), font = infoFont, fontSize = fontSizeInformation / 1.1,
+                                    height = 0, align = "center" }
+        rectHideInformation.textNotShowAgain = display.newText( optionsTextNotShowAgain )
+        rectHideInformation.textNotShowAgain.id = "hideInfoForever"
+        rectHideInformation.textNotShowAgain:setFillColor( unpack(themeData.colorBackground) )
+        rectHideInformation.textNotShowAgain:addEventListener( "touch", handleInfoBoxTouch )
+        infoGroup:insert(rectHideInformation.textNotShowAgain)
+
+        rectHideInformation.height = rectHideInformation.textNotShowAgain.height
+        rectHideInformation.width = rectHideInformation.height
+
+        local optionsRectLockMarker = { text = "X", font = infoFont, fontSize = rectHideInformation.height / 1.1 }
+        rectHideInformation.markerPrompt = display.newText( optionsRectLockMarker )
+        rectHideInformation.markerPrompt.alpha = 0
+        rectHideInformation.markerPrompt.isActivated = false
+        rectHideInformation.markerPrompt:setFillColor( unpack( themeData.colorButtonFillTrue ) )
+        infoGroup:insert(rectHideInformation.markerPrompt)
+
+        -- Add a reference to the variable where you save "Don't show again" preference for this information box
+        if (stringPromptPreference) then
+            rectHideInformation.markerPrompt.stringPromptPreference = stringPromptPreference
+        end
+
+        -- Add a reference to marker lock so when player presses the text, it also makes the marker visible
+        rectHideInformation.textNotShowAgain.markerPrompt = rectHideInformation.markerPrompt
+
+        frameInformation.height = textLockInformation.height + rectHideInformation.textNotShowAgain.height + buttonBack.height + yDistanceElements * 2.5
+        frameInformation.y = display.contentCenterY + frameInformation.height / 3
+        buttonBack.y = frameInformation.y - frameInformation.height / 2 + buttonBack.height / 2
+
+        local xDistanceInfoElements = (frameInformation.width - (rectHideInformation.textNotShowAgain.width + rectHideInformation.width)) / 3
+        rectHideInformation.x = (frameInformation.x - frameInformation.width / 2) + rectHideInformation.width / 2 + xDistanceInfoElements
+        rectHideInformation.y = (frameInformation.y + frameInformation.height / 2) - rectHideInformation.height / 2 - yDistanceElements
+        rectHideInformation.markerPrompt.x = rectHideInformation.x
+        rectHideInformation.markerPrompt.y = rectHideInformation.y
+
+        rectHideInformation.textNotShowAgain.x = rectHideInformation.x + rectHideInformation.width / 1.2 + rectHideInformation.textNotShowAgain.width / 2
+        rectHideInformation.textNotShowAgain.y = rectHideInformation.y
+
+        textLockInformation.y = rectHideInformation.textNotShowAgain.y - rectHideInformation.textNotShowAgain.height / 2 - textLockInformation.height / 2 - yDistanceElements
+    else
+        frameInformation.height = textLockInformation.height + buttonBack.height + yDistanceElements * 1.5
+        frameInformation.y = display.contentCenterY + frameInformation.height / 3
+        buttonBack.y = frameInformation.y - frameInformation.height / 2 + buttonBack.height / 2
+
+        textLockInformation.y = (frameInformation.y + frameInformation.height / 2) - textLockInformation.height / 2 - yDistanceElements
+    end
+
+
+    infoGroup.alpha = 1
+
+
+    -- Return top y coordinate of information box so you can adjust other elements if necessary
+    return frameInformation.y - frameInformation.height / 2
+end
+
+function utils.showDialogBox()
+    -- Create and show dialog box that is used to ask for consent
 end
 
 function utils.openURL(urlHyperlink)

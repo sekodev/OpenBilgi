@@ -10,7 +10,7 @@
 --
 ------------------------------------------------------------------------------
 
-local composer = require ("libs.composer_alt")
+--local composer = require ("libs.composer_alt")
 local scene = composer.newScene()
 
 local particleDesigner = require( "libs.particleDesigner" )

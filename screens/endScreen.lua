@@ -10,7 +10,7 @@
 --
 ------------------------------------------------------------------------------
 
-local composer = require ("libs.composer_alt")
+--local composer = require ("libs.composer_alt")
 local scene = composer.newScene()
 
 local widget = require ("widget")
@@ -208,150 +208,6 @@ local function showShareUI()
     buttonShareLink.y = (frameShareOptions.y + frameShareOptions.height / 2) - buttonShareLink.height / 2 - distanceChoices
     buttonShareQR.y = buttonShareLink.y - heightShareButtons - distanceChoices
     buttonBack.y = buttonShareQR.y - heightShareButtons - distanceChoices
-end
--- Create warning box to give user information about the lock system
-local function showLockInformation()
-    infoGroup.alpha = 0
-    
-    local backgroundShade = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
-    backgroundShade:setFillColor( unpack(themeData.colorBackground) )
-    backgroundShade.alpha = 1
-    backgroundShade.id = "backgroundShade"
-    backgroundShade:addEventListener( "touch", function () return true end )
-
-    local frameLockInformation = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, contentWidthSafe / 1.1, 0 )
-    frameLockInformation:setFillColor( unpack(themeData.colorBackgroundPopup) )
-
-    local widthLockInfoButtons = frameLockInformation.width / 1.1
-    local heightLockInfoButtons = contentHeightSafe / 10
-    local yDistanceElements = heightLockInfoButtons / 3
-    local fontSizeInformation = contentHeightSafe / 30
-
-    local colorButtonFillDefault = themeData.colorButtonFillDefault
-    local colorButtonFillOver = themeData.colorButtonFillOver
-    local colorButtonDefault = themeData.colorButtonDefault
-    local colorButtonOver = themeData.colorButtonOver
-    local colorTextDefault = themeData.colorTextDefault
-    local colorTextOver = themeData.colorTextOver
-    local colorButtonStroke = themeData.colorButtonStroke
-    local colorPadlock = themeData.colorPadlock
-
-    local cornerRadiusButtons = themeData.cornerRadiusButtons
-    local strokeWidthButtons = themeData.strokeWidthButtons
-
-    local infoText
-    if (locksAvailable > 0) then
-        infoText = sozluk.getString("lockInformation")
-    else
-        infoText = sozluk.getString("lockInformationNA")
-    end
-
-    local optionsLockInformation = { text = infoText, font = fontLogo, fontSize = fontSizeInformation,
-                                width = frameLockInformation.width / 1.1, height = 0, align = "center" }
-    local textLockInformation = display.newText( optionsLockInformation )
-    textLockInformation:setFillColor( unpack(themeData.colorBackground) )
-    textLockInformation.x = display.contentCenterX
-    infoGroup:insert(textLockInformation)
-
-    local optionsButtonBack = 
-    {
-        shape = "rect",
-        fillColor = { default = colorButtonFillOver, over = colorButtonFillOver },
-        width = frameLockInformation.width / 6,
-        height = heightLockInfoButtons / 1.5,
-        label = "x",
-        labelColor = { default = colorButtonFillDefault, over = colorButtonOver },
-        font = fontLogo,
-        fontSize = heightLockInfoButtons / 2,
-        id = "closeLockInfo",
-        onEvent = handleTouch,
-    }
-    local buttonBack = widget.newButton( optionsButtonBack )
-    buttonBack.anchorX = 0
-    buttonBack.x = frameLockInformation.x + frameLockInformation.width / 2 - buttonBack.width
-    infoGroup:insert( buttonBack )
-
-
-    local widthUIButton = contentWidthSafe / 9
-    local heightUIButton = widthUIButton
-
-    local imageLock = display.newImageRect( infoGroup, "assets/menu/padlock.png", widthUIButton / 1.5, heightUIButton / 1.5 )
-    imageLock:setFillColor( unpack(colorPadlock) )
-    imageLock.x = frameButtonPlay.x - frameButtonPlay.width / 2 + imageLock.width / 2
-    imageLock.y = display.safeScreenOriginY + imageLock.height / 1.5
-
-    local fontSizeCurrency = imageLock.height / 1.1
-
-    local optionsNumLocks = { text = locksAvailable, font = fontLogo, fontSize = fontSizeCurrency }
-    infoGroup.textNumLocks = display.newText( optionsNumLocks )
-    infoGroup.textNumLocks:setFillColor( unpack(colorTextDefault) )
-    infoGroup.textNumLocks.x = menuGroup.textNumLocks.x
-    infoGroup.textNumLocks.y = imageLock.y
-    infoGroup:insert(infoGroup.textNumLocks)
-
-
-    local rectHideLockInfo, textHideLockInfo
-    --locksAvailable = 1
-    if (locksAvailable > 0) then
-        rectHideLockInfo = display.newRoundedRect( infoGroup, 0, 0, 1, 1, 5 )
-        rectHideLockInfo.id = "hideLockInfoForever"
-        rectHideLockInfo.isActivated = false
-        rectHideLockInfo:setFillColor( unpack(themeData.colorBackgroundPopup) )
-        rectHideLockInfo.strokeWidth = 5
-        rectHideLockInfo:setStrokeColor( unpack(themeData.colorBackground) )
-        rectHideLockInfo:addEventListener( "touch", handleTouch )
-
-        local optionsHideLockInfo = { text = sozluk.getString("lockInformationHide"), font = fontLogo, fontSize = fontSizeInformation / 1.1,
-                                    height = 0, align = "center" }
-        textHideLockInfo = display.newText( optionsHideLockInfo )
-        textHideLockInfo:setFillColor( unpack(themeData.colorBackground) )
-        infoGroup:insert(textHideLockInfo)
-
-        rectHideLockInfo.height = textHideLockInfo.height
-        rectHideLockInfo.width = rectHideLockInfo.height
-
-        local optionsRectLockMarker = { text = "X", font = fontLogo, fontSize = rectHideLockInfo.height / 1.1 }
-        rectHideLockInfo.markerLock = display.newText( optionsRectLockMarker )
-        rectHideLockInfo.markerLock.alpha = 0
-        rectHideLockInfo.markerLock:setFillColor( unpack( themeData.colorButtonFillTrue ) )
-        infoGroup:insert(rectHideLockInfo.markerLock)
-
-        frameLockInformation.height = textLockInformation.height + textHideLockInfo.height + buttonBack.height + yDistanceElements * 2.5
-        frameLockInformation.y = display.contentCenterY + frameLockInformation.height / 3
-        buttonBack.y = frameLockInformation.y - frameLockInformation.height / 2 + buttonBack.height / 2
-
-        local xDistanceInfoElements = (frameLockInformation.width - (textHideLockInfo.width + rectHideLockInfo.width)) / 3
-        rectHideLockInfo.x = (frameLockInformation.x - frameLockInformation.width / 2) + rectHideLockInfo.width / 2 + xDistanceInfoElements
-        rectHideLockInfo.y = (frameLockInformation.y + frameLockInformation.height / 2) - rectHideLockInfo.height / 2 - yDistanceElements
-        rectHideLockInfo.markerLock.x = rectHideLockInfo.x
-        rectHideLockInfo.markerLock.y = rectHideLockInfo.y
-
-        textHideLockInfo.x = rectHideLockInfo.x + rectHideLockInfo.width / 1.2 + textHideLockInfo.width / 2
-        textHideLockInfo.y = rectHideLockInfo.y
-
-        textLockInformation.y = textHideLockInfo.y - textHideLockInfo.height / 2 - textLockInformation.height / 2 - yDistanceElements
-        --buttonBack.y = textLockInformation.y - textLockInformation.height / 2 - buttonBack.height / 2 - yDistanceElements
-    else
-        frameLockInformation.height = textLockInformation.height + buttonBack.height + yDistanceElements * 1.5
-        frameLockInformation.y = display.contentCenterY + frameLockInformation.height / 3
-        buttonBack.y = frameLockInformation.y - frameLockInformation.height / 2 + buttonBack.height / 2
-
-        textLockInformation.y = (frameLockInformation.y + frameLockInformation.height / 2) - textLockInformation.height / 2 - yDistanceElements
-        --buttonBack.y = textLockInformation.y - textLockInformation.height / 2 - buttonBack.height / 2 - yDistanceElements
-    end
-
-
-    imageLock.xTarget = display.contentCenterX - imageLock.width / 2
-    imageLock.yTarget = frameLockInformation.y - frameLockInformation.height / 2 - imageLock.height * 2
-    infoGroup.textNumLocks.xTarget = imageLock.xTarget + imageLock.width / 2 + infoGroup.textNumLocks.width
-    infoGroup.textNumLocks.yTarget = imageLock.yTarget
-
-
-    local timeTransitionShowInfo = 250
-    transition.to( infoGroup, { time = timeTransitionShowInfo, alpha = 1, onComplete = function()
-            transition.to( imageLock, { time = timeTransitionShowInfo, x = imageLock.xTarget, y = imageLock.yTarget} )
-            transition.to( infoGroup.textNumLocks, { time = timeTransitionShowInfo, x = infoGroup.textNumLocks.xTarget, y = infoGroup.textNumLocks.yTarget} )
-        end })
 end
 
 -- Hide tooltip for coins needed
@@ -656,23 +512,6 @@ function handleTouch(event)
         if (isInteractionAvailable) then
             if (event.target.id == "shareSocial") then
                 event.target:setFillColor( unpack(themeData.colorButtonDefault) )
-            elseif (event.target.id == "closeLockInfo") then
-                utils.clearDisplayGroup(infoGroup)
-            elseif (event.target.id == "hideLockInfoForever") then
-                -- If player chose note to see the warning about lock system, don't show again
-                if (event.target.isActivated) then
-                    event.target.isActivated = false
-                    event.target.markerLock.alpha = 0
-
-                    composer.setVariable( "lockInfoAvailable", true )
-                    savePreferences()
-                else
-                    event.target.isActivated = true
-                    event.target.markerLock.alpha = 1
-
-                    composer.setVariable( "lockInfoAvailable", false )
-                    savePreferences()
-                end
             elseif (event.target.id == "lockQuestionSet") then
                 local lockInfoAvailable = composer.getVariable( "lockInfoAvailable" )
 
@@ -691,17 +530,33 @@ function handleTouch(event)
                         if (locksAvailable > 0) then
                             event.target.isActivated = true
                             event.target.alpha = 1
-                            --event.target:setFillColor( unpack(themeData.colorButtonFillTrue) )
                         end
 
-                        showLockInformation()
+                        local infoText
+                        local isPromptAvailable = true
+                        if (locksAvailable > 0) then
+                            infoText = sozluk.getString("lockInformation")
+                        else
+                            infoText = sozluk.getString("lockInformationNA")
+                            isPromptAvailable = false
+                        end
+
+                        yTopFrame = utils.showInformationBox(infoGroup, infoText, fontLogo, isPromptAvailable, "lockInfoAvailable")
+                        commonMethods.showLocksAvailable(infoGroup, yTopFrame, locksAvailable, fontLogo)
                     else
                         if (locksAvailable > 0) then
                             event.target.isActivated = true
                             event.target.alpha = 1
-                            --event.target:setFillColor( unpack(themeData.colorButtonFillTrue) )
                         else
-                            showLockInformation()
+                            local infoText
+                            local isPromptAvailable = true
+                            if (locksAvailable <= 0) then
+                                infoText = sozluk.getString("lockInformationNA")
+                                isPromptAvailable = false
+                            end
+
+                            yTopFrame = utils.showInformationBox(infoGroup, infoText, fontLogo, isPromptAvailable, "lockInfoAvailable")
+                            commonMethods.showLocksAvailable(infoGroup, yTopFrame, locksAvailable, fontLogo)
                         end
                     end
                 end
@@ -1392,7 +1247,7 @@ function scene:create( event )
     end
 
     calculateLockPrice()
-    
+
     local tableFileNames = { "answerChosen.wav", "answerRight.wav", "answerWrong.wav", "fireworks.wav", "lockQuestionSet.wav" }
     tableSoundFiles = utils.loadSoundFX(tableSoundFiles, "assets/soundFX/", tableFileNames)
     

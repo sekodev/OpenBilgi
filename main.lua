@@ -16,11 +16,13 @@ display.setStatusBar( display.HiddenStatusBar )
 native.setProperty( "androidSystemUiVisibility", "immersiveSticky" )
 native.setProperty( "prefersHomeIndicatorAutoHidden", true )
 
-local composer = require ( "libs.composer_alt" ) -- Modified version is used for tossLeft effect
+composer = require ( "libs.composer_alt" ) -- Modified version is used for tossLeft effect
 
 preference = require ( "libs.preference" ) -- Used to save player-related variables
 themeSettings = require ( "libs.themeSettings" ) -- Contains theme data
 utils = require ( "libs.utils" ) -- Contains universally usable code
+commonMethods = require ( "libs.commonMethods" ) -- Contains project specific functions used in different occassions
+
 
 contentWidthSafe = display.safeActualContentWidth
 contentHeightSafe = display.safeActualContentHeight
