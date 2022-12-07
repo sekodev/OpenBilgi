@@ -219,7 +219,7 @@ function scene:show( event )
         -- Show different success messages depending on new question set availability
         if (statusGame == "successSetUnlocked" or "successSetCompletedBefore" == statusGame) then
             emitterFX.y = tableWoods[1].y + tableWoods[1].height
-            
+
             audio.play( tableSoundFiles["campfire"], {channel = 3, loops = -1} )
         elseif(statusGame == "successSetNA" or "successEndgame" == statusGame) then
             emitterFX.y = textMessageSuccess.y + textMessageSuccess.height * 1.5
