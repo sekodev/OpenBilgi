@@ -304,5 +304,26 @@ function utils.showMailUI(mailAddress, mailSubject, mailBody)
     native.showPopup( "mail", mailOptions )
 end
 
+-- Show rating UI depending on the operating system
+-- Better approach would be to implement Scott H's Review PopUp Plugin
+-- https://solar2dmarketplace.com/plugins?ReviewPopUp_tech-scotth
+function utils.showRateUI()
+    if (system.getInfo("platform") == "ios" or system.getInfo("platform") == "macos" or system.getInfo("platform") == "tvos") then
+        local idAppStore = composer.getVariable( "idAppStore" )
+
+        local optionsRateGame = {
+            iOSAppId = idAppStore
+        }
+    else
+        local storeSupported = { "google" }
+
+        local optionsRateGame = {
+            supportedAndroidStores = storeSupported
+        }
+    end
+
+    native.showPopup( "appStore", optionsRateGame )
+end
+
 
 return utils

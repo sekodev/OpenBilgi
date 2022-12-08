@@ -1044,32 +1044,14 @@ local function createMenuElements()
     end
 end
 
--- Show rating UI depending on the operating system
-local function showRateUI()
-    if (system.getInfo("platform") == "ios" or system.getInfo("platform") == "macos" or system.getInfo("platform") == "tvos") then
-        -- local idAppStore = "1234567890" -- placeholder
-        -- https://solar2dmarketplace.com/plugins?ReviewPopUp_tech-scotth
-    else
-        local namePackage = composer.getVariable( "packageName" )
-        local storeSupported = { "google" }
-
-        local optionsRateGame = {
-            --iOSAppId = idAppStore,
-            androidAppPackageName = namePackage,
-            supportedAndroidStores = storeSupported
-        }
-        native.showPopup( "appStore", optionsRateGame )
-    end
-end
-
 local function handleRatingTouch(event)
     if (event.phase == "ended") then
         if (event.target.id == "rateOK") then
             composer.setVariable( "askedRateGame", true )
             savePreferences()
-
+            
             utils.clearDisplayGroup(rateGroup)
-            showRateUI()
+            utils.showRateUI()
         elseif (event.target.id == "rateLater") then
             -- This option is NOT used to ask for ratings later
             composer.setVariable( "askedRateGame", true )

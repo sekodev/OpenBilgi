@@ -203,24 +203,6 @@ local function showShareUI()
     buttonBack.y = buttonShareQR.y - heightShareButtons - distanceChoices
 end
 
--- Show rating UI depending on the operating system
-local function showRateUI()
-    if (system.getInfo("platform") == "ios" or system.getInfo("platform") == "macos" or system.getInfo("platform") == "tvos") then
-        -- local idAppStore = "1234567890" -- placeholder
-        -- https://solar2dmarketplace.com/plugins?ReviewPopUp_tech-scotth
-    else
-        local namePackage = composer.getVariable( "packageName" )
-        local storeSupported = { "google" }
-
-        local optionsRateGame = {
-            --iOSAppId = idAppStore,
-            androidAppPackageName = namePackage,
-            supportedAndroidStores = storeSupported
-        }
-        native.showPopup( "appStore", optionsRateGame )
-    end
-end
-
 -- Hide tooltip for coins needed
 local function hideCoinsNeeded()
     transition.to( infoGroup, { time = 100, alpha = 0, onComplete = function() 
@@ -534,7 +516,7 @@ function handleTouch(event)
 
                 event.target:setFillColor( unpack(themeData.colorButtonOver) )
 
-                showRateUI()
+                utils.showRateUI()
             elseif (event.target.id == "showStats") then
                 isInteractionAvailable = false
 
