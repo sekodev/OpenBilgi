@@ -15,6 +15,27 @@
 
 local commonMethods = {}
 
+
+-- Used in endScreen and menuScreen to format currency shown in UI
+function commonMethods.formatCurrencyString(coinsAvailable)
+    local currencyAbbreviation = ""
+    local currencyShort = 0
+
+    if (coinsAvailable >= 1000) then
+        currencyAbbreviation = sozluk.getString("currencyThousand")
+
+        local remainderCoin = 100
+        if (coinsAvailable % remainderCoin < remainderCoin) then
+            currencyShort = coinsAvailable - (coinsAvailable % remainderCoin)
+        end
+        currencyShort = string.format( "%3.1f", coinsAvailable / 1000 )
+    else
+        currencyShort = coinsAvailable
+    end
+
+    return currencyShort, currencyAbbreviation
+end
+
 function commonMethods.showLocksAvailable(targetGroup, yTopInfoBox, locksAvailable, fontLockText)
     local widthUIButton = contentWidthSafe / 9
     local heightUIButton = widthUIButton

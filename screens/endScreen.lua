@@ -625,7 +625,7 @@ local function showCoinsEarned()
     transition.to( textAwardCoinEarned, { time = 500, y = menuGroup.textNumCoins.y, alpha = 0, onComplete = function ()
         coinsAvailable = coinsAvailable + coinsEarned
 
-        local currencyShort, currencyAbbreviation = formatCurrencyString(coinsAvailable)
+        local currencyShort, currencyAbbreviation = commonMethods.formatCurrencyString(coinsAvailable)
         menuGroup.textNumCoins.text = currencyShort .. currencyAbbreviation
         
         -- If player completes a set successfully, will earn a fixed amount of coins(coinsCompletedSet) + coinsEarned
@@ -633,7 +633,7 @@ local function showCoinsEarned()
             transition.to( textAwardCoinSet, { time = 500, y = menuGroup.textNumCoins.y, alpha = 0, onComplete = function ()
                 coinsAvailable = coinsAvailable + coinsCompletedSet
 
-                local currencyShort, currencyAbbreviation = formatCurrencyString(coinsAvailable)
+                local currencyShort, currencyAbbreviation = commonMethods.formatCurrencyString(coinsAvailable)
                 menuGroup.textNumCoins.text = currencyShort .. currencyAbbreviation
 
                 composer.setVariable( "coinsAvailable", coinsAvailable )
@@ -960,7 +960,7 @@ local function createMenuElements()
 
 
     -- Currency will be formatted for better looks
-    local currencyShort, currencyAbbreviation = formatCurrencyString(coinsAvailable)
+    local currencyShort, currencyAbbreviation = commonMethods.formatCurrencyString(coinsAvailable)
     local optionsNumCoins = { text = currencyShort .. currencyAbbreviation, font = fontLogo, fontSize = fontSizeCurrency }
     menuGroup.textNumCoins = display.newText( optionsNumCoins )
     menuGroup.textNumCoins:setFillColor( unpack(colorTextDefault) )

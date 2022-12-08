@@ -843,7 +843,7 @@ local function createMenuElements()
 
 
     -- Currency will be formatted for better looks
-    local currencyShort, currencyAbbreviation = formatCurrencyString(coinsAvailable)
+    local currencyShort, currencyAbbreviation = commonMethods.formatCurrencyString(coinsAvailable)
     local optionsNumCoins = { text = currencyShort .. currencyAbbreviation, font = fontLogo, fontSize = fontSizeCurrency }
     menuGroup.textNumCoins = display.newText( optionsNumCoins )
     menuGroup.textNumCoins:setFillColor( unpack( colorTextDefault ) )

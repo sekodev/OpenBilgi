@@ -737,7 +737,7 @@ local function createUIElements(targetGroup)
     imageCoin.symbolCurrency.rotation = 45
 
 
-    local currencyShort, currencyAbbreviation = formatCurrencyString(coinsEarned)
+    local currencyShort, currencyAbbreviation = commonMethods.formatCurrencyString(coinsEarned)
     local optionsNumCoins = { text = currencyShort .. currencyAbbreviation, font = fontLogo, fontSize = contentHeightSafe / 30 }
     targetGroup.textNumCoins = display.newText( optionsNumCoins )
     targetGroup.textNumCoins:setFillColor( unpack(colorTextDefault) )
@@ -1157,7 +1157,7 @@ function showAnswer(targetGroup, choiceSelected, textCoinAward)
                     transition.to( textCoinAward, {time = timeTransAward, x = targetGroup.textNumCoins.x, y = targetGroup.textNumCoins.y, alpha = 0, onComplete = function ()
                             targetGroup.textNumCoins.text = coinsEarned + tonumber( textCoinAward.text )
 
-                            local currencyShort, currencyAbbreviation = formatCurrencyString(coinsEarned)
+                            local currencyShort, currencyAbbreviation = commonMethods.formatCurrencyString(coinsEarned)
                             targetGroup.textNumCoins.text = currencyShort .. currencyAbbreviation
                         end} )
                     transition.to( textCoinAward.imageCoin, {time = timeTransAward, x = xTargetCoinImage, y = yTargetCoinImage, alpha = 0} )
