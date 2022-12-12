@@ -55,5 +55,12 @@ function commonMethods.showLocksAvailable(targetGroup, yTopInfoBox, locksAvailab
     targetGroup:insert(imageLock.textNumAvailable)
 end
 
+-- Hide tooltip for coins needed
+function commonMethods.hideCoinsNeeded(infoGroup)
+    transition.to( infoGroup, { time = 100, alpha = 0, onComplete = function() 
+            utils.clearDisplayGroup(infoGroup)
+        end })
+end
+
 
 return commonMethods

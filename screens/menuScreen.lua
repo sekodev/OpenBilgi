@@ -203,13 +203,6 @@ local function showShareUI()
     buttonBack.y = buttonShareQR.y - heightShareButtons - distanceChoices
 end
 
--- Hide tooltip for coins needed
-local function hideCoinsNeeded()
-    transition.to( infoGroup, { time = 100, alpha = 0, onComplete = function() 
-            utils.clearDisplayGroup(infoGroup)
-        end })
-end
-
 -- Create tooltip to show minimum number of coins needed to convert to a single(1) lock
 local function showCoinsNeeded()
     local colorButtonDefault = themeData.colorButtonDefault
@@ -567,7 +560,7 @@ function handleTouch(event)
                                                         showCoinsNeeded()
 
                                                         local timerHideCoinsNeeded = timer.performWithDelay( 2000, function () 
-                                                                hideCoinsNeeded()
+                                                                commonMethods.hideCoinsNeeded(infoGroup)
 
                                                                 isInteractionAvailable = true
                                                             end, 1 )
