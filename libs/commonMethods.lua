@@ -89,7 +89,7 @@ function commonMethods.hideCoinsNeeded(infoGroup)
 end
 
 -- Adjust conversion element positions after coins are converted to lock(s)
-local function adjustConvertElements(menuGroup, frameButtonPlay)
+function commonMethods.adjustConvertElements(menuGroup, frameButtonPlay)
     local timeAdjustElements = 250
 
     menuGroup.imageLock.xTarget = frameButtonPlay.x - frameButtonPlay.width / 2 + menuGroup.imageLock.width / 2
