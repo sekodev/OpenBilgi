@@ -79,6 +79,8 @@ function commonMethods.showLocksAvailable(targetGroup, yTopInfoBox, locksAvailab
     imageLock.textNumAvailable.x = imageLock.x + imageLock.width / 2 + imageLock.textNumAvailable.width
     imageLock.textNumAvailable.y = imageLock.y
     targetGroup:insert(imageLock.textNumAvailable)
+
+    return targetGroup
 end
 
 -- Hide tooltip for coins needed

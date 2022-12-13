@@ -568,7 +568,7 @@ function handleTouch(event)
                         end
 
                         yTopFrame = utils.showInformationBox(infoGroup, infoText, fontLogo, isPromptAvailable, "lockInfoAvailable")
-                        commonMethods.showLocksAvailable(infoGroup, yTopFrame, locksAvailable, fontLogo)
+                        infoGroup = commonMethods.showLocksAvailable(infoGroup, yTopFrame, locksAvailable, fontLogo)
                     else
                         if (locksAvailable > 0) then
                             event.target.isActivated = true
@@ -582,7 +582,7 @@ function handleTouch(event)
                             end
 
                             yTopFrame = utils.showInformationBox(infoGroup, infoText, fontLogo, isPromptAvailable, "lockInfoAvailable")
-                            commonMethods.showLocksAvailable(infoGroup, yTopFrame, locksAvailable, fontLogo)
+                            infoGroup = commonMethods.showLocksAvailable(infoGroup, yTopFrame, locksAvailable, fontLogo)
                         end
                     end
                 end
