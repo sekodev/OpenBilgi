@@ -268,23 +268,6 @@ local function showCoinsNeeded()
     transition.to( infoGroup, { time = 100, alpha = 1 })
 end
 
--- Adjust conversion element positions after coins are converted to lock(s)
-local function adjustConvertElements()
-    local timeAdjustElements = 250
-
-    menuGroup.imageLock.xTarget = frameButtonPlay.x - frameButtonPlay.width / 2 + menuGroup.imageLock.width / 2
-    menuGroup.textNumLocks.xTarget = menuGroup.imageLock.x + menuGroup.imageLock.width + menuGroup.textNumLocks.width / 2
-    menuGroup.textNumCoins.xTarget = frameButtonPlay.x + frameButtonPlay.width / 2 - menuGroup.textNumCoins.width / 2
-    menuGroup.imageCoin.xTarget = menuGroup.textNumCoins.x - menuGroup.textNumCoins.width / 2 - menuGroup.imageCoin.width
-    menuGroup.imageCoin.symbolCurrency.xTarget = menuGroup.imageCoin.xTarget
-
-    transition.to( menuGroup.imageLock, { time = timeAdjustElements, x = menuGroup.imageLock.xTarget } )
-    transition.to( menuGroup.textNumLocks, { time = timeAdjustElements, x = menuGroup.textNumLocks.xTarget } )
-    transition.to( menuGroup.textNumCoins, { time = timeAdjustElements, x = menuGroup.textNumCoins.xTarget } )
-    transition.to( menuGroup.imageCoin, { time = timeAdjustElements, x = menuGroup.imageCoin.xTarget } )
-    transition.to( menuGroup.imageCoin.symbolCurrency, { time = timeAdjustElements, x = menuGroup.imageCoin.symbolCurrency.xTarget } )
-end
-
 -- Calculate and show number of coins spent/coins left and number of locks gained in return
 local function showCoinsConverted( buttonConverter, locksConverted, coinsConverted, coinsLeft )
     local colorButtonDefault = themeData.colorButtonDefault
@@ -318,7 +301,7 @@ local function showCoinsConverted( buttonConverter, locksConverted, coinsConvert
 
                                             savePreferences()
 
-                                            adjustConvertElements()
+                                            commonMethods.adjustConvertElements(menuGroup, frameButtonPlay)
 
                                             buttonConverter.textLabel:setFillColor( unpack(colorTextDefault) )
 
@@ -331,6 +314,7 @@ local function showCoinsConverted( buttonConverter, locksConverted, coinsConvert
             table.insert( tableTimers, timerWaitCoinsConverted )
         end } )
 end
+
 -- Visually, show player that they are using the lock system and calculate remaining locks
 local function useLock()
     local colorTextDefault = themeData.colorTextDefault
