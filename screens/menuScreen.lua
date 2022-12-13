@@ -325,29 +325,6 @@ local function showCoinsConverted( buttonConverter, locksConverted, coinsConvert
         end } )
 end
 
--- Animate conversion elements to draw players' attention to the game mechanic
-local function showConversionAvailable()
-    local timeShake = 75
-    local rotationShake = 20
-
-    frameButtonConvert.textLabel:setFillColor( unpack(themeData.colorButtonFillTrue) )
-
-    transition.to( frameButtonConvert.textLabel, { time = timeShake, xScale = 1.5, yScale = 1.5, onComplete = function ()
-            transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = rotationShake, onComplete = function ()
-                transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = -rotationShake, onComplete = function ()
-                        transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = rotationShake, onComplete = function ()
-                            transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = -rotationShake, onComplete = function ()
-                                transition.to( frameButtonConvert.textLabel, { time = timeShake, xScale = 1, yScale = 1, onComplete = function ()
-                                        frameButtonConvert.textLabel.rotation = 0
-                                        frameButtonConvert.textLabel:setFillColor( unpack(themeData.colorTextDefault) )
-                                    end })
-                                end })
-                        end })
-                    end })
-            end })
-        end })
-end
-
 -- Visually, show player that they are using the lock system and calculate remaining locks
 local function useLock()
     local colorTextDefault = themeData.colorTextDefault
@@ -1104,7 +1081,7 @@ function scene:show( event )
                 --local coinsAvailable = tonumber(menuGroup.textNumCoins.text)
 
                 if (coinsAvailable >= priceLockCoins) then
-                    showConversionAvailable()
+                    commonMethods.showConversionAvailability(frameButtonConvert)
                 else
                     timer.cancel(timerConversionCheck)
                     timerConversionCheck = nil

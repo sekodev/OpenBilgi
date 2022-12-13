@@ -36,6 +36,32 @@ function commonMethods.formatCurrencyString(coinsAvailable)
     return currencyShort, currencyAbbreviation
 end
 
+-- Animate conversion elements to draw players' attention to the game mechanic
+function commonMethods.showConversionAvailability(frameButtonConvert)
+    local timeShake = 75
+    local rotationShake = 20
+
+    local colorButtonFillTrue = themeData.colorButtonFillTrue
+    local colorTextDefault = themeData.colorTextDefault
+
+    frameButtonConvert.textLabel:setFillColor( unpack(colorButtonFillTrue) )
+
+    transition.to( frameButtonConvert.textLabel, { time = timeShake, xScale = 1.5, yScale = 1.5, onComplete = function ()
+            transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = rotationShake, onComplete = function ()
+                transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = -rotationShake, onComplete = function ()
+                        transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = rotationShake, onComplete = function ()
+                            transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = -rotationShake, onComplete = function ()
+                                transition.to( frameButtonConvert.textLabel, { time = timeShake, xScale = 1, yScale = 1, onComplete = function ()
+                                        frameButtonConvert.textLabel.rotation = 0
+                                        frameButtonConvert.textLabel:setFillColor( unpack(colorTextDefault) )
+                                    end })
+                                end })
+                        end })
+                    end })
+            end })
+        end })
+end
+
 function commonMethods.showLocksAvailable(targetGroup, yTopInfoBox, locksAvailable, fontLockText)
     local widthUIButton = contentWidthSafe / 9
     local heightUIButton = widthUIButton

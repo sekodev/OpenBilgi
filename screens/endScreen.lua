@@ -576,29 +576,6 @@ local function shootFireworks()
     end
 end
 
--- Animate conversion elements to draw players' attention to the game mechanic
-local function showConversionAvailable()
-    local timeShake = 75
-    local rotationShake = 20
-
-    frameButtonConvert.textLabel:setFillColor( unpack(themeData.colorButtonFillTrue) )
-
-    transition.to( frameButtonConvert.textLabel, { time = timeShake, xScale = 1.5, yScale = 1.5, onComplete = function ()
-            transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = rotationShake, onComplete = function ()
-                transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = -rotationShake, onComplete = function ()
-                        transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = rotationShake, onComplete = function ()
-                            transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = -rotationShake, onComplete = function ()
-                                transition.to( frameButtonConvert.textLabel, { time = timeShake, xScale = 1, yScale = 1, onComplete = function ()
-                                        frameButtonConvert.textLabel.rotation = 0
-                                        frameButtonConvert.textLabel:setFillColor( unpack(themeData.colorTextDefault) )
-                                    end })
-                                end })
-                        end })
-                    end })
-            end })
-        end })
-end
-
 -- Show number of locks the player earned in this run
 local function showLocksEarned()
     if (textAwardLock ~= nil) then
@@ -1299,7 +1276,7 @@ function scene:show( event )
         local timerConversionCheck
         timerConversionCheck = timer.performWithDelay( 3000, function ()
                 if (coinsAvailable >= priceLockCoins) then
-                    showConversionAvailable()
+                    commonMethods.showConversionAvailability(frameButtonConvert)
                 else
                     timer.cancel(timerConversionCheck)
                     timerConversionCheck = nil
