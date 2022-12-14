@@ -79,8 +79,6 @@ function commonMethods.showLocksAvailable(targetGroup, yTopInfoBox, locksAvailab
     imageLock.textNumAvailable.x = imageLock.x + imageLock.width / 2 + imageLock.textNumAvailable.width
     imageLock.textNumAvailable.y = imageLock.y
     targetGroup:insert(imageLock.textNumAvailable)
-
-    return targetGroup
 end
 
 -- Hide tooltip for coins needed
@@ -146,8 +144,6 @@ function commonMethods.showCoinsNeeded(infoGroup, priceLockCoins, frameButtonPla
 
 
     transition.to( infoGroup, { time = 100, alpha = 1 })
-
-    return infoGroup
 end
 
 -- Adjust conversion element positions after coins are converted to lock(s)

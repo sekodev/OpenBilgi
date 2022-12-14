@@ -459,7 +459,7 @@ function handleTouch(event)
                                                         event.target.textLabel.rotation = 0
                                                         event.target.textLabel:setFillColor( unpack(colorTextDefault) )
 
-                                                        infoGroup = commonMethods.showCoinsNeeded(infoGroup, priceLockCoins, frameButtonPlay, fontLogo)
+                                                        commonMethods.showCoinsNeeded(infoGroup, priceLockCoins, frameButtonPlay, fontLogo)
 
                                                         local timerHideCoinsNeeded = timer.performWithDelay( 2000, function () 
                                                                 commonMethods.hideCoinsNeeded(infoGroup)
@@ -510,7 +510,7 @@ function handleTouch(event)
                         end
 
                         yTopFrame = utils.showInformationBox(infoGroup, infoText, fontLogo, isPromptAvailable, "lockInfoAvailable")
-                        infoGroup = commonMethods.showLocksAvailable(infoGroup, yTopFrame, locksAvailable, fontLogo)
+                        commonMethods.showLocksAvailable(infoGroup, yTopFrame, locksAvailable, fontLogo)
                     else
                         if (locksAvailable > 0) then
                             event.target.isActivated = true
@@ -524,7 +524,7 @@ function handleTouch(event)
                             end
 
                             yTopFrame = utils.showInformationBox(infoGroup, infoText, fontLogo, isPromptAvailable, "lockInfoAvailable")
-                            infoGroup = commonMethods.showLocksAvailable(infoGroup, yTopFrame, locksAvailable, fontLogo)
+                            commonMethods.showLocksAvailable(infoGroup, yTopFrame, locksAvailable, fontLogo)
                         end
                     end
                 end
