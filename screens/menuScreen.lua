@@ -459,7 +459,7 @@ function handleTouch(event)
                                                         event.target.textLabel.rotation = 0
                                                         event.target.textLabel:setFillColor( unpack(colorTextDefault) )
 
-                                                        infoGroup = commonMethods.showCoinsNeeded(infoGroup, frameButtonPlay, fontLogo)
+                                                        infoGroup = commonMethods.showCoinsNeeded(infoGroup, priceLockCoins, frameButtonPlay, fontLogo)
 
                                                         local timerHideCoinsNeeded = timer.performWithDelay( 2000, function () 
                                                                 commonMethods.hideCoinsNeeded(infoGroup)

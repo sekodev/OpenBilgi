@@ -91,7 +91,7 @@ function commonMethods.hideCoinsNeeded(infoGroup)
 end
 
 -- Create tooltip to show minimum number of coins needed to convert to a single(1) lock
-function commonMethods.showCoinsNeeded(infoGroup, frameButtonPlay, fontInformation)
+function commonMethods.showCoinsNeeded(infoGroup, priceLockCoins, frameButtonPlay, fontInformation)
     local colorBackground = themeData.colorBackground
     local colorButtonDefault = themeData.colorButtonDefault
     local colorButtonOver = themeData.colorButtonOver
