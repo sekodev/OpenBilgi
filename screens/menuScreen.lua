@@ -203,64 +203,6 @@ local function showShareUI()
     buttonBack.y = buttonShareQR.y - heightShareButtons - distanceChoices
 end
 
--- Create tooltip to show minimum number of coins needed to convert to a single(1) lock
-local function showCoinsNeeded()
-    local colorButtonDefault = themeData.colorButtonDefault
-    local colorButtonOver = themeData.colorButtonOver
-    local colorTextDefault = themeData.colorTextDefault
-    local colorPadlock = themeData.colorPadlock
-
-    local widthUIButton = contentWidthSafe / 9
-    local heightUIButton = widthUIButton
-
-    infoGroup.alpha = 0
-
-
-    local imageLock = display.newImageRect( infoGroup, "assets/menu/padlock.png", widthUIButton / 1.5, heightUIButton / 1.5 )
-    imageLock:setFillColor( unpack(colorPadlock) )
-    imageLock.x = frameButtonPlay.x - frameButtonPlay.width / 2 + imageLock.width / 2
-    imageLock.y = display.safeScreenOriginY + (imageLock.height / 1.5) * 4
-
-    local fontSizeCurrency = imageLock.height / 1.1
-
-    local optionsNumLocks = { text = "= ", font = fontLogo, fontSize = fontSizeCurrency }
-    local textNumLocks = display.newText( optionsNumLocks )
-    textNumLocks:setFillColor( unpack(colorTextDefault) )
-    textNumLocks.x = imageLock.x + imageLock.width + textNumLocks.width / 2
-    textNumLocks.y = imageLock.y
-    infoGroup:insert(textNumLocks)
-
-    local imageCoin = display.newCircle( infoGroup, 0, imageLock.y, imageLock.width / 2 )
-    --imageCoin:setFillColor( unpack( colorButtonDefault ) )
-    imageCoin:setFillColor( unpack( colorButtonOver ) )
-    imageCoin.x = textNumLocks.x + textNumLocks.width / 2 + imageCoin.width / 2
-    imageCoin.y = textNumLocks.y
-
-    imageCoin.symbolCurrency = display.newRect( infoGroup, imageCoin.x, imageCoin.y, imageCoin.width / 3, imageCoin.height / 3 )
-    imageCoin.symbolCurrency:setFillColor( unpack( themeData.colorBackground ) )
-    imageCoin.symbolCurrency.rotation = 45
-
-    local optionsNumCoins = { text = priceLockCoins, font = fontLogo, fontSize = fontSizeCurrency }
-    local textNumCoins = display.newText( optionsNumCoins )
-    textNumCoins:setFillColor( unpack(colorTextDefault) )
-    textNumCoins.x = imageCoin.x + imageCoin.width + textNumCoins.width / 2
-    textNumCoins.y = imageLock.y
-    infoGroup:insert(textNumCoins)
-
-
-    local widthWarningElements = (textNumCoins.x + textNumCoins.width / 2) - (imageLock.x - imageLock.width / 2)
-    local xDistanceSides = (contentWidthSafe - widthWarningElements) / 2
-
-    imageLock.x = xDistanceSides + imageLock.width / 2
-    textNumLocks.x = imageLock.x + imageLock.width + textNumLocks.width / 2
-    imageCoin.x = textNumLocks.x + textNumLocks.width / 2 + imageCoin.width / 2
-    imageCoin.symbolCurrency.x = imageCoin.x
-    textNumCoins.x = imageCoin.x + imageCoin.width + textNumCoins.width / 2
-
-
-    transition.to( infoGroup, { time = 100, alpha = 1 })
-end
-
 -- Calculate and show number of coins spent/coins left and number of locks gained in return
 local function showCoinsConverted( buttonConverter, locksConverted, coinsConverted, coinsLeft )
     local colorButtonDefault = themeData.colorButtonDefault
@@ -517,7 +459,7 @@ function handleTouch(event)
                                                         event.target.textLabel.rotation = 0
                                                         event.target.textLabel:setFillColor( unpack(colorTextDefault) )
 
-                                                        showCoinsNeeded()
+                                                        infoGroup = commonMethods.showCoinsNeeded(infoGroup, frameButtonPlay, fontLogo)
 
                                                         local timerHideCoinsNeeded = timer.performWithDelay( 2000, function () 
                                                                 commonMethods.hideCoinsNeeded(infoGroup)
