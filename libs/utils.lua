@@ -10,6 +10,9 @@
 --
 ------------------------------------------------------------------------------
 
+-- This file gathers functions that can be used in different projects
+-- Using those functions in other projects may require little to no modifications
+
 local utils = {}
 
 local widget = require ( "widget" )
@@ -149,7 +152,7 @@ function utils.showInformationBox(infoGroup, infoText, infoFont, isPromptAvailab
     buttonBack.x = frameInformation.x + frameInformation.width / 2 - buttonBack.width
     infoGroup:insert( buttonBack )
 
-    -- Add a reference to display group so we can remove it in handleInfoBoxTouch
+    -- Add a reference to display group so we can remove it in handleInfoBoxTouch()
     buttonBack.refGroup = infoGroup
 
 
