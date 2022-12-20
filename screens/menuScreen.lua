@@ -58,53 +58,6 @@ local function hideActiveCard()
     composer.gotoScene( "screens.gameScreen", optionsChangeScene )
 end
 
--- Calculate and show number of coins spent/coins left and number of locks gained in return
-local function showCoinsConverted( buttonConverter, locksConverted, coinsConverted, coinsLeft )
-    local colorButtonDefault = themeData.colorButtonDefault
-    local colorTextDefault = themeData.colorTextDefault
-
-    local widthUIButton = contentWidthSafe / 9
-    local heightUIButton = widthUIButton
-
-    menuGroup.textCoinsConverted.text = "- " .. coinsConverted
-    menuGroup.textLocksConverted.text = "+ " .. locksConverted
-
-
-    local timeAnimationCurrency = 100
-    local timeWaitConversion = 1000
-
-    transition.to( menuGroup.textCoinsConverted, { time = timeAnimationCurrency, y = menuGroup.textCoinsConverted.yTarget, xScale = 1, yScale = 1, alpha = 1, onComplete = function () 
-            coinsAvailable = coinsLeft
-            menuGroup.textNumCoins.text = coinsAvailable
-
-            local timerWaitCoinsConverted = timer.performWithDelay( timeWaitConversion, function () 
-                    transition.to( menuGroup.textCoinsConverted, { time = timeAnimationCurrency, x = menuGroup.textLocksConverted.x, alpha = 0} )
-
-                    transition.to( menuGroup.textLocksConverted, { time = timeAnimationCurrency, alpha = 1, onComplete = function () 
-                            local timerWaitLocksConverted = timer.performWithDelay( timeWaitConversion, function () 
-                                    transition.to( menuGroup.textLocksConverted, { time = timeAnimationCurrency, y = menuGroup.textLocksConverted.yTarget, xScale = 0.01, yScale = 0.01, alpha = 0, onComplete = function ()
-                                            locksAvailable = locksAvailable + locksConverted
-                                            menuGroup.textNumLocks.text = locksAvailable
-
-                                            composer.setVariable( "locksAvailable", locksAvailable )
-                                            composer.setVariable( "coinsAvailable", coinsAvailable )
-
-                                            savePreferences()
-
-                                            commonMethods.adjustConvertElements(menuGroup, frameButtonPlay)
-
-                                            buttonConverter.textLabel:setFillColor( unpack(colorTextDefault) )
-
-                                            isInteractionAvailable = true
-                                        end } )
-                                end, 1 )
-                            table.insert( tableTimers, timerWaitLocksConverted)
-                        end } )
-                end, 1 )
-            table.insert( tableTimers, timerWaitCoinsConverted )
-        end } )
-end
-
 -- Visually, show player that they are using the lock system and calculate remaining locks
 local function useLock()
     local colorTextDefault = themeData.colorTextDefault
@@ -297,7 +250,28 @@ function handleTouch(event)
                         audio.play( tableSoundFiles["answerRight"], {channel = 2} )
                         event.target.textLabel:setFillColor( unpack(colorButtonFillTrue) )
 
-                        showCoinsConverted(event.target, locksConverted, coinsConverted, coinsLeft)
+                        local timeAnimationCurrency = 100
+                        local timeWaitConversion = 1000
+
+                        coinsAvailable = coinsLeft
+
+
+                        local paramsCoins = { coinsAvailable = coinsAvailable, coinsConverted = coinsConverted }
+                        local paramsAnimationValues = { timeAnimationCurrency = timeAnimationCurrency, timeWaitConversion = timeWaitConversion }
+
+                        tableTimers, coinsAvailable = commonMethods.showCoinsConverted(menuGroup, tableTimers,
+                         paramsCoins, paramsAnimationValues)
+
+
+                        local timerWaitShowLocksPurchased = timer.performWithDelay( timeWaitConversion, function ()
+                                local paramsLocks = { locksAvailable = locksAvailable, locksConverted = locksConverted }
+
+                                tableTimers, locksAvailable = commonMethods.showLocksConverted( menuGroup, frameButtonPlay, tableTimers,
+                                 event.target, paramsLocks, paramsAnimationValues )
+                            end, 1 )
+                        table.insert( tableTimers, timerWaitShowLocksPurchased )
+
+                        isInteractionAvailable = true
                     end
                 else
                     audio.play( tableSoundFiles["answerWrong"], {channel = 2} )

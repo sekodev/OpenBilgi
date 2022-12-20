@@ -17,6 +17,7 @@ local commonMethods = {}
 
 local widget = require ( "widget" )
 
+
 -- Used in endScreen and menuScreen to format currency shown in UI
 function commonMethods.formatCurrencyString(coinsAvailable)
     local currencyAbbreviation = ""
@@ -64,11 +65,14 @@ function commonMethods.showConversionAvailability(frameButtonConvert)
 end
 
 function commonMethods.showLocksAvailable(targetGroup, yTopInfoBox, locksAvailable, fontLockText)
+    local colorTextDefault = themeData.colorTextDefault
+    local colorPadlock = themeData.colorPadlock
+
     local widthUIButton = contentWidthSafe / 9
     local heightUIButton = widthUIButton
 
     local imageLock = display.newImageRect( targetGroup, "assets/menu/padlock.png", widthUIButton, heightUIButton )
-    imageLock:setFillColor( unpack(themeData.colorPadlock) )
+    imageLock:setFillColor( unpack(colorPadlock) )
     imageLock.x = display.contentCenterX - imageLock.width / 2
     imageLock.y = yTopInfoBox - imageLock.height
 
@@ -76,7 +80,7 @@ function commonMethods.showLocksAvailable(targetGroup, yTopInfoBox, locksAvailab
 
     local optionsNumLocks = { text = locksAvailable, font = fontLockText, fontSize = fontSizeCurrency }
     imageLock.textNumAvailable = display.newText( optionsNumLocks )
-    imageLock.textNumAvailable:setFillColor( unpack(themeData.colorTextDefault) )
+    imageLock.textNumAvailable:setFillColor( unpack(colorTextDefault) )
     imageLock.textNumAvailable.x = imageLock.x + imageLock.width / 2 + imageLock.textNumAvailable.width
     imageLock.textNumAvailable.y = imageLock.y
     targetGroup:insert(imageLock.textNumAvailable)
@@ -92,7 +96,7 @@ end
 -- Create tooltip to show minimum number of coins needed to convert to a single(1) lock
 function commonMethods.showCoinsNeeded(infoGroup, priceLockCoins, frameButtonPlay, fontInformation)
     local colorBackground = themeData.colorBackground
-    local colorButtonDefault = themeData.colorButtonDefault
+    local colorBackgroundPopup = themeData.colorBackgroundPopup
     local colorButtonOver = themeData.colorButtonOver
     local colorTextDefault = themeData.colorTextDefault
     local colorPadlock = themeData.colorPadlock
@@ -148,7 +152,7 @@ function commonMethods.showCoinsNeeded(infoGroup, priceLockCoins, frameButtonPla
 end
 
 -- Adjust conversion element positions after coins are converted to lock(s)
-function commonMethods.adjustConvertElements(menuGroup, frameButtonPlay)
+local function adjustConvertElements(menuGroup, frameButtonPlay)
     local timeAdjustElements = 250
 
     menuGroup.imageLock.xTarget = frameButtonPlay.x - frameButtonPlay.width / 2 + menuGroup.imageLock.width / 2
@@ -162,6 +166,65 @@ function commonMethods.adjustConvertElements(menuGroup, frameButtonPlay)
     transition.to( menuGroup.textNumCoins, { time = timeAdjustElements, x = menuGroup.textNumCoins.xTarget } )
     transition.to( menuGroup.imageCoin, { time = timeAdjustElements, x = menuGroup.imageCoin.xTarget } )
     transition.to( menuGroup.imageCoin.symbolCurrency, { time = timeAdjustElements, x = menuGroup.imageCoin.symbolCurrency.xTarget } )
+end
+
+-- Show locks purchased by converting coins
+function commonMethods.showLocksConverted( menuGroup, frameButtonPlay, tableTimers, buttonConverter, paramsLocks, paramsAnimationValues )
+    local locksAvailable = paramsLocks["locksAvailable"]
+    local locksConverted = paramsLocks["locksConverted"]
+
+    local timeAnimationCurrency = paramsAnimationValues["timeAnimationCurrency"]
+    local timeWaitConversion = paramsAnimationValues["timeWaitConversion"]
+
+    local colorTextDefault = themeData.colorTextDefault
+
+    menuGroup.textLocksConverted.text = "+ " .. locksConverted
+
+    locksAvailable = locksAvailable + locksConverted
+    composer.setVariable( "locksAvailable", locksAvailable )
+    savePreferences()
+
+
+    transition.to( menuGroup.textLocksConverted, { time = timeAnimationCurrency, alpha = 1, onComplete = function () 
+            local timerWaitLocksConverted = timer.performWithDelay( timeWaitConversion, function () 
+                    transition.to( menuGroup.textLocksConverted, { time = timeAnimationCurrency, y = menuGroup.textLocksConverted.yTarget, xScale = 0.01, yScale = 0.01, alpha = 0, onComplete = function ()
+                            menuGroup.textNumLocks.text = locksAvailable
+
+                            adjustConvertElements(menuGroup, frameButtonPlay)
+
+                            buttonConverter.textLabel:setFillColor( unpack(colorTextDefault) )
+                        end } )
+                end, 1 )
+            table.insert( tableTimers, timerWaitLocksConverted)
+        end } )
+
+    return tableTimers, locksAvailable
+end
+
+-- Calculate and show number of coins spent/coins left and number of locks gained in return
+function commonMethods.showCoinsConverted( menuGroup, tableTimers, paramsCoins, paramsAnimationValues )
+    local coinsAvailable = paramsCoins["coinsAvailable"]
+    local coinsConverted = paramsCoins["coinsConverted"]
+
+    local timeAnimationCurrency = paramsAnimationValues["timeAnimationCurrency"]
+    local timeWaitConversion = paramsAnimationValues["timeWaitConversion"]
+
+
+    menuGroup.textCoinsConverted.text = "- " .. coinsConverted
+
+    composer.setVariable( "coinsAvailable", coinsAvailable )
+
+
+    transition.to( menuGroup.textCoinsConverted, { time = timeAnimationCurrency, y = menuGroup.textCoinsConverted.yTarget, xScale = 1, yScale = 1, alpha = 1, onComplete = function () 
+            menuGroup.textNumCoins.text = coinsAvailable
+
+            local timerWaitCoinsConverted = timer.performWithDelay( timeWaitConversion, function () 
+                    transition.to( menuGroup.textCoinsConverted, { time = timeAnimationCurrency, x = display.contentCenterX, alpha = 0} )
+                end, 1 )
+            table.insert( tableTimers, timerWaitCoinsConverted )
+        end } )
+
+    return tableTimers, coinsAvailable
 end
 
 -- Handles touch events when in-game share UI is shown
@@ -234,21 +297,20 @@ function commonMethods.showShareUI(shareGroup, fontNameUI)
     frameShareOptions:setFillColor( unpack(colorBackgroundPopup) )
 
 
-    local widthShareButtons = frameShareOptions.width / 1.1
-    local heightShareButtons = contentHeightSafe / 10
-    local distanceChoices = heightShareButtons / 5
-    local fontSizeChoices = (contentHeightSafe / 25) / 1.1
-
-    local colorButtonFillDefault = themeData.colorButtonFillDefault
-    local colorButtonFillOver = themeData.colorButtonFillOver
     local colorButtonDefault = themeData.colorButtonDefault
     local colorButtonOver = themeData.colorButtonOver
+    local colorButtonFillDefault = themeData.colorButtonFillDefault
+    local colorButtonFillOver = themeData.colorButtonFillOver
     local colorTextDefault = themeData.colorTextDefault
-    local colorTextOver = themeData.colorTextOver
     local colorButtonStroke = themeData.colorButtonStroke
 
     local cornerRadiusButtons = themeData.cornerRadiusButtons
     local strokeWidthButtons = themeData.strokeWidthButtons
+
+    local widthShareButtons = frameShareOptions.width / 1.1
+    local heightShareButtons = contentHeightSafe / 10
+    local distanceChoices = heightShareButtons / 5
+    local fontSizeChoices = (contentHeightSafe / 25) / 1.1
 
     local optionsButtonShareQR = 
     {
