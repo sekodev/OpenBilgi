@@ -58,45 +58,6 @@ local function hideActiveCard()
     composer.gotoScene( "screens.gameScreen", optionsChangeScene )
 end
 
--- Visually, show player that they are using the lock system and calculate remaining locks
-local function useLock()
-    local colorTextDefault = themeData.colorTextDefault
-
-    locksAvailable = locksAvailable - 1
-
-    composer.setVariable( "locksAvailable", locksAvailable )
-
-    local locksUsed = composer.getVariable( "locksUsed" ) + 1
-    composer.setVariable( "locksUsed", locksUsed )
-
-    savePreferences()
-
-
-    infoGroup.alpha = 0
-
-    local optionsNumLocks = { text = "-1", font = fontLogo, fontSize = menuGroup.textNumLocks.size }
-    local textNumLockUsed = display.newText( optionsNumLocks )
-    textNumLockUsed:setFillColor( unpack(colorTextDefault) )
-    textNumLockUsed.x = menuGroup.textNumLocks.x
-    textNumLockUsed.y = menuGroup.textNumLocks.y
-    textNumLockUsed.yTarget = menuGroup.textCoinsConverted.yTarget
-    textNumLockUsed.alpha = 0
-    textNumLockUsed.xScale, textNumLockUsed.yScale = 0.01, 0.01
-    infoGroup:insert(textNumLockUsed)
-
-    infoGroup.alpha = 1
-
-    local timeTransitionDropLockUsed = 250
-    transition.to( textNumLockUsed, { time = timeTransitionDropLockUsed, y = textNumLockUsed.yTarget, xScale = 1, yScale = 1, alpha = 1, onComplete = function ()
-            local timerWaitLockUsed = timer.performWithDelay( timeTransitionDropLockUsed * 2, function ()
-                transition.to( textNumLockUsed, { time = timeTransitionDropLockUsed, alpha = 0, onComplete = function ()
-                    menuGroup.textNumLocks.text = locksAvailable
-                end })
-            end )
-            table.insert(tableTimers, timerWaitLockUsed)
-        end })
-end
-
 -- Handle touch events for every visible UI element
 function handleTouch(event)
     if (event.phase == "began") then
@@ -132,7 +93,7 @@ function handleTouch(event)
 
                     -- if lock is enabled, show player that a lock is used
                     if (buttonLockQuestionSet.isActivated) then
-                        useLock()
+                        tableTimers, locksAvailable = commonMethods.useLock(infoGroup, tableTimers, locksAvailable, menuGroup.textNumLocks)
                     end
 
                     -- Wait some time before changing the scene

@@ -64,6 +64,50 @@ function commonMethods.showConversionAvailability(frameButtonConvert)
         end })
 end
 
+-- Visually, show player that they are using the lock system and calculate remaining locks
+function commonMethods.useLock(infoGroup, tableTimers, locksAvailable, textNumLocks)
+    local fontLogo = composer.getVariable( "fontLogo" )
+
+    local colorTextDefault = themeData.colorTextDefault
+    
+
+    locksAvailable = locksAvailable - 1
+
+    composer.setVariable( "locksAvailable", locksAvailable )
+
+    local locksUsed = composer.getVariable( "locksUsed" ) + 1
+    composer.setVariable( "locksUsed", locksUsed )
+
+    savePreferences()
+
+
+    infoGroup.alpha = 0
+
+    local optionsNumLocks = { text = "-1", font = fontLogo, fontSize = textNumLocks.size }
+    local textNumLockUsed = display.newText( optionsNumLocks )
+    textNumLockUsed:setFillColor( unpack(colorTextDefault) )
+    textNumLockUsed.x = textNumLocks.x
+    textNumLockUsed.y = textNumLocks.y
+    textNumLockUsed.yTarget = display.safeScreenOriginY + (textNumLockUsed.height / 1.5) * 4
+    textNumLockUsed.alpha = 0
+    textNumLockUsed.xScale, textNumLockUsed.yScale = 0.01, 0.01
+    infoGroup:insert(textNumLockUsed)
+
+    infoGroup.alpha = 1
+
+    local timeTransitionDropLockUsed = 250
+    transition.to( textNumLockUsed, { time = timeTransitionDropLockUsed, y = textNumLockUsed.yTarget, xScale = 1, yScale = 1, alpha = 1, onComplete = function ()
+            local timerWaitLockUsed = timer.performWithDelay( timeTransitionDropLockUsed * 2, function ()
+                transition.to( textNumLockUsed, { time = timeTransitionDropLockUsed, alpha = 0, onComplete = function ()
+                    textNumLocks.text = locksAvailable
+                end })
+            end )
+            table.insert(tableTimers, timerWaitLockUsed)
+        end })
+
+    return tableTimers, locksAvailable
+end
+
 function commonMethods.showLocksAvailable(targetGroup, yTopInfoBox, locksAvailable, fontLockText)
     local colorTextDefault = themeData.colorTextDefault
     local colorPadlock = themeData.colorPadlock
