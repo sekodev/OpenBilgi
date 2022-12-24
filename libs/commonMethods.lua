@@ -64,72 +64,6 @@ function commonMethods.showConversionAvailability(frameButtonConvert)
         end })
 end
 
--- Visually, show player that they are using the lock system and calculate remaining locks
-function commonMethods.useLock(infoGroup, tableTimers, locksAvailable, textNumLocks)
-    local fontLogo = composer.getVariable( "fontLogo" )
-
-    local colorTextDefault = themeData.colorTextDefault
-    
-
-    locksAvailable = locksAvailable - 1
-
-    composer.setVariable( "locksAvailable", locksAvailable )
-
-    local locksUsed = composer.getVariable( "locksUsed" ) + 1
-    composer.setVariable( "locksUsed", locksUsed )
-
-    savePreferences()
-
-
-    infoGroup.alpha = 0
-
-    local optionsNumLocks = { text = "-1", font = fontLogo, fontSize = textNumLocks.size }
-    local textNumLockUsed = display.newText( optionsNumLocks )
-    textNumLockUsed:setFillColor( unpack(colorTextDefault) )
-    textNumLockUsed.x = textNumLocks.x
-    textNumLockUsed.y = textNumLocks.y
-    textNumLockUsed.yTarget = display.safeScreenOriginY + (textNumLockUsed.height / 1.5) * 4
-    textNumLockUsed.alpha = 0
-    textNumLockUsed.xScale, textNumLockUsed.yScale = 0.01, 0.01
-    infoGroup:insert(textNumLockUsed)
-
-    infoGroup.alpha = 1
-
-    local timeTransitionDropLockUsed = 250
-    transition.to( textNumLockUsed, { time = timeTransitionDropLockUsed, y = textNumLockUsed.yTarget, xScale = 1, yScale = 1, alpha = 1, onComplete = function ()
-            local timerWaitLockUsed = timer.performWithDelay( timeTransitionDropLockUsed * 2, function ()
-                transition.to( textNumLockUsed, { time = timeTransitionDropLockUsed, alpha = 0, onComplete = function ()
-                    textNumLocks.text = locksAvailable
-                end })
-            end )
-            table.insert(tableTimers, timerWaitLockUsed)
-        end })
-
-    return tableTimers, locksAvailable
-end
-
-function commonMethods.showLocksAvailable(targetGroup, yTopInfoBox, locksAvailable, fontLockText)
-    local colorTextDefault = themeData.colorTextDefault
-    local colorPadlock = themeData.colorPadlock
-
-    local widthUIButton = contentWidthSafe / 9
-    local heightUIButton = widthUIButton
-
-    local imageLock = display.newImageRect( targetGroup, "assets/menu/padlock.png", widthUIButton, heightUIButton )
-    imageLock:setFillColor( unpack(colorPadlock) )
-    imageLock.x = display.contentCenterX - imageLock.width / 2
-    imageLock.y = yTopInfoBox - imageLock.height
-
-    local fontSizeCurrency = imageLock.height / 1.1
-
-    local optionsNumLocks = { text = locksAvailable, font = fontLockText, fontSize = fontSizeCurrency }
-    imageLock.textNumAvailable = display.newText( optionsNumLocks )
-    imageLock.textNumAvailable:setFillColor( unpack(colorTextDefault) )
-    imageLock.textNumAvailable.x = imageLock.x + imageLock.width / 2 + imageLock.textNumAvailable.width
-    imageLock.textNumAvailable.y = imageLock.y
-    targetGroup:insert(imageLock.textNumAvailable)
-end
-
 -- Hide tooltip for coins needed
 function commonMethods.hideCoinsNeeded(infoGroup)
     transition.to( infoGroup, { time = 100, alpha = 0, onComplete = function() 
@@ -138,7 +72,9 @@ function commonMethods.hideCoinsNeeded(infoGroup)
 end
 
 -- Create tooltip to show minimum number of coins needed to convert to a single(1) lock
-function commonMethods.showCoinsNeeded(infoGroup, priceLockCoins, frameButtonPlay, fontInformation)
+function commonMethods.showCoinsNeeded(infoGroup, priceLockCoins, frameButtonPlay)
+    local fontLogo = composer.getVariable( "fontLogo" )
+
     local colorBackground = themeData.colorBackground
     local colorBackgroundPopup = themeData.colorBackgroundPopup
     local colorButtonOver = themeData.colorButtonOver
@@ -158,7 +94,7 @@ function commonMethods.showCoinsNeeded(infoGroup, priceLockCoins, frameButtonPla
 
     local fontSizeCurrency = imageLock.height / 1.1
 
-    local optionsNumLocks = { text = "= ", font = fontInformation, fontSize = fontSizeCurrency }
+    local optionsNumLocks = { text = "= ", font = fontLogo, fontSize = fontSizeCurrency }
     local textNumLocks = display.newText( optionsNumLocks )
     textNumLocks:setFillColor( unpack(colorTextDefault) )
     textNumLocks.x = imageLock.x + imageLock.width + textNumLocks.width / 2
@@ -174,7 +110,7 @@ function commonMethods.showCoinsNeeded(infoGroup, priceLockCoins, frameButtonPla
     imageCoin.symbolCurrency:setFillColor( unpack( colorBackground ) )
     imageCoin.symbolCurrency.rotation = 45
 
-    local optionsNumCoins = { text = priceLockCoins, font = fontInformation, fontSize = fontSizeCurrency }
+    local optionsNumCoins = { text = priceLockCoins, font = fontLogo, fontSize = fontSizeCurrency }
     local textNumCoins = display.newText( optionsNumCoins )
     textNumCoins:setFillColor( unpack(colorTextDefault) )
     textNumCoins.x = imageCoin.x + imageCoin.width + textNumCoins.width / 2
@@ -193,6 +129,32 @@ function commonMethods.showCoinsNeeded(infoGroup, priceLockCoins, frameButtonPla
 
 
     transition.to( infoGroup, { time = 100, alpha = 1 })
+end
+
+-- Calculate and show number of coins spent/coins left and number of locks gained in return
+function commonMethods.showCoinsConverted( menuGroup, tableTimers, paramsCoins, paramsAnimationValues )
+    local coinsAvailable = paramsCoins["coinsAvailable"]
+    local coinsConverted = paramsCoins["coinsConverted"]
+
+    local timeAnimationCurrency = paramsAnimationValues["timeAnimationCurrency"]
+    local timeWaitConversion = paramsAnimationValues["timeWaitConversion"]
+
+
+    menuGroup.textCoinsConverted.text = "- " .. coinsConverted
+
+    composer.setVariable( "coinsAvailable", coinsAvailable )
+
+
+    transition.to( menuGroup.textCoinsConverted, { time = timeAnimationCurrency, y = menuGroup.textCoinsConverted.yTarget, xScale = 1, yScale = 1, alpha = 1, onComplete = function () 
+            menuGroup.textNumCoins.text = coinsAvailable
+
+            local timerWaitCoinsConverted = timer.performWithDelay( timeWaitConversion, function () 
+                    transition.to( menuGroup.textCoinsConverted, { time = timeAnimationCurrency, x = display.contentCenterX, alpha = 0} )
+                end, 1 )
+            table.insert( tableTimers, timerWaitCoinsConverted )
+        end } )
+
+    return tableTimers, coinsAvailable
 end
 
 -- Adjust conversion element positions after coins are converted to lock(s)
@@ -245,30 +207,73 @@ function commonMethods.showLocksConverted( menuGroup, frameButtonPlay, tableTime
     return tableTimers, locksAvailable
 end
 
--- Calculate and show number of coins spent/coins left and number of locks gained in return
-function commonMethods.showCoinsConverted( menuGroup, tableTimers, paramsCoins, paramsAnimationValues )
-    local coinsAvailable = paramsCoins["coinsAvailable"]
-    local coinsConverted = paramsCoins["coinsConverted"]
+-- Visually, show player that they are using the lock system and calculate remaining locks
+function commonMethods.useLock(infoGroup, tableTimers, locksAvailable, textNumLocks)
+    local fontLogo = composer.getVariable( "fontLogo" )
 
-    local timeAnimationCurrency = paramsAnimationValues["timeAnimationCurrency"]
-    local timeWaitConversion = paramsAnimationValues["timeWaitConversion"]
+    local colorTextDefault = themeData.colorTextDefault
+    
+
+    locksAvailable = locksAvailable - 1
+
+    composer.setVariable( "locksAvailable", locksAvailable )
+
+    local locksUsed = composer.getVariable( "locksUsed" ) + 1
+    composer.setVariable( "locksUsed", locksUsed )
+
+    savePreferences()
 
 
-    menuGroup.textCoinsConverted.text = "- " .. coinsConverted
+    infoGroup.alpha = 0
 
-    composer.setVariable( "coinsAvailable", coinsAvailable )
+    local optionsNumLocks = { text = "-1", font = fontLogo, fontSize = textNumLocks.size }
+    local textNumLockUsed = display.newText( optionsNumLocks )
+    textNumLockUsed:setFillColor( unpack(colorTextDefault) )
+    textNumLockUsed.x = textNumLocks.x
+    textNumLockUsed.y = textNumLocks.y
+    textNumLockUsed.yTarget = display.safeScreenOriginY + (textNumLockUsed.height / 1.5) * 4
+    textNumLockUsed.alpha = 0
+    textNumLockUsed.xScale, textNumLockUsed.yScale = 0.01, 0.01
+    infoGroup:insert(textNumLockUsed)
 
+    infoGroup.alpha = 1
 
-    transition.to( menuGroup.textCoinsConverted, { time = timeAnimationCurrency, y = menuGroup.textCoinsConverted.yTarget, xScale = 1, yScale = 1, alpha = 1, onComplete = function () 
-            menuGroup.textNumCoins.text = coinsAvailable
+    local timeTransitionDropLockUsed = 250
+    transition.to( textNumLockUsed, { time = timeTransitionDropLockUsed, y = textNumLockUsed.yTarget, xScale = 1, yScale = 1, alpha = 1, onComplete = function ()
+            local timerWaitLockUsed = timer.performWithDelay( timeTransitionDropLockUsed * 2, function ()
+                transition.to( textNumLockUsed, { time = timeTransitionDropLockUsed, alpha = 0, onComplete = function ()
+                    textNumLocks.text = locksAvailable
+                end })
+            end )
+            table.insert(tableTimers, timerWaitLockUsed)
+        end })
 
-            local timerWaitCoinsConverted = timer.performWithDelay( timeWaitConversion, function () 
-                    transition.to( menuGroup.textCoinsConverted, { time = timeAnimationCurrency, x = display.contentCenterX, alpha = 0} )
-                end, 1 )
-            table.insert( tableTimers, timerWaitCoinsConverted )
-        end } )
+    return tableTimers, locksAvailable
+end
 
-    return tableTimers, coinsAvailable
+-- Show number of locks available to use
+function commonMethods.showLocksAvailable(targetGroup, yTopInfoBox, locksAvailable)
+    local fontLogo = composer.getVariable( "fontLogo" )
+
+    local colorTextDefault = themeData.colorTextDefault
+    local colorPadlock = themeData.colorPadlock
+
+    local widthUIButton = contentWidthSafe / 9
+    local heightUIButton = widthUIButton
+
+    local imageLock = display.newImageRect( targetGroup, "assets/menu/padlock.png", widthUIButton, heightUIButton )
+    imageLock:setFillColor( unpack(colorPadlock) )
+    imageLock.x = display.contentCenterX - imageLock.width / 2
+    imageLock.y = yTopInfoBox - imageLock.height
+
+    local fontSizeCurrency = imageLock.height / 1.1
+
+    local optionsNumLocks = { text = locksAvailable, font = fontLogo, fontSize = fontSizeCurrency }
+    imageLock.textNumAvailable = display.newText( optionsNumLocks )
+    imageLock.textNumAvailable:setFillColor( unpack(colorTextDefault) )
+    imageLock.textNumAvailable.x = imageLock.x + imageLock.width / 2 + imageLock.textNumAvailable.width
+    imageLock.textNumAvailable.y = imageLock.y
+    targetGroup:insert(imageLock.textNumAvailable)
 end
 
 -- Handles touch events when in-game share UI is shown
@@ -327,7 +332,9 @@ local function handleShareTouch(event)
 end
 
 -- Create share UI that shows two options - QR code or system(OS) share UI
-function commonMethods.showShareUI(shareGroup, fontNameUI)
+function commonMethods.showShareUI(shareGroup)
+    local fontLogo = composer.getVariable( "fontLogo" )
+
     local colorBackground = themeData.colorBackground
     local colorBackgroundPopup = themeData.colorBackgroundPopup
 
@@ -365,7 +372,7 @@ function commonMethods.showShareUI(shareGroup, fontNameUI)
         cornerRadius = cornerRadiusButtons,
         label = sozluk.getString("shareStoreQR"),
         labelColor = { default = colorTextDefault, over = colorButtonFillDefault },
-        font = fontNameUI,
+        font = fontLogo,
         fontSize = fontSizeChoices,
         strokeColor = { default = colorButtonStroke, over = colorButtonDefault },
         strokeWidth = strokeWidthButtons * 3,
@@ -385,7 +392,7 @@ function commonMethods.showShareUI(shareGroup, fontNameUI)
         cornerRadius = cornerRadiusButtons,
         label = sozluk.getString("shareStoreLink"),
         labelColor = { default = colorTextDefault, over = colorButtonFillDefault },
-        font = fontNameUI,
+        font = fontLogo,
         fontSize = fontSizeChoices,
         strokeColor = { default = colorButtonStroke, over = colorButtonDefault },
         strokeWidth = strokeWidthButtons * 3,
@@ -404,7 +411,7 @@ function commonMethods.showShareUI(shareGroup, fontNameUI)
         height = heightShareButtons / 1.5,
         label = "x",
         labelColor = { default = colorButtonFillDefault, over = colorButtonOver },
-        font = fontNameUI,
+        font = fontLogo,
         fontSize = heightShareButtons / 2,
         id = "shareCancel",
         onEvent = handleShareTouch,

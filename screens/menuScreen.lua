@@ -174,7 +174,7 @@ function handleTouch(event)
 
                 event.target:setFillColor( unpack(themeData.colorButtonOver) )
 
-                commonMethods.showShareUI(shareGroup, fontLogo)
+                commonMethods.showShareUI(shareGroup)
             elseif (event.target.id == "rateGame") then
                 audio.play( tableSoundFiles["answerChosen"], {channel = 2} )
 
@@ -249,7 +249,7 @@ function handleTouch(event)
                                                         event.target.textLabel.rotation = 0
                                                         event.target.textLabel:setFillColor( unpack(colorTextDefault) )
 
-                                                        commonMethods.showCoinsNeeded(infoGroup, priceLockCoins, frameButtonPlay, fontLogo)
+                                                        commonMethods.showCoinsNeeded(infoGroup, priceLockCoins, frameButtonPlay)
 
                                                         local timerHideCoinsNeeded = timer.performWithDelay( 2000, function () 
                                                                 commonMethods.hideCoinsNeeded(infoGroup)
@@ -300,7 +300,7 @@ function handleTouch(event)
                         end
 
                         yTopFrame = utils.showInformationBox(infoGroup, infoText, fontLogo, isPromptAvailable, "lockInfoAvailable")
-                        commonMethods.showLocksAvailable(infoGroup, yTopFrame, locksAvailable, fontLogo)
+                        commonMethods.showLocksAvailable(infoGroup, yTopFrame, locksAvailable)
                     else
                         if (locksAvailable > 0) then
                             event.target.isActivated = true
@@ -314,7 +314,7 @@ function handleTouch(event)
                             end
 
                             yTopFrame = utils.showInformationBox(infoGroup, infoText, fontLogo, isPromptAvailable, "lockInfoAvailable")
-                            commonMethods.showLocksAvailable(infoGroup, yTopFrame, locksAvailable, fontLogo)
+                            commonMethods.showLocksAvailable(infoGroup, yTopFrame, locksAvailable)
                         end
                     end
                 end
