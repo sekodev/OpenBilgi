@@ -108,6 +108,9 @@ local function stopGameTimer(targetGroup)
 end
 
 local function cleanUp()
+    -- No need to keep device always on outside of game screen. Going back to default
+    system.setIdleTimer( true )
+
     Runtime:removeEventListener( "system", onSystemEvent )
     
     transition.cancel( )
@@ -1913,6 +1916,9 @@ function scene:show( event )
         composer.setVariable("currentAppScene", "gameScreen")
 
         Runtime:addEventListener( "system", onSystemEvent )
+
+        -- Prevent device from going to sleep while user is thinking
+        system.setIdleTimer( false )
     end
 end
 
