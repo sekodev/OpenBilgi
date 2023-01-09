@@ -718,16 +718,6 @@ local function showPermissionRequest()
     infoGroup.alpha = 1
 end
 
--- Increase lock price as the player advances through the game, unlocks more question sets
-local function calculateLockPrice()
-    local numAvailableQuestionSets = #composer.getVariable("availableQuestionSets")
-    priceLockCoins = priceLockCoins * math.round(numAvailableQuestionSets / 2)
-
-    if (priceLockCoins < composer.getVariable("priceLockCoins")) then
-        priceLockCoins = composer.getVariable("priceLockCoins")
-    end
-end
-
 -- Handle system events such as resuming/suspending the game/application
 function onSystemEvent(event)
     if( event.type == "applicationResume" ) then
@@ -762,7 +752,7 @@ function scene:create( event )
     shareGroup = display.newGroup( )
     infoGroup = display.newGroup( )
 
-    calculateLockPrice()
+    priceLockCoins = commonMethods.calculateLockPrice(priceLockCoins)
     
     local tableFileNames = { "answerChosen.wav", "answerRight.wav", "answerWrong.wav", "lockQuestionSet.wav", "campfire.mp3" }
     tableSoundFiles = utils.loadSoundFX(tableSoundFiles, "assets/soundFX/", tableFileNames)

@@ -38,6 +38,18 @@ function commonMethods.formatCurrencyString(coinsAvailable)
     return currencyShort, currencyAbbreviation
 end
 
+-- Increase lock price as the player advances through the game, unlocks more question sets
+function commonMethods.calculateLockPrice(priceLockCoins)
+    local numAvailableQuestionSets = #composer.getVariable("availableQuestionSets")
+    priceLockCoins = priceLockCoins * math.round(numAvailableQuestionSets / 2)
+
+    if (priceLockCoins < composer.getVariable("priceLockCoins")) then
+        priceLockCoins = composer.getVariable("priceLockCoins")
+    end
+
+    return priceLockCoins
+end
+
 -- Animate conversion elements to draw players' attention to the game mechanic
 function commonMethods.showConversionAvailability(frameButtonConvert)
     local timeShake = 75

@@ -869,16 +869,6 @@ function createAskRatingElements()
     buttonRateOK.y = buttonAskLater.y - heightRateButtons - distanceChoices
 end
 
--- Increase lock price as the player advances through the game, unlocks more question sets
-local function calculateLockPrice()
-    local numAvailableQuestionSets = #composer.getVariable("availableQuestionSets")
-    priceLockCoins = priceLockCoins * math.round(numAvailableQuestionSets / 2)
-
-    if (priceLockCoins < composer.getVariable("priceLockCoins")) then
-        priceLockCoins = composer.getVariable("priceLockCoins")
-    end
-end
-
 local function handleAudioTransition()
     audio.dispose( streamMusicBackground )
 
@@ -915,7 +905,7 @@ function scene:create( event )
         end
     end
 
-    calculateLockPrice()
+    priceLockCoins = commonMethods.calculateLockPrice(priceLockCoins)
 
     local tableFileNames = { "answerChosen.wav", "answerRight.wav", "answerWrong.wav", "fireworks.wav", "lockQuestionSet.wav" }
     tableSoundFiles = utils.loadSoundFX(tableSoundFiles, "assets/soundFX/", tableFileNames)
