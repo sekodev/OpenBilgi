@@ -235,34 +235,10 @@ function handleTouch(event)
                         isInteractionAvailable = true
                     end
                 else
-                    audio.play( tableSoundFiles["answerWrong"], {channel = 2} )
-                    event.target.textLabel:setFillColor( unpack(colorButtonFillWrong) )
+                    isInteractionAvailable = true
 
-                    local timeShake = 75
-                    local rotationShake = 20
-                    transition.to( event.target.textLabel, { time = timeShake, xScale = 1.5, yScale = 1.5, onComplete = function ()
-                            transition.to( event.target.textLabel, { time = timeShake, rotation = rotationShake, onComplete = function ()
-                                transition.to( event.target.textLabel, { time = timeShake, rotation = -rotationShake, onComplete = function ()
-                                        transition.to( event.target.textLabel, { time = timeShake, rotation = rotationShake, onComplete = function ()
-                                            transition.to( event.target.textLabel, { time = timeShake, rotation = -rotationShake, onComplete = function ()
-                                                transition.to( event.target.textLabel, { time = timeShake, xScale = 1, yScale = 1, onComplete = function ()
-                                                        event.target.textLabel.rotation = 0
-                                                        event.target.textLabel:setFillColor( unpack(colorTextDefault) )
-
-                                                        commonMethods.showCoinsNeeded(infoGroup, priceLockCoins, frameButtonPlay)
-
-                                                        local timerHideCoinsNeeded = timer.performWithDelay( 2000, function () 
-                                                                commonMethods.hideCoinsNeeded(infoGroup)
-
-                                                                isInteractionAvailable = true
-                                                            end, 1 )
-                                                        table.insert( tableTimers, timerHideCoinsNeeded )
-                                                    end })
-                                                end })
-                                        end })
-                                    end })
-                            end })
-                        end })
+                    event.target.isAvailable = false -- Take defensive action, change availability to false
+                    commonMethods.showConversionAvailability(event.target, tableSoundFiles, infoGroup, priceLockCoins, frameButtonPlay)
                 end
             end
         end
@@ -494,9 +470,8 @@ local function createMenuElements()
     -- Create coin-lock conversion UI
     frameButtonConvert = display.newRoundedRect( display.contentCenterX, 0, 0, 0, cornerRadiusButtons )
     frameButtonConvert.id = "convertCurrency"
+    frameButtonConvert.isAvailable = false -- This will be 'true' if player has enough coins to get a lock
     frameButtonConvert:setFillColor( unpack(colorButtonFillDefault) )
-    --frameButtonConvert.strokeWidth = strokeWidthButtons * 3
-    --frameButtonConvert:setStrokeColor( unpack(colorButtonFillDefault) )
     frameButtonConvert:addEventListener( "touch", handleTouch )
     menuGroup:insert( frameButtonConvert )
 
@@ -783,11 +758,12 @@ function scene:show( event )
         -- Animation won't stop until conversion is triggered
         local timerConversionCheck
         timerConversionCheck = timer.performWithDelay( 3000, function ()
-                --local coinsAvailable = tonumber(menuGroup.textNumCoins.text)
-
                 if (coinsAvailable >= priceLockCoins) then
-                    commonMethods.showConversionAvailability(frameButtonConvert)
+                    frameButtonConvert.isAvailable = true
+                    commonMethods.showConversionAvailability(frameButtonConvert, tableSoundFiles, infoGroup, priceLockCoins, frameButtonPlay)
                 else
+                    frameButtonConvert.isAvailable = false
+
                     timer.cancel(timerConversionCheck)
                     timerConversionCheck = nil
                 end

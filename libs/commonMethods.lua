@@ -50,41 +50,15 @@ function commonMethods.calculateLockPrice(priceLockCoins)
     return priceLockCoins
 end
 
--- Animate conversion elements to draw players' attention to the game mechanic
-function commonMethods.showConversionAvailability(frameButtonConvert)
-    local timeShake = 75
-    local rotationShake = 20
-
-    local colorButtonFillTrue = themeData.colorButtonFillTrue
-    local colorTextDefault = themeData.colorTextDefault
-
-    frameButtonConvert.textLabel:setFillColor( unpack(colorButtonFillTrue) )
-
-    transition.to( frameButtonConvert.textLabel, { time = timeShake, xScale = 1.5, yScale = 1.5, onComplete = function ()
-            transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = rotationShake, onComplete = function ()
-                transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = -rotationShake, onComplete = function ()
-                        transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = rotationShake, onComplete = function ()
-                            transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = -rotationShake, onComplete = function ()
-                                transition.to( frameButtonConvert.textLabel, { time = timeShake, xScale = 1, yScale = 1, onComplete = function ()
-                                        frameButtonConvert.textLabel.rotation = 0
-                                        frameButtonConvert.textLabel:setFillColor( unpack(colorTextDefault) )
-                                    end })
-                                end })
-                        end })
-                    end })
-            end })
-        end })
-end
-
 -- Hide tooltip for coins needed
-function commonMethods.hideCoinsNeeded(infoGroup)
+local function hideCoinsNeeded(infoGroup)
     transition.to( infoGroup, { time = 100, alpha = 0, onComplete = function() 
             utils.clearDisplayGroup(infoGroup)
         end })
 end
 
 -- Create tooltip to show minimum number of coins needed to convert to a single(1) lock
-function commonMethods.showCoinsNeeded(infoGroup, priceLockCoins, frameButtonPlay)
+local function showCoinsNeeded(infoGroup, priceLockCoins, frameButtonPlay)
     local fontLogo = composer.getVariable( "fontLogo" )
 
     local colorBackground = themeData.colorBackground
@@ -141,6 +115,52 @@ function commonMethods.showCoinsNeeded(infoGroup, priceLockCoins, frameButtonPla
 
 
     transition.to( infoGroup, { time = 100, alpha = 1 })
+end
+
+-- Animate conversion elements to draw players' attention to the game mechanic
+function commonMethods.showConversionAvailability(frameButtonConvert, tableSoundFiles, infoGroup, priceLockCoins, frameButtonPlay)
+    local isConversionAvailable = frameButtonConvert.isAvailable
+
+    local colorButtonFillTrue = themeData.colorButtonFillTrue
+    local colorButtonFillWrong = themeData.colorButtonFillWrong
+    local colorTextDefault = themeData.colorTextDefault
+
+    if (isConversionAvailable) then
+        frameButtonConvert.textLabel:setFillColor( unpack(colorButtonFillTrue) )
+    else
+        audio.play( tableSoundFiles["answerWrong"], {channel = 2} )
+        frameButtonConvert.textLabel:setFillColor( unpack(colorButtonFillWrong) )
+    end
+
+
+    local timeShake = 75
+    local rotationShake = 20
+    transition.to( frameButtonConvert.textLabel, { time = timeShake, xScale = 1.5, yScale = 1.5, onComplete = function ()
+            transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = rotationShake, onComplete = function ()
+                transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = -rotationShake, onComplete = function ()
+                        transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = rotationShake, onComplete = function ()
+                            transition.to( frameButtonConvert.textLabel, { time = timeShake, rotation = -rotationShake, onComplete = function ()
+                                transition.to( frameButtonConvert.textLabel, { time = timeShake, xScale = 1, yScale = 1, onComplete = function ()
+                                        frameButtonConvert.textLabel.rotation = 0
+                                        frameButtonConvert.textLabel:setFillColor( unpack(colorTextDefault) )
+
+                                        if (not isConversionAvailable) then
+                                            showCoinsNeeded(infoGroup, priceLockCoins, frameButtonPlay)
+
+                                            local timerHideCoinsNeeded
+                                            timerHideCoinsNeeded = timer.performWithDelay( 2000, function () 
+                                                    hideCoinsNeeded(infoGroup)
+
+                                                    timer.cancel(timerHideCoinsNeeded)
+                                                    timerHideCoinsNeeded = nil
+                                                end, 1 )
+                                        end
+                                    end })
+                                end })
+                        end })
+                    end })
+            end })
+        end })
 end
 
 -- Calculate and show number of coins spent/coins left and number of locks gained in return
