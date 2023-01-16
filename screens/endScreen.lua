@@ -869,14 +869,6 @@ function createAskRatingElements()
     buttonRateOK.y = buttonAskLater.y - heightRateButtons - distanceChoices
 end
 
-local function handleAudioTransition()
-    audio.dispose( streamMusicBackground )
-
-    streamMusicBackground = audio.loadStream("assets/music/questionsTheme.mp3")
-    channelMusicBackground = audio.play(streamMusicBackground, {loops = -1})
-    audio.setVolume(composer.getVariable( "musicLevel" ), {channel = channelMusicBackground})
-end
-
 function scene:create( event )
     mainGroup = self.view
 
@@ -944,7 +936,6 @@ function scene:show( event )
 
         if (event.params) then
             if (event.params["callSource"] == "gameScreen") then
-                --handleAudioTransition()
                 -- Increase volume back to level set by the user
                 -- We do this because we lower the volume in gameScreen when player sees visual cue of time remaining
                 channelMusicBackground = audio.play(streamMusicBackground, {loops = -1})
