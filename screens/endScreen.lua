@@ -275,10 +275,6 @@ local function showLocksEarned()
         transition.to( textAwardLock, { time = 500, y = menuGroup.textNumLocks.y, alpha = 0, onComplete = function ()
             locksAvailable = locksAvailable + 1
             menuGroup.textNumLocks.text = locksAvailable
-
-            composer.setVariable( "locksAvailable", locksAvailable )
-
-            savePreferences()
         end } )
     end
 end
@@ -298,21 +294,7 @@ local function showCoinsEarned()
 
                 local currencyShort, currencyAbbreviation = commonMethods.formatCurrencyString(coinsAvailable)
                 menuGroup.textNumCoins.text = currencyShort .. currencyAbbreviation
-
-                composer.setVariable( "coinsAvailable", coinsAvailable )
-
-                local coinsTotal = composer.getVariable( "coinsTotal" ) + coinsEarned
-                composer.setVariable( "coinsTotal", coinsTotal )
-
-                savePreferences()
             end } )
-        else
-            composer.setVariable( "coinsAvailable", coinsAvailable )
-
-            local coinsTotal = composer.getVariable( "coinsTotal" ) + coinsEarned
-            composer.setVariable( "coinsTotal", coinsTotal )
-
-            savePreferences()
         end
     end } )
 end
@@ -844,6 +826,33 @@ function createAskRatingElements()
     buttonRateOK.y = buttonAskLater.y - heightRateButtons - distanceChoices
 end
 
+-- Saves what player earned in this session(coins and locks)
+local function savePlayerEarnings()
+    local coinsPlayer = coinsAvailable
+
+    coinsPlayer = coinsPlayer + coinsEarned
+    if (textAwardCoinSet) then
+        coinsPlayer = coinsPlayer + coinsCompletedSet 
+    end
+
+    composer.setVariable( "coinsAvailable", coinsPlayer )
+
+    -- Collect coins total information for stats screen
+    local coinsTotal = composer.getVariable( "coinsTotal" ) + coinsEarned
+    composer.setVariable( "coinsTotal", coinsTotal )
+
+
+    local locksPlayer = locksAvailable
+
+    if (textAwardLock) then
+        locksPlayer = locksPlayer + 1
+
+        composer.setVariable( "locksAvailable", locksPlayer )
+    end
+
+    savePreferences()
+end
+
 function scene:create( event )
     mainGroup = self.view
 
@@ -878,7 +887,7 @@ function scene:create( event )
     tableSoundFiles = utils.loadSoundFX(tableSoundFiles, "assets/soundFX/", tableFileNames)
     
     checkHighScore()
---isRecordBroken = true
+
     createMenuElements()
 
     if (statusGame == "fail") then
@@ -921,6 +930,8 @@ function scene:show( event )
 
         local gamesPlayed = composer.getVariable( "gamesPlayed" )
         local askedRateGame = composer.getVariable( "askedRateGame" )
+
+        savePlayerEarnings()
 
         -- Check if current score is better than all time high
         -- If player beats a record, show fireworks
