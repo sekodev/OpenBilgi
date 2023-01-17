@@ -711,6 +711,7 @@ local function handleAudioTransition()
     audio.fadeOut( {channel = channelMusicBackground, time = fadeTime} )
 
     local timerAudio = timer.performWithDelay( fadeTime + 50, function ()
+        audio.stop()
         audio.dispose( streamMusicBackground )
 
         streamMusicBackground = audio.loadStream("assets/music/menuTheme.mp3")

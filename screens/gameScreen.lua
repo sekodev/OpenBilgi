@@ -1765,7 +1765,9 @@ local function loadQuestionSet(indexSetRequested)
     end
 end
 
+-- Transition from menu theme to ingame music
 local function handleAudioTransition()
+    audio.stop()
     audio.dispose( streamMusicBackground )
 
     streamMusicBackground = audio.loadStream("assets/music/intro.wav")
