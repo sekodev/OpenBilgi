@@ -122,7 +122,7 @@ local function playBackgroundMusic(fadeTime)
 
     local timerAudio = timer.performWithDelay( fadeTime + 50, function ()
         streamMusicBackground = audio.loadStream("assets/music/questionsTheme.mp3")
-        channelMusicBackground = audio.play(streamMusicBackground)
+        channelMusicBackground = audio.play(streamMusicBackground, {channel = channelMusicBackground, loops = -1})
         audio.setVolume(composer.getVariable( "musicLevel" ), {channel = channelMusicBackground})
      end, 1)
     table.insert( tableTimers, timerAudio )
@@ -1771,7 +1771,7 @@ local function handleAudioTransition()
     audio.dispose( streamMusicBackground )
 
     streamMusicBackground = audio.loadStream("assets/music/intro.wav")
-    channelMusicBackground = audio.play(streamMusicBackground)
+    channelMusicBackground = audio.play(streamMusicBackground, {channel = channelMusicBackground, loops = -1})
     audio.setVolume(composer.getVariable( "musicLevel" ), {channel = channelMusicBackground})
 end
 

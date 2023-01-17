@@ -715,7 +715,7 @@ local function handleAudioTransition()
         audio.dispose( streamMusicBackground )
 
         streamMusicBackground = audio.loadStream("assets/music/menuTheme.mp3")
-        channelMusicBackground = audio.play(streamMusicBackground, {loops = -1})
+        channelMusicBackground = audio.play(streamMusicBackground, {channel = channelMusicBackground, loops = -1})
         audio.setVolume(composer.getVariable( "musicLevel" ), {channel = channelMusicBackground})
      end, 1)
     table.insert( tableTimers, timerAudio )
