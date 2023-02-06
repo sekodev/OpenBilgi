@@ -16,7 +16,7 @@ local scene = composer.newScene()
 local widget = require( "widget" )
 local particleDesigner = require( "libs.particleDesigner" )
 
-local mainGroup, menuGroup, loadingGroup, shareGroup, infoGroup
+local mainGroup, menuGroup, shareGroup, infoGroup
 
 local currentLanguage = composer.getVariable( "currentLanguage" )
 local timeTransitionScene = composer.getVariable( "timeTransitionScene" )
@@ -724,7 +724,6 @@ end
 function scene:create( event )
     mainGroup = self.view
     menuGroup = display.newGroup( )
-    loadingGroup = display.newGroup( )
     shareGroup = display.newGroup( )
     infoGroup = display.newGroup( )
 
@@ -735,7 +734,6 @@ function scene:create( event )
 
     createMenuElements()
 
-    mainGroup:insert(loadingGroup)
     mainGroup:insert(menuGroup)
     mainGroup:insert(shareGroup)
     mainGroup:insert(infoGroup)
