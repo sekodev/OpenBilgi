@@ -50,9 +50,9 @@ function themeSettings.getData(themeSelected)
 		themeData.colorTimeLeftHigh =  themeData.colorButtonFillTrue
 
 		themeData.colorHyperlink = { .56, .85, .85 }
-		themeData.colorHyperlinkDark = { 0, 0, 1 }
 		themeData.colorHyperlinkVisited = { .023, .27, .678 }
-		themeData.colorHyperlinkDarkVisited = { .56, .85, .85 }
+		themeData.colorHyperlinkPopup = { 0, 0, 1 }
+		themeData.colorHyperlinkPopupVisited = { .56, .85, .85 }
 	elseif (themeSelected == "light") then
 		themeData.themeSelected = "light"
 
@@ -86,9 +86,9 @@ function themeSettings.getData(themeSelected)
 		themeData.colorTimeLeftHigh =  themeData.colorButtonFillTrue
 
 		themeData.colorHyperlink = { 0, 0, 1 }
-		themeData.colorHyperlinkDark = { .56, .85, .85 }
 		themeData.colorHyperlinkVisited = { .56, .85, .85 }
-		themeData.colorHyperlinkDarkVisited = { .023, .27, .678 }
+		themeData.colorHyperlinkPopup = { .56, .85, .85 }
+		themeData.colorHyperlinkPopupVisited = { .023, .27, .678 }
 	end
 
     return themeData

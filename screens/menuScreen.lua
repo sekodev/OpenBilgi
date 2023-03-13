@@ -559,7 +559,7 @@ local function handlePermissionTouch(event)
     if (event.phase == "ended") then
         if (event.target.id == "openURL") then
             if (event.target.underline) then
-                event.target.underline:setFillColor( unpack( themeData.colorHyperlinkDarkVisited ) )
+                event.target.underline:setFillColor( unpack( themeData.colorHyperlinkPopupVisited ) )
             end
 
             system.openURL( event.target.URL )
@@ -594,10 +594,8 @@ local function showPermissionRequest()
     local fontSizeInformation = contentHeightSafe / 30
     
     local fontSizePolicy = heightPermissionButton / 3
-    local colorHyperlink = themeData.colorHyperlink
-    local colorHyperlinkDark = themeData.colorHyperlinkDark
-    local colorHyperlinkVisited = themeData.colorHyperlinkVisited
-    local colorHyperlinkDarkVisited = themeData.colorHyperlinkDarkVisited
+    local colorHyperlinkPopup = themeData.colorHyperlinkPopup
+    local colorHyperlinkPopupVisited = themeData.colorHyperlinkPopupVisited
 
     local colorButtonFillDefault = themeData.colorButtonFillDefault
     local colorButtonFillOver = themeData.colorButtonFillOver
@@ -646,7 +644,7 @@ local function showPermissionRequest()
         textOnly = true,
         font = fontLogo,
         fontSize = fontSizePolicy,
-        labelColor = { default = { unpack(colorHyperlinkDark) }, over = { unpack(colorHyperlinkDarkVisited) } },
+        labelColor = { default = { unpack(colorHyperlinkPopup) }, over = { unpack(colorHyperlinkPopupVisited) } },
         id = "openURL",
         onEvent = handlePermissionTouch,
     }
@@ -656,7 +654,7 @@ local function showPermissionRequest()
     infoGroup:insert(buttonPrivacyPolicy)
 
     buttonPrivacyPolicy.underline = display.newRect( infoGroup, buttonPrivacyPolicy.x, 0, buttonPrivacyPolicy.width, 5 )
-    buttonPrivacyPolicy.underline:setFillColor( unpack( colorHyperlinkDark ) )
+    buttonPrivacyPolicy.underline:setFillColor( unpack( colorHyperlinkPopup ) )
 
     local optionsButtonTermsUse = 
     {
@@ -666,7 +664,7 @@ local function showPermissionRequest()
         textOnly = true,
         font = fontLogo,
         fontSize = fontSizePolicy,
-        labelColor = { default = { unpack(colorHyperlinkDark) }, over = { unpack(colorHyperlinkDarkVisited) } },
+        labelColor = { default = { unpack(colorHyperlinkPopup) }, over = { unpack(colorHyperlinkPopupVisited) } },
         id = "openURL",
         onEvent = handlePermissionTouch,
     }
@@ -676,7 +674,7 @@ local function showPermissionRequest()
     infoGroup:insert(buttonTermsUse)
 
     buttonTermsUse.underline = display.newRect( infoGroup, buttonTermsUse.x, 0, buttonTermsUse.width, 5 )
-    buttonTermsUse.underline:setFillColor( unpack( colorHyperlinkDark ) )
+    buttonTermsUse.underline:setFillColor( unpack( colorHyperlinkPopup ) )
 
     frameTermsPrivacyRequest.height = textTermsPrivacyRequest.height + buttonAcceptTerms.height + buttonPrivacyPolicy.height + buttonTermsUse.height + yDistanceElements * 3.5
     frameTermsPrivacyRequest.y = display.contentCenterY
