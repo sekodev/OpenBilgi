@@ -709,9 +709,12 @@ local function handleRatingTouch(event)
             utils.clearDisplayGroup(rateGroup)
 
 
+            local currentVersion = composer.getVariable( "currentVersion" )
+
             local mailAddress = composer.getVariable("emailSupport")
             local mailSubject = sozluk.getString("sendSupportMailSubject")
-            local mailBody = sozluk.getString("sendSupportMailBody")
+            local mailBody = sozluk.getString("sendSupportMailVersionInformation") .. ": " .. currentVersion .. "\n"
+             .. sozluk.getString("sendSupportMailBody")
 
             utils.showMailUI(mailAddress, mailSubject, mailBody)
         end

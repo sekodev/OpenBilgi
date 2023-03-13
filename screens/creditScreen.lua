@@ -17,6 +17,8 @@ local widget = require ("widget")
 
 local currentLanguage = composer.getVariable( "currentLanguage" )
 local currentTheme = composer.getVariable( "currentTheme" )
+local currentVersion = composer.getVariable( "currentVersion" )
+
 local fontIngame = composer.getVariable( "fontIngame" )
 local fontLogo = composer.getVariable( "fontLogo" )
 local timeTransitionScene = composer.getVariable( "timeTransitionScene" )
@@ -64,14 +66,17 @@ local function handleTouch(event)
         if (event.target.id == "sendMail") then
             local mailAddress = composer.getVariable("emailSupport")
             local mailSubject = sozluk.getString("sendSupportMailSubject")
-            local mailBody = sozluk.getString("sendSupportMailBody")
+            local mailBody = sozluk.getString("sendSupportMailVersionInformation") .. ": " .. currentVersion .. "\n"
+             .. sozluk.getString("sendSupportMailBody")
 
             utils.showMailUI(mailAddress, mailSubject, mailBody)
         elseif (event.target.id == "openURL") then
             if (event.target.underline) then
                 event.target.underline:setFillColor( unpack( themeData.colorHyperlinkVisited ) )
             end
-
+            local mailBody = sozluk.getString("sendSupportMailVersionInformation") .. ": " .. currentVersion .. "\n"
+             .. sozluk.getString("sendSupportMailBody")
+             print (mailBody)
             system.openURL( event.target.URL )
         elseif (event.target.id == "mainMenu") then
             Runtime:removeEventListener( "enterFrame", moveCredits )

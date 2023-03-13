@@ -88,7 +88,8 @@ function translationSetup.getData()
     translationData["disclaimerFont"] = "SIL Open Font License version 1.1. Daha fazla bilgi için https://scripts.sil.org/OFL adresini ziyaret edin."
     translationData["disclaimerCopyright"] = "Tüm ticari markalar, logolar ve marka isimleri ilgili sahiplerine aittir."
     translationData["poweredBy"] = "Oyun motoru"
-    translationData["sendSupportMailSubject"] = "Öneri - bilgi"
+    translationData["sendSupportMailSubject"] = "Öneri - OpenBilgi"
+    translationData["sendSupportMailVersionInformation"] = "Sürüm bilgisi"
     translationData["sendSupportMailBody"] = "Mesajınızı buraya yazabilirsiniz."
 
     return translationData
