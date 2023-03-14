@@ -221,8 +221,96 @@ function utils.showInformationBox(infoGroup, infoText, infoFont, isPromptAvailab
     return frameInformation.y - frameInformation.height / 2
 end
 
-function utils.showDialogBox()
-    -- Create and show dialog box that is used to ask for consent
+-- Handle touch events for dialog box
+-- Calls assigned function when corresponding option is selected
+local function handleDialogTouch(event)
+    if (event.phase == "ended") then
+        event.target.methodAssigned()
+    end
+    return true
+end
+
+-- Create and show dialog box that contains a text and two options - confirm & deny
+-- Confirm/Deny strings and assigned functionality will be passed on function call with tableDialogOptions
+function utils.showDialogBox(dialogGroup, tableDialogOptions)
+    local fontDialog = tableDialogOptions["fontDialog"]
+    local dialogText = tableDialogOptions["dialogText"]
+    local confirmText = tableDialogOptions["confirmText"]
+    local denyText = tableDialogOptions["denyText"]
+    local confirmFunction = tableDialogOptions["confirmFunction"]
+    local denyFunction = tableDialogOptions["denyFunction"]
+
+
+    local backgroundShade = display.newRect( dialogGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
+    backgroundShade:setFillColor( unpack(themeData.colorBackground) )
+    backgroundShade.alpha = .9
+    backgroundShade.id = "backgroundShade"
+    backgroundShade:addEventListener( "touch", function () return true end )
+
+    local fontSizeDialogText = contentHeightSafe / 28
+
+    local frameQuestionDialog = display.newRect( dialogGroup, display.contentCenterX, display.contentCenterY, contentWidthSafe / 1.1, 0 )
+    frameQuestionDialog:setFillColor( unpack(themeData.colorBackgroundPopup) )
+
+    local optionsTextDialog = { text = dialogText, width = frameQuestionDialog.width / 1.1, height = 0, 
+        align = "center", font = fontDialog, fontSize = fontSizeDialogText }
+    frameQuestionDialog.textLabel = display.newText( optionsTextDialog )
+    frameQuestionDialog.textLabel:setFillColor( unpack(themeData.colorBackground) )
+    frameQuestionDialog.textLabel.x = frameQuestionDialog.x
+    dialogGroup:insert(frameQuestionDialog.textLabel)
+
+
+    local widthDialogButton = frameQuestionDialog.width / 1.1
+    local heightDialogButton = contentHeightSafe / 10
+    local yDistanceChoices = heightDialogButton / 5
+    local fontSizeChoices = fontSizeDialogText
+
+    local colorButtonFillDefault = themeData.colorButtonFillDefault
+    local colorButtonFillOver = themeData.colorButtonFillOver
+    local colorTextDefault = themeData.colorTextDefault
+    local colorTextOver = themeData.colorTextOver
+
+    local optionsButtonConfirm = 
+    {
+        shape = "rect",
+        fillColor = { default = colorButtonFillDefault, over = colorButtonFillOver },
+        width = widthDialogButton,
+        height = heightDialogButton,
+        label = confirmText,
+        labelColor = { default = colorTextDefault, over = colorButtonFillDefault },
+        font = fontDialog,
+        fontSize = fontSizeChoices,
+        id = "confirmDialog",
+        onEvent = handleDialogTouch,
+    }
+    local buttonConfirm = widget.newButton( optionsButtonConfirm )
+    buttonConfirm.x = display.contentCenterX
+    dialogGroup:insert( buttonConfirm )
+    buttonConfirm.methodAssigned = confirmFunction
+
+    local optionsButtonDeny = 
+    {
+        shape = "rect",
+        fillColor = { default = colorButtonFillDefault, over = colorButtonFillOver },
+        width = widthDialogButton,
+        height = heightDialogButton,
+        label = denyText,
+        labelColor = { default = colorTextDefault, over = colorButtonFillDefault },
+        font = fontDialog,
+        fontSize = fontSizeChoices,
+        id = "denyDialog",
+        onEvent = handleDialogTouch,
+    }
+    local buttonDeny = widget.newButton( optionsButtonDeny )
+    buttonDeny.x = display.contentCenterX
+    dialogGroup:insert( buttonDeny )
+    buttonDeny.methodAssigned = denyFunction
+
+    frameQuestionDialog.height = frameQuestionDialog.textLabel.height + buttonConfirm.height + buttonDeny.height + yDistanceChoices * 4
+    frameQuestionDialog.y = display.contentCenterY
+    frameQuestionDialog.textLabel.y = frameQuestionDialog.y - frameQuestionDialog.height / 2 + frameQuestionDialog.textLabel.height / 1.5
+    buttonDeny.y = (frameQuestionDialog.y + frameQuestionDialog.height / 2) - buttonDeny.height / 2 - yDistanceChoices
+    buttonConfirm.y = buttonDeny.y - heightDialogButton - yDistanceChoices
 end
 
 function utils.openURL(urlHyperlink)

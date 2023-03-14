@@ -35,104 +35,17 @@ local function cleanUp()
     savePreferences()
 end
 
--- Handle touch events on question reset box
--- Redirects to logoScreen if player confirms question reset
-local function handleConfirmationTouch(event)
-    if (event.phase == "ended") then
-        -- WARNING !
-        -- Confirm option acts as progress reset. Handle with care!
-        if (event.target.id == "resetQuestionsConfirm") then
-            resetQuestions()
+-- Change scene to logoScreen after resetting player progress
+local function resetProgress()
+    resetQuestions()
 
-            local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene}
-            composer.gotoScene( "screens.logoScreen", optionsChangeScene )
-        elseif (event.target.id == "resetQuestionsDeny") then
-            utils.clearDisplayGroup(resetGroup)
-        end
-    end
-    return true
+    local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene}
+    composer.gotoScene( "screens.logoScreen", optionsChangeScene )
 end
 
--- Create dialog box to ask if user confirms question reset
-local function showResetConfirmation()
-    local backgroundShade = display.newRect( resetGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
-    backgroundShade:setFillColor( unpack(themeData.colorBackground) )
-    backgroundShade.alpha = .9
-    backgroundShade.id = "backgroundShade"
-    backgroundShade:addEventListener( "touch", function () return true end )
-
-    local fontSizeQuestion = contentHeightSafe / 30
-
-    local frameQuestionReset = display.newRect( resetGroup, display.contentCenterX, display.contentCenterY, contentWidthSafe / 1.1, 0 )
-    frameQuestionReset:setFillColor( unpack(themeData.colorBackgroundPopup) )
-
-    local optionsTextReset = { text = sozluk.getString("resetQuestionsAsk"), 
-        width = frameQuestionReset.width / 1.1, height = 0, align = "center", font = fontLogo, fontSize = fontSizeQuestion }
-    frameQuestionReset.textLabel = display.newText( optionsTextReset )
-    frameQuestionReset.textLabel:setFillColor( unpack(themeData.colorBackground) )
-    frameQuestionReset.textLabel.x = frameQuestionReset.x
-    resetGroup:insert(frameQuestionReset.textLabel)
-
-    local widthRateButtons = frameQuestionReset.width / 1.1
-    local heightRateButtons = contentHeightSafe / 10
-    local distanceChoices = heightRateButtons / 5
-    local fontSizeChoices = fontSizeQuestion / 1.1
-
-    local colorButtonFillDefault = themeData.colorButtonFillDefault
-    local colorButtonFillOver = themeData.colorButtonFillOver
-    local colorButtonDefault = themeData.colorButtonDefault
-    local colorTextDefault = themeData.colorTextDefault
-    local colorTextOver = themeData.colorTextOver
-    local colorButtonStroke = themeData.colorButtonStroke
-
-    local cornerRadiusButtons = themeData.cornerRadiusButtons
-    local strokeWidthButtons = themeData.strokeWidthButtons
-
-    local optionsButtonResetConfirm = 
-    {
-        shape = "roundedRect",
-        fillColor = { default = colorButtonFillDefault, over = colorButtonFillOver },
-        width = widthRateButtons,
-        height = heightRateButtons,
-        cornerRadius = cornerRadiusButtons,
-        label = sozluk.getString("resetQuestionsConfirm"),
-        labelColor = { default = colorTextDefault, over = colorButtonFillDefault },
-        font = fontLogo,
-        fontSize = fontSizeChoices,
-        strokeColor = { default = colorButtonStroke, over = colorButtonDefault },
-        strokeWidth = strokeWidthButtons * 3,
-        id = "resetQuestionsConfirm",
-        onEvent = handleConfirmationTouch,
-    }
-    local buttonResetConfirm = widget.newButton( optionsButtonResetConfirm )
-    buttonResetConfirm.x = display.contentCenterX
-    resetGroup:insert( buttonResetConfirm )
-
-    local optionsButtonConfirmDeny = 
-    {
-        shape = "roundedRect",
-        fillColor = { default = colorButtonFillDefault, over = colorButtonFillOver },
-        width = widthRateButtons,
-        height = heightRateButtons,
-        cornerRadius = cornerRadiusButtons,
-        label = sozluk.getString("resetQuestionsDeny"),
-        labelColor = { default = colorTextDefault, over = colorButtonFillDefault },
-        font = fontLogo,
-        fontSize = fontSizeChoices,
-        strokeColor = { default = colorButtonStroke, over = colorButtonDefault },
-        strokeWidth = strokeWidthButtons * 3,
-        id = "resetQuestionsDeny",
-        onEvent = handleConfirmationTouch,
-    }
-    local buttonResetDeny = widget.newButton( optionsButtonConfirmDeny )
-    buttonResetDeny.x = display.contentCenterX
-    resetGroup:insert( buttonResetDeny )
-
-    frameQuestionReset.height = frameQuestionReset.textLabel.height + buttonResetConfirm.height + buttonResetDeny.height + distanceChoices * 4
-    frameQuestionReset.y = display.contentCenterY
-    frameQuestionReset.textLabel.y = frameQuestionReset.y - frameQuestionReset.height / 2 + frameQuestionReset.textLabel.height / 1.5
-    buttonResetDeny.y = (frameQuestionReset.y + frameQuestionReset.height / 2) - buttonResetDeny.height / 2 - distanceChoices
-    buttonResetConfirm.y = buttonResetDeny.y - heightRateButtons - distanceChoices
+-- Close progress reset dialog box
+local function closeDialogBox()
+    utils.clearDisplayGroup(resetGroup)
 end
 
 -- Handle touch events for everything visible on the scene
@@ -300,11 +213,21 @@ local function handleTouch(event)
 
                 composer.setVariable( "soundLevel", event.target.levelCurrent )
             elseif (event.target.id == "resetQuestions") then
+                -- Declare options for dialog box creation
+                local optionsDialogBox = {
+                    fontDialog = fontLogo,
+                    dialogText = sozluk.getString("resetQuestionsAsk"),
+                    confirmText = sozluk.getString("resetQuestionsConfirm"),
+                    confirmFunction = resetProgress,
+                    denyText = sozluk.getString("resetQuestionsDeny"),
+                    denyFunction = closeDialogBox,
+                }
+
+                utils.showDialogBox(resetGroup, optionsDialogBox)
+
                 local colorButtonFillDefault = themeData.colorButtonFillDefault
                 local colorButtonStroke = themeData.colorButtonStroke
                 local colorTextDefault = themeData.colorTextDefault
-
-                showResetConfirmation()
 
                 event.target:setFillColor( unpack(colorButtonFillDefault) )
                 event.target:setStrokeColor( unpack(colorButtonStroke) )
