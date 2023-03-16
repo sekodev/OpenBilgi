@@ -222,7 +222,6 @@ local function handleTouch(event)
                     denyText = sozluk.getString("resetQuestionsDeny"),
                     denyFunction = closeDialogBox,
                 }
-
                 utils.showDialogBox(resetGroup, optionsDialogBox)
 
                 local colorButtonFillDefault = themeData.colorButtonFillDefault
