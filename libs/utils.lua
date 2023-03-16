@@ -308,16 +308,9 @@ function utils.showDialogBox(dialogGroup, tableDialogOptions)
 
     frameQuestionDialog.height = frameQuestionDialog.textLabel.height + buttonConfirm.height + buttonDeny.height + yDistanceChoices * 4
     frameQuestionDialog.y = display.contentCenterY
-    frameQuestionDialog.textLabel.y = frameQuestionDialog.y - frameQuestionDialog.height / 2 + frameQuestionDialog.textLabel.height / 1.5
-    buttonDeny.y = (frameQuestionDialog.y + frameQuestionDialog.height / 2) - buttonDeny.height / 2 - yDistanceChoices
-    buttonConfirm.y = buttonDeny.y - heightDialogButton - yDistanceChoices
-end
-
-function utils.openURL(urlHyperlink)
-    -- Ask for consent to take player out of the app
-    -- Show two options: OK or Cancel
-    -- If 'OK' -> system.openURL( urlHyperlink )
-    -- If 'Cancel' -> close dialog box
+    frameQuestionDialog.textLabel.y = frameQuestionDialog.y - frameQuestionDialog.height / 2 + frameQuestionDialog.textLabel.height / 2 + yDistanceChoices
+    buttonConfirm.y = frameQuestionDialog.textLabel.y + frameQuestionDialog.textLabel.height / 2 + buttonConfirm.height / 2 + yDistanceChoices
+    buttonDeny.y = buttonConfirm.y + buttonConfirm.height / 2 + buttonDeny.height / 2 + yDistanceChoices
 end
 
 -- Load short, frequently used sound effects into memory

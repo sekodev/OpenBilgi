@@ -16,7 +16,7 @@ local scene = composer.newScene()
 local widget = require( "widget" )
 local particleDesigner = require( "libs.particleDesigner" )
 
-local mainGroup, menuGroup, shareGroup, infoGroup
+local mainGroup, menuGroup, shareGroup, infoGroup, URLGroup
 
 local currentLanguage = composer.getVariable( "currentLanguage" )
 local timeTransitionScene = composer.getVariable( "timeTransitionScene" )
@@ -30,6 +30,8 @@ local savedRandomSeed = composer.getVariable( "savedRandomSeed" )
 
 local frameButtonPlay, frameButtonSettings, frameButtonCredits, frameButtonConvert
 local buttonLockQuestionSet, buttonShare
+
+local URLselected = ""
 
 local tableSoundFiles = {}
 local tableTimers = {}
@@ -554,15 +556,40 @@ local function createMenuElements()
     end
 end
 
+-- Close progress reset dialog box
+local function closeDialogBox()
+    utils.clearDisplayGroup(URLGroup)
+end
+
+-- Open URL after user confirmation
+local function openURL()
+    system.openURL( URLselected )
+    closeDialogBox()
+end
+
 -- Handle touch events for permission dialog box
 local function handlePermissionTouch(event)
     if (event.phase == "ended") then
         if (event.target.id == "openURL") then
+            URLselected = event.target.URL
+
             if (event.target.underline) then
                 event.target.underline:setFillColor( unpack( themeData.colorHyperlinkPopupVisited ) )
             end
 
-            system.openURL( event.target.URL )
+            local dialogTextBody = sozluk.getString("openURLQuestion") .. "\n\n" .. URLselected
+
+            -- Declare options for dialog box creation
+            local optionsDialogBox = {
+                fontDialog = fontLogo,
+                dialogText = dialogTextBody,
+                confirmText = sozluk.getString("openURLConfirm"),
+                confirmFunction = openURL,
+                denyText = sozluk.getString("openURLDeny"),
+                denyFunction = closeDialogBox,
+            }
+
+            utils.showDialogBox(URLGroup, optionsDialogBox)
         elseif (event.target.id == "acceptTerms") then
             composer.setVariable( "isTermsPrivacyAccepted", true )
 
@@ -724,6 +751,7 @@ function scene:create( event )
     menuGroup = display.newGroup( )
     shareGroup = display.newGroup( )
     infoGroup = display.newGroup( )
+    URLGroup = display.newGroup( )
 
     priceLockCoins = commonMethods.calculateLockPrice(priceLockCoins)
     
@@ -735,6 +763,7 @@ function scene:create( event )
     mainGroup:insert(menuGroup)
     mainGroup:insert(shareGroup)
     mainGroup:insert(infoGroup)
+    mainGroup:insert(URLGroup)
 end
 
 function scene:show( event )

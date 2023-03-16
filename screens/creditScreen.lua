@@ -23,9 +23,10 @@ local fontIngame = composer.getVariable( "fontIngame" )
 local fontLogo = composer.getVariable( "fontLogo" )
 local timeTransitionScene = composer.getVariable( "timeTransitionScene" )
 
-local mainGroup, creditsGroup
-
+local mainGroup, creditsGroup, URLGroup
 local containerCredits
+
+local URLselected = ""
 
 local heightCreditsElements = 0
 
@@ -60,6 +61,17 @@ local function moveCredits()
     end
 end
 
+-- Close progress reset dialog box
+local function closeDialogBox()
+    utils.clearDisplayGroup(URLGroup)
+end
+
+-- Open URL after user confirmation
+local function openURL()
+    system.openURL( URLselected )
+    closeDialogBox()
+end
+
 -- Handle touch events for everything on screen including URLs attached to credits elements
 local function handleTouch(event)
     if (event.phase == "ended") then
@@ -71,13 +83,25 @@ local function handleTouch(event)
 
             utils.showMailUI(mailAddress, mailSubject, mailBody)
         elseif (event.target.id == "openURL") then
+            URLselected = event.target.URL
+
             if (event.target.underline) then
                 event.target.underline:setFillColor( unpack( themeData.colorHyperlinkVisited ) )
             end
-            local mailBody = sozluk.getString("sendSupportMailVersionInformation") .. ": " .. currentVersion .. "\n"
-             .. sozluk.getString("sendSupportMailBody")
-             print (mailBody)
-            system.openURL( event.target.URL )
+
+            local dialogTextBody = sozluk.getString("openURLQuestion") .. "\n\n" .. URLselected
+
+            -- Declare options for dialog box creation
+            local optionsDialogBox = {
+                fontDialog = fontLogo,
+                dialogText = dialogTextBody,
+                confirmText = sozluk.getString("openURLConfirm"),
+                confirmFunction = openURL,
+                denyText = sozluk.getString("openURLDeny"),
+                denyFunction = closeDialogBox,
+            }
+
+            utils.showDialogBox(URLGroup, optionsDialogBox)
         elseif (event.target.id == "mainMenu") then
             Runtime:removeEventListener( "enterFrame", moveCredits )
 
@@ -613,12 +637,13 @@ end
 
 function scene:create( event )
     mainGroup = self.view
-
     creditsGroup = display.newGroup( )
+    URLGroup = display.newGroup( )
 
     createCreditsElements()
 
     mainGroup:insert(creditsGroup)
+    mainGroup:insert(URLGroup)
 end
 
 function scene:show( event )
