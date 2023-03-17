@@ -112,7 +112,7 @@ function utils.showInformationBox(infoGroup, optionsInfoBox)
     backgroundShade.id = "backgroundShade"
     backgroundShade:addEventListener( "touch", function () return true end )
 
-    frameInformation = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, contentWidthSafe / 1.1, 0 )
+    local frameInformation = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, contentWidthSafe / 1.1, 0 )
     frameInformation:setFillColor( unpack(themeData.colorBackgroundPopup) )
 
     local widthButton = frameInformation.width / 1.1
