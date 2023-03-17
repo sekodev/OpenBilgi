@@ -98,12 +98,17 @@ local function handleInfoBoxTouch(event)
 end
 
 -- Create and show dialog box that is used to display information
-function utils.showInformationBox(infoGroup, infoText, infoFont, isPromptAvailable, stringPromptPreference)
+function utils.showInformationBox(infoGroup, optionsInfoBox)
+    local infoFont = optionsInfoBox["infoFont"]
+    local infoText = optionsInfoBox["infoText"]
+    local isPromptAvailable = optionsInfoBox["isPromptAvailable"]
+    local stringPromptPreference = optionsInfoBox["stringPromptPreference"]
+    
     infoGroup.alpha = 0
 
     local backgroundShade = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
     backgroundShade:setFillColor( unpack(themeData.colorBackground) )
-    backgroundShade.alpha = 1
+    backgroundShade.alpha = .9
     backgroundShade.id = "backgroundShade"
     backgroundShade:addEventListener( "touch", function () return true end )
 
@@ -231,14 +236,14 @@ local function handleDialogTouch(event)
 end
 
 -- Create and show dialog box that contains a text and two options - confirm & deny
--- Confirm/Deny strings and assigned functionality will be passed on function call with tableDialogOptions
-function utils.showDialogBox(dialogGroup, tableDialogOptions)
-    local fontDialog = tableDialogOptions["fontDialog"]
-    local dialogText = tableDialogOptions["dialogText"]
-    local confirmText = tableDialogOptions["confirmText"]
-    local denyText = tableDialogOptions["denyText"]
-    local confirmFunction = tableDialogOptions["confirmFunction"]
-    local denyFunction = tableDialogOptions["denyFunction"]
+-- Confirm/Deny strings and assigned functionality will be passed on function call with optionsDialogBox
+function utils.showDialogBox(dialogGroup, optionsDialogBox)
+    local fontDialog = optionsDialogBox["fontDialog"]
+    local dialogText = optionsDialogBox["dialogText"]
+    local confirmText = optionsDialogBox["confirmText"]
+    local denyText = optionsDialogBox["denyText"]
+    local confirmFunction = optionsDialogBox["confirmFunction"]
+    local denyFunction = optionsDialogBox["denyFunction"]
 
 
     local backgroundShade = display.newRect( dialogGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )

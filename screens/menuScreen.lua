@@ -277,7 +277,14 @@ function handleTouch(event)
                             isPromptAvailable = false
                         end
 
-                        yTopFrame = utils.showInformationBox(infoGroup, infoText, fontLogo, isPromptAvailable, "lockInfoAvailable")
+                        -- Declare options for information box creation
+                        local optionsInfoBox = {
+                            infoFont = fontLogo,
+                            infoText = infoText,
+                            isPromptAvailable = isPromptAvailable,
+                            stringPromptPreference = "lockInfoAvailable",
+                        }
+                        yTopFrame = utils.showInformationBox(infoGroup, optionsInfoBox)
                         commonMethods.showLocksAvailable(infoGroup, yTopFrame, locksAvailable)
                     else
                         if (locksAvailable > 0) then
@@ -291,7 +298,14 @@ function handleTouch(event)
                                 isPromptAvailable = false
                             end
 
-                            yTopFrame = utils.showInformationBox(infoGroup, infoText, fontLogo, isPromptAvailable, "lockInfoAvailable")
+                            -- Declare options for information box creation
+                            local optionsInfoBox = {
+                                infoFont = fontLogo,
+                                infoText = infoText,
+                                isPromptAvailable = isPromptAvailable,
+                                stringPromptPreference = "lockInfoAvailable",
+                            }
+                            yTopFrame = utils.showInformationBox(infoGroup, optionsInfoBox)
                             commonMethods.showLocksAvailable(infoGroup, yTopFrame, locksAvailable)
                         end
                     end
