@@ -12,9 +12,13 @@ You need [Solar2D](https://solar2d.com/) to compile and build the project.
 Tested against version [2022.3682](https://github.com/coronalabs/corona/releases/tag/3682).
 <br><br>
 
-## Before you go...
+## Libraries
 
-Code quality is not great at this version. I prioritized releasing working versions over code quality. There are some changes I made to improve but you won't see it in this release. I'll slowly try to reflect those changes into this repository as well. Until then, you're on your own :)
+[Pseudorandom Number Generator](https://github.com/XeduR/Solar2D-Projects/tree/master/Pseudorandom%20Number%20Generator)
+
+[Preference](https://github.com/SatheeshJM/Lua-Preference-Library)
+
+[sozluk](https://github.com/sekodev/sozluk)
 <br><br>
 
 ## Music
