@@ -607,7 +607,7 @@ local function createMenuElements()
     menuGroup.imageLock.x = frameButtonPlay.x - frameButtonPlay.width / 2 + menuGroup.imageLock.width / 2
     menuGroup.imageLock.y = display.safeScreenOriginY + menuGroup.imageLock.height / 1.5
 
-    local fontSizeCurrency = menuGroup.imageLock.height / 1.1
+    local fontSizeCurrency = menuGroup.imageLock.height / 1.2
 
     local optionsNumLocks = { text = locksAvailable, font = fontLogo, fontSize = fontSizeCurrency }
     menuGroup.textNumLocks = display.newText( optionsNumLocks )
@@ -627,9 +627,8 @@ local function createMenuElements()
     menuGroup:insert(menuGroup.textNumCoins)
 
     menuGroup.imageCoin = display.newCircle( menuGroup, 0, menuGroup.imageLock.y, menuGroup.imageLock.width / 2 )
-    --menuGroup.imageCoin:setFillColor( unpack( colorButtonDefault ) )
     menuGroup.imageCoin:setFillColor( unpack( colorButtonOver ) )
-    menuGroup.imageCoin.x = menuGroup.textNumCoins.x - menuGroup.textNumCoins.width / 2 - menuGroup.imageCoin.width
+    menuGroup.imageCoin.x = menuGroup.textNumCoins.x - menuGroup.textNumCoins.width / 2 - menuGroup.imageCoin.width / 1.5
     menuGroup.imageCoin.y = menuGroup.textNumCoins.y
 
     menuGroup.imageCoin.symbolCurrency = display.newRect( menuGroup, menuGroup.imageCoin.x, menuGroup.imageCoin.y, menuGroup.imageCoin.width / 3, menuGroup.imageCoin.height / 3 )

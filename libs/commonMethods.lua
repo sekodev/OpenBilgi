@@ -23,14 +23,12 @@ function commonMethods.formatCurrencyString(coinsAvailable)
     local currencyAbbreviation = ""
     local currencyShort = 0
 
-    if (coinsAvailable >= 1000) then
+    if (coinsAvailable > 9999) then
+        currencyAbbreviation = sozluk.getString("currencyThousand") .. "+"
+        currencyShort = "10"
+    elseif (coinsAvailable >= 1000) then
         currencyAbbreviation = sozluk.getString("currencyThousand")
-
-        local remainderCoin = 100
-        if (coinsAvailable % remainderCoin < remainderCoin) then
-            currencyShort = coinsAvailable - (coinsAvailable % remainderCoin)
-        end
-        currencyShort = string.format( "%3.1f", coinsAvailable / 1000 )
+        currencyShort = string.sub( coinsAvailable / 1000, 1, -2 )
     else
         currencyShort = coinsAvailable
     end
@@ -196,7 +194,7 @@ local function adjustConvertElements(menuGroup, frameButtonPlay)
     menuGroup.imageLock.xTarget = frameButtonPlay.x - frameButtonPlay.width / 2 + menuGroup.imageLock.width / 2
     menuGroup.textNumLocks.xTarget = menuGroup.imageLock.x + menuGroup.imageLock.width + menuGroup.textNumLocks.width / 2
     menuGroup.textNumCoins.xTarget = frameButtonPlay.x + frameButtonPlay.width / 2 - menuGroup.textNumCoins.width / 2
-    menuGroup.imageCoin.xTarget = menuGroup.textNumCoins.x - menuGroup.textNumCoins.width / 2 - menuGroup.imageCoin.width
+    menuGroup.imageCoin.xTarget = menuGroup.textNumCoins.x - menuGroup.textNumCoins.width / 2 - menuGroup.imageCoin.width / 1.5
     menuGroup.imageCoin.symbolCurrency.xTarget = menuGroup.imageCoin.xTarget
 
     transition.to( menuGroup.imageLock, { time = timeAdjustElements, x = menuGroup.imageLock.xTarget } )
