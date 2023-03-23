@@ -78,8 +78,8 @@ local function handleTouch(event)
         if (event.target.id == "sendMail") then
             local mailAddress = composer.getVariable("emailSupport")
             local mailSubject = sozluk.getString("sendSupportMailSubject")
-            local mailBody = sozluk.getString("sendSupportMailVersionInformation") .. ": " .. currentVersion .. "\n"
-             .. sozluk.getString("sendSupportMailBody")
+            local mailBody = sozluk.getString("sendSupportMailVersionInformation") .. ": " .. currentVersion .. "\n\n"
+             .. sozluk.getString("sendSupportMailBody") .. "\n\n"
 
             utils.showMailUI(mailAddress, mailSubject, mailBody)
         elseif (event.target.id == "openURL") then
