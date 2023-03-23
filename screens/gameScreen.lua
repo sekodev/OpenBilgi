@@ -783,7 +783,7 @@ local function createUIElements(targetGroup)
     local colorVisualCue = themeData.colorVisualCue
     local strokeWidthVisualCue = themeData.strokeWidthVisualCue
 
-    if (composer.getVariable("fullScreen")) then
+    if (composer.getVariable("fullScreen") and contentWidth > contentWidthSafe) then
         targetGroup.cueVisual = display.newRoundedRect( targetGroup, display.contentCenterX, display.contentCenterY, contentWidth - strokeWidthVisualCue, contentHeight - strokeWidthVisualCue, cornerRadiusButtons )
     else
         targetGroup.cueVisual = display.newRect( targetGroup, display.contentCenterX, display.contentCenterY, contentWidth - strokeWidthVisualCue, contentHeight - strokeWidthVisualCue )
