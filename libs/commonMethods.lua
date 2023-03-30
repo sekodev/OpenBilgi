@@ -188,7 +188,7 @@ function commonMethods.showCoinsConverted( menuGroup, tableTimers, paramsCoins, 
 end
 
 -- Adjust conversion element positions after coins are converted to lock(s)
-function utils.adjustConvertElements(menuGroup, frameButtonPlay)
+function commonMethods.adjustConvertElements(menuGroup, frameButtonPlay)
     local timeAdjustElements = 250
 
     menuGroup.imageLock.xTarget = frameButtonPlay.x - frameButtonPlay.width / 2 + menuGroup.imageLock.width / 2
@@ -226,7 +226,7 @@ function commonMethods.showLocksConverted( menuGroup, frameButtonPlay, tableTime
                     transition.to( menuGroup.textLocksConverted, { time = timeAnimationCurrency, y = menuGroup.textLocksConverted.yTarget, xScale = 0.01, yScale = 0.01, alpha = 0, onComplete = function ()
                             menuGroup.textNumLocks.text = locksAvailable
 
-                            utils.adjustConvertElements(menuGroup, frameButtonPlay)
+                            commonMethods.adjustConvertElements(menuGroup, frameButtonPlay)
 
                             buttonConverter.textLabel:setFillColor( unpack(colorTextDefault) )
                         end } )

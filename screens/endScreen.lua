@@ -301,7 +301,7 @@ local function showCoinsEarned()
         local currencyShort, currencyAbbreviation = commonMethods.formatCurrencyString(coinsAvailable)
         menuGroup.textNumCoins.text = currencyShort .. currencyAbbreviation
 
-        utils.adjustConvertElements(menuGroup, frameButtonPlay)
+        commonMethods.adjustConvertElements(menuGroup, frameButtonPlay)
         
         -- If player completes a set successfully, will earn a fixed amount of coins(coinsCompletedSet) + coinsEarned
         if (textAwardCoinSet) then
@@ -311,7 +311,7 @@ local function showCoinsEarned()
                 local currencyShort, currencyAbbreviation = commonMethods.formatCurrencyString(coinsAvailable)
                 menuGroup.textNumCoins.text = currencyShort .. currencyAbbreviation
 
-                utils.adjustConvertElements(menuGroup, frameButtonPlay)
+                commonMethods.adjustConvertElements(menuGroup, frameButtonPlay)
             end } )
         end
     end } )
