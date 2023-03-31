@@ -418,11 +418,9 @@ local function createProgressMap(yButtonTop)
         table.insert(tableCheckpoints, mapCheckpoint) 
     end
 
-    local widthMapPin = mapLine.height * 2.5
+    local widthMapPin = mapLine.height * 3
     mapPin = display.newImageRect( mapGroup, "assets/menu/pinMap.png", widthMapPin, widthMapPin )
-    mapPin:setFillColor( unpack(colorTextDefault) )
-
-
+    mapPin:setFillColor( unpack(themeData.colorPadlock) )
     mapPin.x = mapLine.x - mapLine.width / 2 + widthCheckpoint / 2
     mapPin.y = mapLine.y - mapLine.height / 2 - mapPin.height
 

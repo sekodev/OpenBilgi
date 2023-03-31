@@ -832,13 +832,9 @@ local function createProgressMap(targetGroup, yPositionReference)
         table.insert(tableCheckpoints, mapCheckpoint) 
     end
 
-    local widthMapPin = mapLine.height * 2.5
-
-    local filePinMap = "assets/menu/pinMap.png"
-    if (themeData.themeSelected == "light") then
-        filePinMap = "assets/menu/pinMap-light.png"
-    end
-    local mapPin = display.newImageRect( targetGroup, filePinMap, widthMapPin, widthMapPin )
+    local widthMapPin = mapLine.height * 3
+    local mapPin = display.newImageRect( targetGroup, "assets/menu/pinMap.png", widthMapPin, widthMapPin )
+    mapPin:setFillColor( unpack(themeData.colorPadlock) )
 
     local currentCheckpoint = 1
     -- (questionCurrent - 1) is used because the value is set for the next question
