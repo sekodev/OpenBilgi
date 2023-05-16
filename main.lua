@@ -294,20 +294,18 @@ sozluk.init()
 local shownLanguage
 
 if (system.getInfo("targetAppStore") == "google" or system.getInfo("targetAppStore") == "amazon" or system.getInfo("targetAppStore") == "none") then
-    shownLanguage = system.getPreference("locale", "language")
+    shownLanguage = system.getPreference( "locale", "language" )
 elseif (system.getInfo("targetAppStore") == "apple") then
-    shownLanguage = string.sub( system.getPreference("ui", "language"), 1, 2 )
+    shownLanguage = string.sub( system.getPreference( "ui", "language" ), 1, 2 )
 end
 
---if ( shownLanguage == "en" or shownLanguage == "EN" or "English" == shownLanguage ) then
---    composer.setVariable( "currentLanguage", "en" )
 if ( shownLanguage == "tr" or shownLanguage == "TR" or "Türkçe" == shownLanguage or shownLanguage == "Turkish" or "Turkce" == shownLanguage ) then
     composer.setVariable( "currentLanguage", "tr" )
 else
     composer.setVariable( "currentLanguage", "en" )
 end
 
-composer.setVariable( "currentLanguage", "tr" )
+--composer.setVariable( "currentLanguage", "tr" )
 sozluk.setSelectedTranslation( composer.getVariable("currentLanguage") )
 
 -- Load preferences file and initialize variables
