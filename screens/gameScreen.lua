@@ -54,7 +54,7 @@ local isInteractionAvailable = false
 local isSaveAvailable = false
 local isSetCompletedBefore = false
 
-local fontSizeQuestion = contentHeightSafe / 25
+local fontSizeQuestion = contentHeightSafe / 30
 
 local random = math.random
 local roundNumber = math.round
@@ -438,7 +438,7 @@ local function createFramesChoices(targetGroup)
     local widthFrameChoice = contentWidthSafe / 1.1
     local cornerRadiusButtons = themeData.cornerRadiusButtons
     local choicesPossible = {1, 2, 3, 4}
-    local fontSizeChoices = fontSizeQuestion / 1.1
+    local fontSizeChoices = fontSizeQuestion
 
     local numChoices = tableQuestions[questionIndex].numChoices
     for i = 1, numChoices do

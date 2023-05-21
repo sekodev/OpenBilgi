@@ -102,6 +102,33 @@ local function handleTouch(event)
                 createSettingsElements()
 
                 isInteractionAvailable = true
+            elseif (event.target.id == "controlLanguage") then
+                -- Changing selected language happens in the same screen
+
+                isInteractionAvailable = false
+
+                local colorButtonOver = themeData.colorButtonOver
+
+                event.target.textLabel:setFillColor( unpack(colorButtonOver) )
+
+                audio.play( tableSoundFiles["answerChosen"], {channel = 2} )
+
+                local currentLanguage = composer.getVariable( "currentLanguage" )
+                local languageSelected = ""
+
+                if (currentLanguage == "tr") then
+                    languageSelected = "en"
+                elseif (currentLanguage == "en") then
+                    languageSelected = "tr"
+                end
+
+                composer.setVariable( "currentLanguage", languageSelected )
+
+                sozluk.setSelectedTranslation( composer.getVariable("currentLanguage") )
+                utils.clearDisplayGroup(menuGroup)
+                createSettingsElements()
+
+                isInteractionAvailable = true
             elseif (event.target.id == "resetQuestions") then
                 -- Will be handled in "ended" phase
                 local colorButtonOver = themeData.colorButtonOver
@@ -330,7 +357,7 @@ function createSettingsElements()
     frameButtonTheme:addEventListener( "touch", handleTouch )
     menuGroup:insert( frameButtonTheme )
 
-    local optionsLabelTheme = { text = "< " .. sozluk.getString("themeSelected") .. " " .. themeName .. " >", 
+    local optionsLabelTheme = { text = sozluk.getString("themeSelected") .. " " .. themeName, 
         height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
     frameButtonTheme.textLabel = display.newText( optionsLabelTheme )
     frameButtonTheme.textLabel:setFillColor( unpack(colorTextDefault) )
@@ -342,7 +369,7 @@ function createSettingsElements()
     frameButtonTheme.textLabel.y = frameButtonTheme.y
 
     -- This will keep track of the latest element created, in case full screen toggle is not available
-    yButtonPlacementNextElement = frameButtonTheme.y - frameButtonTheme.height * 2
+    yButtonPlacementNextElement = frameButtonTheme.y - frameButtonTheme.height / 2
 
 
     -- Show full screen toggle based on device resolution
@@ -363,7 +390,7 @@ function createSettingsElements()
         frameButtonFullScreen:addEventListener( "touch", handleTouch )
         menuGroup:insert( frameButtonFullScreen )
 
-        local optionsLabelFullScreen = { text = "< " .. sozluk.getString("fullScreen") .. " " .. statusFullScreen .. " >", 
+        local optionsLabelFullScreen = { text = sozluk.getString("fullScreen") .. " " .. statusFullScreen, 
             height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
         frameButtonFullScreen.textLabel = display.newText( optionsLabelFullScreen )
         frameButtonFullScreen.textLabel:setFillColor( unpack(colorTextDefault) )
@@ -375,8 +402,34 @@ function createSettingsElements()
         frameButtonFullScreen.textLabel.y = frameButtonFullScreen.y
 
         -- This will keep track of the latest element created
-        yButtonPlacementNextElement = frameButtonFullScreen.y - frameButtonFullScreen.height * 2
+        yButtonPlacementNextElement = frameButtonFullScreen.y - frameButtonFullScreen.height / 2
     end
+
+    local languageSelected
+    if (composer.getVariable( "currentLanguage" ) == "tr") then
+        languageSelected = sozluk.getString("languageTurkish")
+    elseif (composer.getVariable( "currentLanguage" ) == "en") then
+        languageSelected = sozluk.getString("languageEnglish")
+    end
+
+    local frameButtonLanguage = display.newRoundedRect( display.contentCenterX, 0, widthMenuButtons, 0, cornerRadiusButtons )
+    frameButtonLanguage.id = "controlLanguage"
+    frameButtonLanguage:setFillColor( unpack(colorButtonFillDefault) )
+    frameButtonLanguage.strokeWidth = strokeWidthButtons
+    frameButtonLanguage:setStrokeColor( unpack(colorButtonFillDefault) )
+    frameButtonLanguage:addEventListener( "touch", handleTouch )
+    menuGroup:insert( frameButtonLanguage )
+
+    local optionsLabelLanguage = { text = sozluk.getString("languageSelected") .. " " .. languageSelected, 
+        height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
+    frameButtonLanguage.textLabel = display.newText( optionsLabelLanguage )
+    frameButtonLanguage.textLabel:setFillColor( unpack(colorTextDefault) )
+    frameButtonLanguage.textLabel.x = frameButtonLanguage.x
+    menuGroup:insert(frameButtonLanguage.textLabel)
+
+    frameButtonLanguage.height = frameButtonLanguage.textLabel.height * 2
+    frameButtonLanguage.y = yButtonPlacementNextElement - frameButtonLanguage.height / 2
+    frameButtonLanguage.textLabel.y = frameButtonLanguage.y
 
 
     local imageMusic = display.newImageRect( menuGroup, "assets/menu/music.png", widthButtonSettings, heightButtonSettings )
@@ -384,7 +437,7 @@ function createSettingsElements()
     imageMusic:setFillColor( unpack(colorButtonDefault) )
     imageMusic.anchorX = 0
     imageMusic.x = xDistanceSides
-    imageMusic.y = yButtonPlacementNextElement
+    imageMusic.y = frameButtonLanguage.y - frameButtonLanguage.height * 2
     imageMusic:addEventListener( "touch", handleTouch )
 
     local widthLineMusic = contentWidthSafe - xDistanceSides * 2 - imageMusic.width * 1.5

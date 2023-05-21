@@ -134,7 +134,7 @@ local function createScreenElements()
     backgroundSuccess:setFillColor( unpack(themeData.colorBackground) )
     backgroundSuccess:addEventListener( "touch", handleTouch )
 
-    local fontSizeSuccessTitle = contentHeightSafe / 20
+    local fontSizeSuccessTitle = contentHeightSafe / 25
     local fontSizeSuccessMessage = contentHeightSafe / 35
 
     local optionsTextSuccessTitle = { text = sozluk.getString("successCongrats"), width = contentWidthSafe / 1.1, height = 0,
