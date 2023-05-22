@@ -68,6 +68,16 @@ function utils.clearDisplayGroup(targetGroup)
     end
 end
 
+function utils.clearTable(targetTable)
+    for i = #targetTable, 1, -1 do
+        display.remove(targetTable[i])
+        targetTable[i] = nil
+    end
+    targetTable = {}
+
+    return targetTable
+end
+
 local function handleInfoBoxTouch(event)
     if (event.phase == "ended" or "cancelled" == event.phase) then
         if (event.target.id == "closeInfoBox") then
@@ -103,7 +113,7 @@ function utils.showInformationBox(infoGroup, optionsInfoBox)
     local infoText = optionsInfoBox["infoText"]
     local isPromptAvailable = optionsInfoBox["isPromptAvailable"]
     local stringPromptPreference = optionsInfoBox["stringPromptPreference"]
-    
+
     infoGroup.alpha = 0
 
     local backgroundShade = display.newRect( infoGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
@@ -218,9 +228,7 @@ function utils.showInformationBox(infoGroup, optionsInfoBox)
         textLockInformation.y = (frameInformation.y + frameInformation.height / 2) - textLockInformation.height / 2 - yDistanceElements
     end
 
-
     infoGroup.alpha = 1
-
 
     -- Return top y coordinate of information box so you can adjust other elements if necessary
     return frameInformation.y - frameInformation.height / 2
