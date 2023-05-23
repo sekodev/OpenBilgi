@@ -569,15 +569,15 @@ local function createMenuElements()
     end
 end
 
--- Close progress reset dialog box
-local function closeDialogBox()
+-- Close URL redirection warning box
+local function closeURLWarningBox()
     utils.clearDisplayGroup(URLGroup)
 end
 
 -- Open URL after user confirmation
 local function openURL()
     system.openURL( URLselected )
-    closeDialogBox()
+    closeURLWarningBox()
 end
 
 -- Handle touch events for permission dialog box
@@ -593,16 +593,16 @@ local function handlePermissionTouch(event)
             local dialogTextBody = sozluk.getString("openURLQuestion") .. "\n\n" .. URLselected
 
             -- Declare options for dialog box creation
-            local optionsDialogBox = {
+            local optionsURLDialogBox = {
                 fontDialog = fontLogo,
                 dialogText = dialogTextBody,
                 confirmText = sozluk.getString("openURLConfirm"),
                 confirmFunction = openURL,
                 denyText = sozluk.getString("openURLDeny"),
-                denyFunction = closeDialogBox,
+                denyFunction = closeURLWarningBox,
             }
 
-            utils.showDialogBox(URLGroup, optionsDialogBox)
+            utils.showDialogBox(URLGroup, optionsURLDialogBox)
         elseif (event.target.id == "acceptTerms") then
             composer.setVariable( "isTermsPrivacyAccepted", true )
 
@@ -731,6 +731,23 @@ local function showPermissionRequest()
     infoGroup.alpha = 1
 end
 
+-- Close language notification box
+local function closeLanguageNotificationBox()
+    utils.clearDisplayGroup(infoGroup)
+
+    composer.setVariable( "isLanguageOptionShown", true )
+    savePreferences()
+end
+
+-- Switch scene to Settings
+local function gotoSettings()
+    composer.setVariable( "isLanguageOptionShown", true )
+    savePreferences()
+
+    local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "menuScreen"}}
+    composer.gotoScene( "screens.settingScreen", optionsChangeScene )
+end
+
 -- Handle system events such as resuming/suspending the game/application
 function onSystemEvent(event)
     if( event.type == "applicationResume" ) then
@@ -816,6 +833,22 @@ function scene:show( event )
         local isTermsPrivacyAccepted = composer.getVariable( "isTermsPrivacyAccepted" )
         if (not isTermsPrivacyAccepted) then
             showPermissionRequest()
+        else
+            -- Show user dialog box informing them about language options in Settings
+            local isLanguageOptionShown = composer.getVariable( "isLanguageOptionShown" )
+
+            if (not isLanguageOptionShown) then
+                -- Declare options for dialog box creation
+                local optionsLanguageOptionBox = {
+                    fontDialog = fontLogo,
+                    dialogText = sozluk.getString("languageNotificationInformation"),
+                    confirmText = sozluk.getString("languageNotificationConfirm"),
+                    confirmFunction = gotoSettings,
+                    denyText = sozluk.getString("languageNotificationDeny"),
+                    denyFunction = closeLanguageNotificationBox,
+                }
+                utils.showDialogBox(infoGroup, optionsLanguageOptionBox)
+            end
         end
 
         audio.setVolume( composer.getVariable( "soundLevel" ), {channel = 3} )

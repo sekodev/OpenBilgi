@@ -99,6 +99,7 @@ local function assignVariables()
     composer.setVariable( "isQuestionResetNeeded", true ) -- Used to fix a consistency between versions
 
     composer.setVariable( "isTermsPrivacyAccepted", false ) -- Privacy policy & terms of use information flag
+    composer.setVariable( "isLanguageOptionShown", false ) -- Language option notification flag
 
     -- Statistics variables
     composer.setVariable( "scoreHigh", 0 )
@@ -147,6 +148,7 @@ local function loadPreferences()
         composer.setVariable( "savedIsRevived", preference.getValue("settings")[33] )
         composer.setVariable( "isTermsPrivacyAccepted", preference.getValue("settings")[34] )
         composer.setVariable( "fullScreen", preference.getValue("settings")[35] )
+        composer.setVariable( "isLanguageOptionShown", preference.getValue("settings")[36] )
     end
 end
 
@@ -187,7 +189,8 @@ function savePreferences()
         composer.getVariable( "savedPlayerScore" ),
         composer.getVariable( "savedIsRevived" ),
         composer.getVariable( "isTermsPrivacyAccepted" ),
-        composer.getVariable( "fullScreen" ), } }
+        composer.getVariable( "fullScreen" ),
+        composer.getVariable( "isLanguageOptionShown" ), } }
 end
 
 -- Reset preferences file
