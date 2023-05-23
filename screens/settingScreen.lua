@@ -502,7 +502,7 @@ function scene:create( event )
     menuGroup = display.newGroup( )
     resetGroup = display.newGroup( )
 
-    local tableFileNames = { "answerChosen.wav", "answerRight.wav" }
+    local tableFileNames = { "answerChosen.wav" }
     tableSoundFiles = utils.loadSoundFX(tableSoundFiles, "assets/soundFX/", tableFileNames)
 
     createSettingsElements()

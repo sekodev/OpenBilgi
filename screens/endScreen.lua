@@ -901,7 +901,7 @@ function scene:create( event )
 
     priceLockCoins = commonMethods.calculateLockPrice(priceLockCoins)
 
-    local tableFileNames = { "answerChosen.wav", "answerRight.wav", "answerWrong.wav", "fireworks.wav", "lockQuestionSet.wav" }
+    local tableFileNames = { "answerChosen.wav", "answerRight.wav", "fireworks.wav", "lockQuestionSet.wav" }
     tableSoundFiles = utils.loadSoundFX(tableSoundFiles, "assets/soundFX/", tableFileNames)
     
     checkHighScore()

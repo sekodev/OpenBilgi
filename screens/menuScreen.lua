@@ -733,6 +733,12 @@ end
 
 -- Close language notification box
 local function closeLanguageNotificationBox()
+    menuGroup.emitterFXLeft:start()
+    menuGroup.emitterFXRight:start()
+
+    transition.to( menuGroup.emitterFXLeft, { time = timeWaitChoice, alpha = 1 } )
+    transition.to( menuGroup.emitterFXRight, { time = timeWaitChoice, alpha = 1 } )
+
     utils.clearDisplayGroup(infoGroup)
 
     composer.setVariable( "isLanguageOptionShown", true )
@@ -785,7 +791,7 @@ function scene:create( event )
 
     priceLockCoins = commonMethods.calculateLockPrice(priceLockCoins)
     
-    local tableFileNames = { "answerChosen.wav", "answerRight.wav", "answerWrong.wav", "lockQuestionSet.wav", "campfire.mp3" }
+    local tableFileNames = { "answerChosen.wav", "answerRight.wav", "lockQuestionSet.wav", "campfire.mp3" }
     tableSoundFiles = utils.loadSoundFX(tableSoundFiles, "assets/soundFX/", tableFileNames)
 
     createMenuElements()
@@ -838,6 +844,12 @@ function scene:show( event )
             local isLanguageOptionShown = composer.getVariable( "isLanguageOptionShown" )
 
             if (not isLanguageOptionShown) then
+                menuGroup.emitterFXLeft:stop()
+                menuGroup.emitterFXRight:stop()
+
+                transition.to( menuGroup.emitterFXLeft, { time = timeWaitChoice, alpha = 0 } )
+                transition.to( menuGroup.emitterFXRight, { time = timeWaitChoice, alpha = 0 } )
+
                 -- Declare options for dialog box creation
                 local optionsLanguageOptionBox = {
                     fontDialog = fontLogo,
