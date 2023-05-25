@@ -600,93 +600,61 @@ local function createQuitConfirmationMenu(targetGroup)
     targetGroup.buttonQuitDecline.alpha = 0
 end
 
--- Create settings menu that opens up when player clicks gear(settings) icon
-local function createSettingsMenu(targetGroup)
-    local xDistanceSides = contentWidthSafe / 10
-    local widthButtonSettings = contentWidthSafe / 10
-    local heightButtonSettings = widthButtonSettings
-    
+-- Creates audio controls
+local function createAudioMenu(targetGroup)
+    local colorBackground = themeData.colorBackground
+    local colorButtonDefault = themeData.colorButtonDefault
+    local colorButtonFillDefault = themeData.colorButtonFillWrong
+    local colorButtonFillOnPress = themeData.colorButtonFillTrue
+    local colorButtonStroke = themeData.colorButtonStroke
+
     yStartingPlacement = targetGroup.menuSeparator.y + targetGroup.menuSeparator.height / 2
 
-    targetGroup.backgroundSettings = display.newRect( targetGroup, display.contentCenterX, 0, 1, 1 )
-    targetGroup.backgroundSettings.anchorY = 0
-    targetGroup.backgroundSettings:setFillColor( unpack(themeData.colorBackground) )
-
-    targetGroup.imageSound = display.newImageRect( targetGroup, "assets/menu/sound.png", widthButtonSettings, heightButtonSettings )
-    targetGroup.imageSound.id = "muteSound"
-    targetGroup.imageSound:setFillColor( unpack(themeData.colorButtonDefault) )
-    targetGroup.imageSound.anchorX = 0
-    targetGroup.imageSound.x = xDistanceSides
-    targetGroup.imageSound.y = yStartingPlacement + targetGroup.imageSound.height * 1.2
-    targetGroup.imageSound:addEventListener( "touch", handleUITouch )
-
-    targetGroup.imageMusic = display.newImageRect( targetGroup, "assets/menu/music.png", widthButtonSettings, heightButtonSettings )
-    targetGroup.imageMusic.id = "muteMusic"
-    targetGroup.imageMusic:setFillColor( unpack(themeData.colorButtonDefault) )
-    targetGroup.imageMusic.anchorX = 0
-    targetGroup.imageMusic.x = xDistanceSides
-    targetGroup.imageMusic.y = targetGroup.imageSound.y + targetGroup.imageSound.height / 2 + targetGroup.imageMusic.height * 1.2
-    targetGroup.imageMusic:addEventListener( "touch", handleUITouch )
-
-    
-    local widthLineSound = contentWidthSafe - xDistanceSides * 2 - targetGroup.imageSound.width * 1.5
-    local heightLineSound = targetGroup.imageSound.height / 12
-    local xLineSound = targetGroup.imageSound.x + targetGroup.imageSound.width * 1.5
-    local yLineSound = targetGroup.imageSound.y
-
-    local colorButtonDefault = themeData.colorButtonDefault
-    local colorButtonFillWrong = themeData.colorButtonFillWrong
-
-    targetGroup.imageSound.buttonControl = display.newCircle( targetGroup, xLineSound + widthLineSound / 2, yLineSound, targetGroup.imageSound.height / 4 )
-    targetGroup.imageSound.buttonControl:setStrokeColor( unpack(themeData.colorButtonStroke) )
-    targetGroup.imageSound.buttonControl.strokeWidth = 10
-    targetGroup.imageSound.buttonControl:setFillColor( unpack(colorButtonFillWrong) )
-    targetGroup.imageSound.buttonControl.id = "controlSound"
-    targetGroup.imageSound.buttonControl.levelCurrent = composer.getVariable("soundLevel")
-    targetGroup.imageSound.buttonControl.levelBeforeMute = targetGroup.imageSound.buttonControl.levelCurrent -- Used to keep last sound level before mute is pressed
-    targetGroup.imageSound.buttonControl:addEventListener( "touch", handleUITouch )
-
-    targetGroup.imageSound.buttonControl.line = display.newRect( targetGroup, 0, targetGroup.imageSound.buttonControl.y, 0, heightLineSound )
-    targetGroup.imageSound.buttonControl.line:setFillColor( unpack(colorButtonDefault) )
-    targetGroup.imageSound.buttonControl.line.anchorX = 0
-    targetGroup.imageSound.buttonControl.line.x = xLineSound
-    targetGroup.imageSound.buttonControl.line.width = widthLineSound
+    targetGroup.shadeBlocker = display.newRect( targetGroup, display.contentCenterX, 0, contentWidth, 0 )
+    targetGroup.shadeBlocker:setFillColor( unpack(colorBackground) )
+    targetGroup.shadeBlocker.alpha = .2
+    targetGroup.shadeBlocker.alphaStart = targetGroup.shadeBlocker.alpha
+    targetGroup.shadeBlocker:addEventListener( "touch", function () return true end )
 
 
-    local widthLineMusic = widthLineSound
-    local heightLineMusic = heightLineSound
-    local xLineMusic = xLineSound
-    local yLineMusic = targetGroup.imageMusic.y
+    local widthSoundButton = contentWidthSafe / 10
+    local heightSoundButton = widthSoundButton
+    local ySoundSlider = yStartingPlacement + heightSoundButton * 1.2
 
-    targetGroup.imageMusic.buttonControl = display.newCircle( targetGroup, xLineMusic + widthLineMusic / 2, yLineMusic, targetGroup.imageMusic.height / 4 )
-    targetGroup.imageMusic.buttonControl:setStrokeColor( unpack(themeData.colorButtonStroke) )
-    targetGroup.imageMusic.buttonControl.strokeWidth = 10
-    targetGroup.imageMusic.buttonControl:setFillColor( unpack(colorButtonFillWrong) )
-    targetGroup.imageMusic.buttonControl.id = "controlMusic"
-    targetGroup.imageMusic.buttonControl.levelCurrent = composer.getVariable("musicLevel")
-    targetGroup.imageMusic.buttonControl.levelBeforeMute = targetGroup.imageMusic.buttonControl.levelCurrent -- Used to keep last music level before mute is pressed
-    targetGroup.imageMusic.buttonControl:addEventListener( "touch", handleUITouch )
+    local optionsSliderSound = { id = "soundLevel", filePath = "assets/menu/sound.png", 
+        colorBackground = colorBackground, colorButtonDefault = colorButtonDefault, 
+        colorButtonFillDefault = colorButtonFillDefault, colorButtonFillOnPress = colorButtonFillOnPress, 
+        colorButtonStroke = colorButtonStroke, widthButton = widthSoundButton, heightButton = heightSoundButton, 
+        yButton = ySoundSlider, soundSample = tableSoundFiles["answerChosen"] }
+    targetGroup.buttonSound = utils.createSliderControl(targetGroup, optionsSliderSound)
 
-    targetGroup.imageMusic.buttonControl.line = display.newRect( targetGroup, 0, targetGroup.imageMusic.y, 0, targetGroup.imageMusic.height / 12 )
-    targetGroup.imageMusic.buttonControl.line:setFillColor( unpack(colorButtonDefault) )
-    targetGroup.imageMusic.buttonControl.line.anchorX = 0
-    targetGroup.imageMusic.buttonControl.line.x = xLineMusic
-    targetGroup.imageMusic.buttonControl.line.width = widthLineMusic
+    local widthMusicButton = widthSoundButton
+    local heightMusicButton = widthMusicButton
+    local yMusicSlider = targetGroup.buttonSound.y + targetGroup.buttonSound.height + heightMusicButton * 1.2
 
-    targetGroup.imageSound.buttonControl.x = targetGroup.imageSound.buttonControl.line.x + (targetGroup.imageSound.buttonControl.line.width * targetGroup.imageSound.buttonControl.levelCurrent)
-    targetGroup.imageMusic.buttonControl.x = targetGroup.imageMusic.buttonControl.line.x + (targetGroup.imageMusic.buttonControl.line.width * targetGroup.imageMusic.buttonControl.levelCurrent)
+    local optionsSliderMusic = { id = "musicLevel", filePath = "assets/menu/music.png", 
+        colorBackground = colorBackground, colorButtonDefault = colorButtonDefault, 
+        colorButtonFillDefault = colorButtonFillDefault, colorButtonFillOnPress = colorButtonFillOnPress, 
+        colorButtonStroke = colorButtonStroke, widthButton = widthMusicButton, heightButton = heightMusicButton, 
+        yButton = yMusicSlider, typeSlider = "clickOpen", yStartingPlacement = yStartingPlacement, position = "top" }
+    targetGroup.buttonMusic = utils.createSliderControl(targetGroup, optionsSliderMusic)
 
-    targetGroup.backgroundSettings.width = targetGroup.imageSound.buttonControl.line.x + targetGroup.imageSound.buttonControl.line.width * 1.1 - targetGroup.imageSound.x
-    targetGroup.backgroundSettings.height = (targetGroup.imageMusic.y + targetGroup.imageMusic.height) - yStartingPlacement
-    targetGroup.backgroundSettings.y = yStartingPlacement
- 
-    targetGroup.backgroundSettings.alpha = 0
-    targetGroup.imageSound.alpha = 0
-    targetGroup.imageMusic.alpha = 0
-    targetGroup.imageSound.buttonControl.alpha = 0
-    targetGroup.imageSound.buttonControl.line.alpha = 0
-    targetGroup.imageMusic.buttonControl.alpha = 0
-    targetGroup.imageMusic.buttonControl.line.alpha = 0
+    targetGroup.shadeBlocker.height = contentHeightSafe - yStartingPlacement
+    targetGroup.shadeBlocker.y = yStartingPlacement + targetGroup.shadeBlocker.height / 2
+    targetGroup.shadeBlocker:toBack( )
+
+
+    targetGroup.shadeBlocker.alpha = 0
+    targetGroup.buttonMusic.background.alpha = 0
+
+    targetGroup.buttonSound.alpha = 0
+    targetGroup.buttonMusic.alpha = 0
+
+    targetGroup.buttonSound.nodeControl.alpha = 0
+    targetGroup.buttonSound.nodeControl.line.alpha = 0
+
+    targetGroup.buttonMusic.nodeControl.alpha = 0
+    targetGroup.buttonMusic.nodeControl.line.alpha = 0
 end
 
 -- Create UI elements including visual cue
@@ -749,15 +717,15 @@ local function createUIElements(targetGroup)
     targetGroup:insert(targetGroup.textNumCoins)
 
 
-    local optionsButtonSettings = 
+    local optionsButtonAudioMenu = 
     {
         defaultFile = "assets/menu/settings.png",
         width = contentHeightSafe / 15,
         height = contentHeightSafe / 15,
-        id = "settings",
+        id = "openAudioSettings",
         onEvent = handleUITouch,
     }
-    targetGroup.buttonSettings = widget.newButton( optionsButtonSettings )
+    targetGroup.buttonSettings = widget.newButton( optionsButtonAudioMenu )
     targetGroup.buttonSettings:setFillColor( unpack(colorButtonDefault) )
     targetGroup.buttonSettings.isActivated = false
     targetGroup.buttonSettings.x, targetGroup.buttonSettings.y = contentWidthSafe - targetGroup.buttonBack.width / 2, targetGroup.buttonBack.y
@@ -797,7 +765,7 @@ end
 -- Create every element that player sees on the screen
 local function createGameArea(targetGroup)
     createUIElements(targetGroup)
-    createSettingsMenu(targetGroup)
+    createAudioMenu(targetGroup)
     createQuitConfirmationMenu(targetGroup)
     createFramesChoices(targetGroup)
     createGameTimer(targetGroup)
@@ -1009,17 +977,23 @@ local function showQuitConfirmationMenu(targetGroup)
     targetGroup.buttonBack.id = "quitDecline"
 end
 
-local function hideSettingsMenu(targetGroup, isSettingsButtonActivated)
+local function hideAudioSettings(targetGroup, isSettingsButtonActivated)
     -- Save changes made by the player
     savePreferences()
 
-    transition.to( targetGroup.backgroundSettings, {time = 250, alpha = 0} )
-    transition.to( targetGroup.imageSound, {time = 250, alpha = 0} )
-    transition.to( targetGroup.imageMusic, {time = 250, alpha = 0} )
-    transition.to( targetGroup.imageSound.buttonControl, {time = 250, alpha = 0} )
-    transition.to( targetGroup.imageSound.buttonControl.line, {time = 250, alpha = 0} )
-    transition.to( targetGroup.imageMusic.buttonControl, {time = 250, alpha = 0} )
-    transition.to( targetGroup.imageMusic.buttonControl.line, {time = 250, alpha = 0} )
+    
+    transition.to( targetGroup.shadeBlocker, {time = 250, alpha = 0} )
+    transition.to( targetGroup.buttonMusic.background, {time = 250, alpha = 0} )
+
+    transition.to( targetGroup.buttonSound, {time = 250, alpha = 0} )
+    transition.to( targetGroup.buttonMusic, {time = 250, alpha = 0} )
+
+    transition.to( targetGroup.buttonSound.nodeControl, {time = 250, alpha = 0} )
+    transition.to( targetGroup.buttonSound.nodeControl.line, {time = 250, alpha = 0} )
+
+    transition.to( targetGroup.buttonMusic.nodeControl, {time = 250, alpha = 0} )
+    transition.to( targetGroup.buttonMusic.nodeControl.line, {time = 250, alpha = 0} )
+
 
     targetGroup.buttonBack:setLabel( "<" )
     targetGroup.buttonBack.id = "buttonBack"
@@ -1030,25 +1004,35 @@ local function hideSettingsMenu(targetGroup, isSettingsButtonActivated)
     end
 end
 
-local function showSettingsMenu(targetGroup)
-    targetGroup.backgroundSettings:toFront( )
-    targetGroup.imageSound:toFront( )
-    targetGroup.imageMusic:toFront( )
-    targetGroup.imageSound.buttonControl.line:toFront( )
-    targetGroup.imageSound.buttonControl:toFront( )
-    targetGroup.imageMusic.buttonControl.line:toFront( )
-    targetGroup.imageMusic.buttonControl:toFront( )
+local function showAudioSettings(targetGroup)
+    targetGroup.shadeBlocker:toFront( )
+    targetGroup.buttonMusic.background:toFront( )
 
-    transition.to( targetGroup.backgroundSettings, {time = 250, alpha = 1} )
-    transition.to( targetGroup.imageSound, {time = 250, alpha = 1} )
-    transition.to( targetGroup.imageMusic, {time = 250, alpha = 1} )
-    transition.to( targetGroup.imageSound.buttonControl, {time = 250, alpha = 1} )
-    transition.to( targetGroup.imageSound.buttonControl.line, {time = 250, alpha = 1} )
-    transition.to( targetGroup.imageMusic.buttonControl, {time = 250, alpha = 1} )
-    transition.to( targetGroup.imageMusic.buttonControl.line, {time = 250, alpha = 1} )
+    targetGroup.buttonSound:toFront( )
+    targetGroup.buttonMusic:toFront( )
+
+    targetGroup.buttonSound.nodeControl.line:toFront( )
+    targetGroup.buttonSound.nodeControl:toFront( )
+
+    targetGroup.buttonMusic.nodeControl.line:toFront( )
+    targetGroup.buttonMusic.nodeControl:toFront( )
+
+
+    transition.to( targetGroup.shadeBlocker, {time = 250, alpha = targetGroup.shadeBlocker.alphaStart} )
+    transition.to( targetGroup.buttonMusic.background, {time = 250, alpha = 1} )
+
+    transition.to( targetGroup.buttonSound, {time = 250, alpha = 1} )
+    transition.to( targetGroup.buttonMusic, {time = 250, alpha = 1} )
+
+    transition.to( targetGroup.buttonSound.nodeControl, {time = 250, alpha = 1} )
+    transition.to( targetGroup.buttonSound.nodeControl.line, {time = 250, alpha = 1} )
+
+    transition.to( targetGroup.buttonMusic.nodeControl, {time = 250, alpha = 1} )
+    transition.to( targetGroup.buttonMusic.nodeControl.line, {time = 250, alpha = 1} )
+
 
     targetGroup.buttonBack:setLabel( "x" )
-    targetGroup.buttonBack.id = "closeSettings"
+    targetGroup.buttonBack.id = "closeAudioSettings"
 end
 
 local function showContinueEndElements(targetGroup)
@@ -1266,10 +1250,10 @@ function showAnswer(targetGroup, choiceSelected, textCoinAward)
     else
         -- If the player didn't choose any answer, highlight the correct choice
         if (frontGroup.numChildren > 0) then
-            hideSettingsMenu(frontGroup)
+            hideAudioSettings(frontGroup)
             hideQuitConfirmationMenu(frontGroup)
         else
-            hideSettingsMenu(backGroup)
+            hideAudioSettings(backGroup)
             hideQuitConfirmationMenu(backGroup)
         end
 
@@ -1290,84 +1274,17 @@ end
 
 -- Handle in-game menu touches like settings related and quit buttons
 function handleUITouch(event)
-    if (event.phase == "began") then
-        if (event.target.id == "controlSound" or "controlMusic" == event.target.id) then
-            display.getCurrentStage( ):setFocus( event.target )
-
-            event.target:setFillColor( unpack(themeData.colorButtonFillTrue) )
-        elseif (event.target.id == "muteSound") then
-            event.target.buttonControl.x = event.target.buttonControl.line.x
-
-            -- Quick mute/unmute
-            if (event.target.buttonControl.levelCurrent <= 0) then
-                event.target.buttonControl.levelCurrent = event.target.buttonControl.levelBeforeMute
-            else
-                event.target.buttonControl.levelBeforeMute = event.target.buttonControl.levelCurrent
-                event.target.buttonControl.levelCurrent = 0
-            end
-
-            event.target.buttonControl.x = event.target.buttonControl.line.x + (event.target.buttonControl.line.width * event.target.buttonControl.levelCurrent)
-
-            for i = 2, audio.totalChannels do
-                audio.setVolume( event.target.buttonControl.levelCurrent, {channel = i} )
-            end
-
-            composer.setVariable( "soundLevel", event.target.buttonControl.levelCurrent )
-        elseif (event.target.id == "muteMusic") then
-            event.target.buttonControl.x = event.target.buttonControl.line.x
-
-            -- Quick mute/unmute
-            if (event.target.buttonControl.levelCurrent <= 0) then
-                event.target.buttonControl.levelCurrent = event.target.buttonControl.levelBeforeMute
-            else
-                event.target.buttonControl.levelBeforeMute = event.target.buttonControl.levelCurrent
-                event.target.buttonControl.levelCurrent = 0
-            end
-
-            event.target.buttonControl.x = event.target.buttonControl.line.x + (event.target.buttonControl.line.width * event.target.buttonControl.levelCurrent)
-
-            audio.setVolume( event.target.buttonControl.levelCurrent, {channel = channelMusicBackground} )
-
-            composer.setVariable( "musicLevel", event.target.buttonControl.levelCurrent )
-        end
-    elseif (event.phase == "moved") then
-        if (event.target.id == "controlSound" or "controlMusic" == event.target.id) then
-            if (event.x >= event.target.line.x and event.x <= event.target.line.x + event.target.line.width) then
-                event.target.x = event.x
-
-                event.target.levelBeforeMute = event.target.levelCurrent
-                event.target.levelCurrent = (event.target.x - event.target.line.x) / event.target.line.width
-
-                if (event.target.levelCurrent < 0.05) then
-                    event.target.levelCurrent = 0
-                end
-                
-
-                if (event.target.id == "controlSound") then
-                    -- Only channels 2 and 3 are actively used in this scene
-                    -- We will set volume for other channels in "ended" phase
-                    audio.setVolume( event.target.levelCurrent, {channel = 2} )
-                    audio.setVolume( event.target.levelCurrent, {channel = 3} )
-
-                    if (not audio.isChannelPlaying( 2 )) then
-                        audio.play( tableSoundFiles["answerChosen"], {channel = 2} ) 
-                    end
-                elseif (event.target.id == "controlMusic") then
-                    audio.setVolume( event.target.levelCurrent, {channel = channelMusicBackground} )
-                end
-            end
-        end
-    elseif (event.phase == "ended") then
+    if (event.phase == "ended") then
         if (event.target.id == "buttonBack") then
             -- Show an "Are you sure?" dialog box when quit / back button is pressed
             if (not event.target.isActivated) then
                 event.target.isActivated = true
 
                 if (frontGroup.numChildren > 0) then
-                    hideSettingsMenu(frontGroup)
+                    hideAudioSettings(frontGroup)
                     showQuitConfirmationMenu(frontGroup)
                 else
-                    hideSettingsMenu(backGroup)
+                    hideAudioSettings(backGroup)
                     showQuitConfirmationMenu(backGroup)
                 end
             else
@@ -1390,50 +1307,34 @@ function handleUITouch(event)
             else
                 hideQuitConfirmationMenu(backGroup)
             end
-        elseif (event.target.id == "settings") then
+        elseif (event.target.id == "openAudioSettings") then
             if (not event.target.isActivated) then
                 event.target.isActivated = true
 
                 if (frontGroup.numChildren > 0) then
                     hideQuitConfirmationMenu(frontGroup)
-                    showSettingsMenu(frontGroup)
+                    showAudioSettings(frontGroup)
                 else
                     hideQuitConfirmationMenu(backGroup)
-                    showSettingsMenu(backGroup)
+                    showAudioSettings(backGroup)
                 end
             else
                 event.target.isActivated = false
 
                 if (frontGroup.numChildren > 0) then
-                    hideSettingsMenu(frontGroup)
+                    hideAudioSettings(frontGroup)
                 else
-                    hideSettingsMenu(backGroup)
+                    hideAudioSettings(backGroup)
                 end
             end
-        elseif (event.target.id == "closeSettings") then
+        elseif (event.target.id == "closeAudioSettings") then
             event.target.isActivated = false
 
             if (frontGroup.numChildren > 0) then
-                hideSettingsMenu(frontGroup, frontGroup.buttonSettings.isActivated)
+                hideAudioSettings(frontGroup, frontGroup.buttonSettings.isActivated)
             else
-                hideSettingsMenu(backGroup, backGroup.buttonSettings.isActivated)
+                hideAudioSettings(backGroup, backGroup.buttonSettings.isActivated)
             end
-        elseif (event.target.id == "controlMusic") then
-            display.getCurrentStage( ):setFocus( nil )
-
-            event.target:setFillColor( unpack(themeData.colorButtonFillWrong) )
-
-            composer.setVariable( "musicLevel", event.target.levelCurrent )
-        elseif (event.target.id == "controlSound") then
-            display.getCurrentStage( ):setFocus( nil )
-
-            for i = 2, audio.totalChannels do
-                audio.setVolume( event.target.levelCurrent, {channel = i} )
-            end
-
-            event.target:setFillColor( unpack(themeData.colorButtonFillWrong) )
-
-            composer.setVariable( "soundLevel", event.target.levelCurrent )
         end
     end
 end
@@ -1544,9 +1445,9 @@ function handleGameTouch(event)
 
                 -- If player made a choice before closing the settings menu, close it before showing the answer
                 if (frontGroup.numChildren > 0) then
-                    hideSettingsMenu(frontGroup, frontGroup.buttonSettings.isActivated)
+                    hideAudioSettings(frontGroup, frontGroup.buttonSettings.isActivated)
                 else
-                    hideSettingsMenu(backGroup, backGroup.buttonSettings.isActivated)
+                    hideAudioSettings(backGroup, backGroup.buttonSettings.isActivated)
                 end                
 
 

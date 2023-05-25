@@ -78,6 +78,173 @@ function utils.clearTable(targetTable)
     return targetTable
 end
 
+-- Adjust slider level - turn on/off or fine control
+local function controlSliderLevel(event)
+    if (event.phase == "began") then
+        if (event.target.id == "sliderControl") then
+            display.getCurrentStage( ):setFocus( event.target )
+
+            event.target:setFillColor( unpack(event.target.colorFillOnPress) )
+        elseif (event.target.id == "switchOnOff") then
+            event.target.nodeControl.x = event.target.nodeControl.line.x
+
+            -- Quick on/off
+            if (event.target.nodeControl.levelCurrent <= 0) then
+                event.target.nodeControl.levelCurrent = event.target.nodeControl.levelBeforeMute
+            else
+                event.target.nodeControl.levelBeforeMute = event.target.nodeControl.levelCurrent
+                event.target.nodeControl.levelCurrent = 0
+            end
+
+            event.target.nodeControl.x = event.target.nodeControl.line.x + (event.target.nodeControl.line.width * event.target.nodeControl.levelCurrent)
+
+            local idVariable = event.target.idVariable
+            if (idVariable == "soundLevel") then
+                for i = 2, audio.totalChannels do
+                    audio.setVolume( event.target.nodeControl.levelCurrent, {channel = i} )
+                end
+
+                if (not audio.isChannelPlaying( 2 )) then
+                    audio.play( event.target.soundSample, {channel = 2} )
+                end
+            elseif (idVariable == "musicLevel") then
+                audio.setVolume( event.target.nodeControl.levelCurrent, {channel = channelBackgroundMusic} )
+            end
+
+            composer.setVariable( idVariable, event.target.nodeControl.levelCurrent )
+        end
+    elseif (event.phase == "moved") then
+        if (event.target.id == "sliderControl") then
+            if (event.x >= event.target.line.x and event.x <= event.target.line.x + event.target.line.width) then
+                event.target.x = event.x
+
+                event.target.levelBeforeMute = event.target.levelCurrent
+                event.target.levelCurrent = (event.target.x - event.target.line.x) / event.target.line.width
+
+                if (event.target.levelCurrent < 0.05) then
+                    event.target.levelCurrent = 0
+                end
+
+
+                local idVariable = event.target.idVariable
+                if (idVariable == "soundLevel") then
+                    -- Only channels 2 and 3 are actively used in this scene
+                    -- We will set volume for other channels in "ended" phase
+                    audio.setVolume( event.target.levelCurrent, {channel = 2} )
+                    audio.setVolume( event.target.levelCurrent, {channel = 3} )
+
+                    if (not audio.isChannelPlaying( 2 )) then
+                        audio.play( event.target.soundSample, {channel = 2} )
+                    end
+                elseif (idVariable == "musicLevel") then
+                    audio.setVolume( event.target.levelCurrent, {channel = channelBackgroundMusic} )
+                end
+            end
+        end
+    elseif (event.phase == "ended") then
+        if (event.target.id == "sliderControl") then
+            display.getCurrentStage( ):setFocus( nil )
+
+            local idVariable = event.target.idVariable
+            if (idVariable == "soundLevel") then
+                for i = 2, audio.totalChannels do
+                    audio.setVolume( event.target.levelCurrent, {channel = i} )
+                end
+            end
+
+            event.target:setFillColor( unpack(event.target.colorFillDefault) )
+
+            composer.setVariable( idVariable, event.target.levelCurrent )
+        end
+    end
+    return true
+end
+
+-- Create slider controls - used for SFX and music levels
+function utils.createSliderControl(targetGroup, optionsSliderControl)
+    local idVariable = optionsSliderControl["id"]
+    local filePath = optionsSliderControl["filePath"]
+    local widthButton = optionsSliderControl["widthButton"]
+    local heightButton = optionsSliderControl["heightButton"]
+    local yButton = optionsSliderControl["yButton"]
+    local soundSample = optionsSliderControl["soundSample"]
+
+    local colorBackground = optionsSliderControl["colorBackground"]
+    local colorButtonDefault = optionsSliderControl["colorButtonDefault"]
+    local colorButtonFillDefault = optionsSliderControl["colorButtonFillDefault"]
+    local colorButtonFillOnPress = optionsSliderControl["colorButtonFillOnPress"]
+    local colorButtonStroke = optionsSliderControl["colorButtonStroke"]
+    
+
+    local xDistanceSides = contentWidthSafe / 10
+    local imageButton
+    local typeSlider, yStartingPlacement
+
+    if (optionsSliderControl["typeSlider"]) then
+        typeSlider = optionsSliderControl["typeSlider"]
+        yStartingPlacement = optionsSliderControl["yStartingPlacement"]
+    end
+
+    imageButton = display.newImageRect( targetGroup, filePath, widthButton, heightButton )
+    imageButton:setFillColor( unpack(colorButtonDefault) )
+    imageButton.id = "switchOnOff"
+    imageButton.idVariable = idVariable
+    imageButton.soundSample = soundSample
+    imageButton.anchorX = 0
+    imageButton.x = xDistanceSides
+    imageButton.y = yButton
+    imageButton:addEventListener( "touch", controlSliderLevel )
+
+    local widthLineSlider = contentWidthSafe - xDistanceSides * 2 - imageButton.width * 1.5
+    local heightLineSlider = imageButton.height / 12
+    local xLineSlider = imageButton.x + imageButton.width * 1.5
+    local yLineSlider = imageButton.y
+
+    imageButton.nodeControl = display.newCircle( targetGroup, xLineSlider + widthLineSlider / 2, yLineSlider, imageButton.height / 4 )
+    imageButton.nodeControl:setStrokeColor( unpack(colorButtonStroke) )
+    imageButton.nodeControl.strokeWidth = 10
+    imageButton.nodeControl.colorFillDefault = colorButtonFillDefault
+    imageButton.nodeControl.colorFillOnPress = colorButtonFillOnPress
+    imageButton.nodeControl:setFillColor( unpack(imageButton.nodeControl.colorFillDefault) )
+    imageButton.nodeControl.id = "sliderControl"
+    imageButton.nodeControl.idVariable = idVariable
+    imageButton.nodeControl.levelCurrent = composer.getVariable(idVariable)
+    imageButton.nodeControl.levelBeforeMute = imageButton.nodeControl.levelCurrent -- Used to keep last sound level before mute is pressed
+    imageButton.nodeControl.soundSample = soundSample
+    imageButton.nodeControl:addEventListener( "touch", controlSliderLevel )
+
+    imageButton.nodeControl.line = display.newRect( targetGroup, 0, imageButton.nodeControl.y, 0, heightLineSlider )
+    imageButton.nodeControl.line:setFillColor( unpack(colorButtonDefault) )
+    imageButton.nodeControl.line.anchorX = 0
+    imageButton.nodeControl.line.x = xLineSlider
+    imageButton.nodeControl.line.width = widthLineSlider
+
+    imageButton.nodeControl:toFront( )
+
+    imageButton.nodeControl.x = imageButton.nodeControl.line.x + (imageButton.nodeControl.line.width * imageButton.nodeControl.levelCurrent)
+
+    if (typeSlider == "clickOpen") then
+        imageButton.background = display.newRect( targetGroup, display.contentCenterX, 0, contentWidth, 0 )
+        imageButton.background:setFillColor( unpack(colorBackground) )
+        imageButton.background:toBack( )
+        imageButton.background:addEventListener( "touch", function () return true end )
+
+        local position = optionsSliderControl["position"]
+        if (position == "top") then
+            imageButton.background.height = (imageButton.y + imageButton.height) - yStartingPlacement
+            imageButton.background.y = yStartingPlacement + imageButton.background.height / 2
+        elseif (position == "bottom") then
+            -- Determine the y position for clickOpen type menu's top
+            local yTopMenu = imageButton.y - imageButton.height
+
+            imageButton.background.height = yStartingPlacement - yTopMenu
+            imageButton.background.y = yTopMenu + imageButton.background.height / 2
+        end
+    end
+
+    return imageButton
+end
+
 local function handleInfoBoxTouch(event)
     if (event.phase == "ended" or "cancelled" == event.phase) then
         if (event.target.id == "closeInfoBox") then

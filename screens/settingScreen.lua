@@ -139,75 +139,6 @@ local function handleTouch(event)
                 event.target:setFillColor( unpack(colorButtonOver) )
                 event.target:setStrokeColor( unpack(colorButtonOver) )
                 event.target.textLabel:setFillColor( unpack(colorTextOver) )
-            elseif (event.target.id == "controlSound" or "controlMusic" == event.target.id) then
-                -- Start controlling music and sound effects
-                display.getCurrentStage( ):setFocus( event.target )
-
-                event.target:setFillColor( unpack(themeData.colorButtonFillTrue) )
-            elseif (event.target.id == "muteSound") then
-                -- Pressing the icon mutes sound effects
-                event.target.buttonControl.x = event.target.buttonControl.line.x
-
-                -- Quick mute/unmute
-                if (event.target.buttonControl.levelCurrent <= 0) then
-                    event.target.buttonControl.levelCurrent = event.target.buttonControl.levelBeforeMute
-                else
-                    event.target.buttonControl.levelBeforeMute = event.target.buttonControl.levelCurrent
-                    event.target.buttonControl.levelCurrent = 0
-                end
-
-                event.target.buttonControl.x = event.target.buttonControl.line.x + (event.target.buttonControl.line.width * event.target.buttonControl.levelCurrent)
-
-                for i = 2, audio.totalChannels do
-                    audio.setVolume( event.target.buttonControl.levelCurrent, {channel = i} )
-                end
-
-                composer.setVariable( "soundLevel", event.target.buttonControl.levelCurrent )
-            elseif (event.target.id == "muteMusic") then
-                -- Pressing the icon mutes the music
-                event.target.buttonControl.x = event.target.buttonControl.line.x
-
-                -- Quick mute/unmute
-                if (event.target.buttonControl.levelCurrent <= 0) then
-                    event.target.buttonControl.levelCurrent = event.target.buttonControl.levelBeforeMute
-                else
-                    event.target.buttonControl.levelBeforeMute = event.target.buttonControl.levelCurrent
-                    event.target.buttonControl.levelCurrent = 0
-                end
-
-                event.target.buttonControl.x = event.target.buttonControl.line.x + (event.target.buttonControl.line.width * event.target.buttonControl.levelCurrent)
-
-                audio.setVolume( event.target.buttonControl.levelCurrent, {channel = channelMusicBackground} )
-
-                composer.setVariable( "musicLevel", event.target.buttonControl.levelCurrent )
-            end
-        end
-    elseif (event.phase == "moved") then
-        if (isInteractionAvailable) then
-            if (event.target.id == "controlSound" or "controlMusic" == event.target.id) then
-                -- Main code used to control sound and music levels
-                if (event.x >= event.target.line.x and event.x <= event.target.line.x + event.target.line.width) then
-                    event.target.x = event.x
-
-                    event.target.levelBeforeMute = event.target.levelCurrent
-                    event.target.levelCurrent = (event.target.x - event.target.line.x) / event.target.line.width
-
-                    if (event.target.levelCurrent < 0.05) then
-                        event.target.levelCurrent = 0
-                    end
-                    
-
-                    if (event.target.id == "controlSound") then
-                        audio.setVolume( event.target.levelCurrent, {channel = 2} )
-
-                        -- Play sample sound
-                        if (not audio.isChannelPlaying( 2 )) then
-                            audio.play( tableSoundFiles["answerChosen"], {channel = 2} ) 
-                        end
-                    elseif (event.target.id == "controlMusic") then
-                        audio.setVolume( event.target.levelCurrent, {channel = channelMusicBackground} )
-                    end
-                end
             end
         end
     elseif (event.phase == "ended") then
@@ -223,22 +154,6 @@ local function handleTouch(event)
                     local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "settingScreen"}}
                     composer.gotoScene( "screens.menuScreen", optionsChangeScene )
                 end
-            elseif (event.target.id == "controlMusic") then
-                display.getCurrentStage( ):setFocus( nil )
-
-                event.target:setFillColor( unpack(themeData.colorButtonFillWrong) )
-
-                composer.setVariable( "musicLevel", event.target.levelCurrent )
-            elseif (event.target.id == "controlSound") then
-                display.getCurrentStage( ):setFocus( nil )
-
-                for i = 2, audio.totalChannels do
-                    audio.setVolume( event.target.levelCurrent, {channel = i} )
-                end
-
-                event.target:setFillColor( unpack(themeData.colorButtonFillWrong) )
-
-                composer.setVariable( "soundLevel", event.target.levelCurrent )
             elseif (event.target.id == "resetQuestions") then
                 -- Declare options for dialog box creation
                 local optionsDialogBox = {
@@ -269,15 +184,17 @@ function createSettingsElements()
     local widthButtonSettings = contentWidthSafe / 8
     local heightButtonSettings = widthButtonSettings
 
+    local colorBackground = themeData.colorBackground
     local colorButtonFillDefault = themeData.colorButtonFillDefault
     local colorButtonDefault = themeData.colorButtonDefault
     local colorButtonOver = themeData.colorButtonOver
     local colorTextDefault = themeData.colorTextDefault
     local colorButtonFillWrong = themeData.colorButtonFillWrong
+    local colorButtonFillTrue = themeData.colorButtonFillTrue
     local colorButtonStroke = themeData.colorButtonStroke
 
     local background = display.newRect( menuGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
-    background:setFillColor( unpack(themeData.colorBackground) )
+    background:setFillColor( unpack(colorBackground) )
 
     local optionsButtonBack = 
     {
@@ -432,69 +349,25 @@ function createSettingsElements()
     frameButtonLanguage.textLabel.y = frameButtonLanguage.y
 
 
-    local imageMusic = display.newImageRect( menuGroup, "assets/menu/music.png", widthButtonSettings, heightButtonSettings )
-    imageMusic.id = "muteMusic"
-    imageMusic:setFillColor( unpack(colorButtonDefault) )
-    imageMusic.anchorX = 0
-    imageMusic.x = xDistanceSides
-    imageMusic.y = frameButtonLanguage.y - frameButtonLanguage.height * 2
-    imageMusic:addEventListener( "touch", handleTouch )
+    local widthMusicButton = widthButtonSettings
+    local heightMusicButton = heightButtonSettings
+    local yMusicSlider = frameButtonLanguage.y - frameButtonLanguage.height - heightMusicButton * 1.2
+    local optionsSliderMusic = { id = "musicLevel", filePath = "assets/menu/music.png", 
+        colorBackground = colorBackground, colorButtonDefault = colorButtonDefault, 
+        colorButtonFillDefault = colorButtonFillWrong, colorButtonFillOnPress = colorButtonFillTrue, 
+        colorButtonStroke = colorButtonStroke, widthButton = widthMusicButton, heightButton = heightMusicButton, 
+        yButton = yMusicSlider }
+    local buttonMusic = utils.createSliderControl(menuGroup, optionsSliderMusic)
 
-    local widthLineMusic = contentWidthSafe - xDistanceSides * 2 - imageMusic.width * 1.5
-    local heightLineMusic = imageMusic.height / 12
-    local xLineMusic = imageMusic.x + imageMusic.width * 1.5
-    local yLineMusic = imageMusic.y
-
-    imageMusic.buttonControl = display.newCircle( menuGroup, xLineMusic + widthLineMusic / 2, yLineMusic, imageMusic.height / 4 )
-    imageMusic.buttonControl:setStrokeColor( unpack(colorButtonStroke) )
-    imageMusic.buttonControl.strokeWidth = 10
-    imageMusic.buttonControl:setFillColor( unpack(colorButtonFillWrong) )
-    imageMusic.buttonControl.id = "controlMusic"
-    imageMusic.buttonControl.levelCurrent = composer.getVariable("musicLevel")
-    imageMusic.buttonControl.levelBeforeMute = imageMusic.buttonControl.levelCurrent -- Used to keep last music level before mute is pressed
-    imageMusic.buttonControl:addEventListener( "touch", handleTouch )
-
-    imageMusic.buttonControl.line = display.newRect( menuGroup, 0, imageMusic.y, 0, imageMusic.height / 12 )
-    imageMusic.buttonControl.line:setFillColor( unpack(colorButtonDefault) )
-    imageMusic.buttonControl.line.anchorX = 0
-    imageMusic.buttonControl.line.x = xLineMusic
-    imageMusic.buttonControl.line.width = widthLineMusic
-
-
-    local imageSound = display.newImageRect( menuGroup, "assets/menu/sound.png", widthButtonSettings, heightButtonSettings )
-    imageSound.id = "muteSound"
-    imageSound:setFillColor( unpack(colorButtonDefault) )
-    imageSound.anchorX = 0
-    imageSound.x = xDistanceSides
-    imageSound.y = imageMusic.y - imageMusic.height / 2 - imageMusic.height * 1.2
-    imageSound:addEventListener( "touch", handleTouch )
-
-    local widthLineSound = widthLineMusic
-    local heightLineSound = heightLineMusic
-    local xLineSound = xLineMusic
-    local yLineSound = imageSound.y
-
-    imageSound.buttonControl = display.newCircle( menuGroup, xLineSound + widthLineSound / 2, yLineSound, imageSound.height / 4 )
-    imageSound.buttonControl:setStrokeColor( unpack(colorButtonStroke) )
-    imageSound.buttonControl.strokeWidth = 10
-    imageSound.buttonControl:setFillColor( unpack(colorButtonFillWrong) )
-    imageSound.buttonControl.id = "controlSound"
-    imageSound.buttonControl.levelCurrent = composer.getVariable("soundLevel")
-    imageSound.buttonControl.levelBeforeMute = imageSound.buttonControl.levelCurrent -- Used to keep last sound level before mute is pressed
-    imageSound.buttonControl:addEventListener( "touch", handleTouch )
-
-    imageSound.buttonControl.line = display.newRect( menuGroup, 0, imageSound.buttonControl.y, 0, heightLineSound )
-    imageSound.buttonControl.line:setFillColor( unpack(colorButtonDefault) )
-    imageSound.buttonControl.line.anchorX = 0
-    imageSound.buttonControl.line.x = xLineSound
-    imageSound.buttonControl.line.width = widthLineSound
-
-
-    imageSound.buttonControl.x = imageSound.buttonControl.line.x + (imageSound.buttonControl.line.width * imageSound.buttonControl.levelCurrent)
-    imageMusic.buttonControl.x = imageMusic.buttonControl.line.x + (imageMusic.buttonControl.line.width * imageMusic.buttonControl.levelCurrent)
-
-    imageSound.buttonControl:toFront( )
-    imageMusic.buttonControl:toFront( )
+    local widthSoundButton = widthMusicButton
+    local heightSoundButton = heightMusicButton
+    local ySoundSlider = buttonMusic.y - buttonMusic.height / 2 - heightSoundButton * 1.2
+    local optionsSliderSound = { id = "soundLevel", filePath = "assets/menu/sound.png", 
+        colorBackground = colorBackground, colorButtonDefault = colorButtonDefault, 
+        colorButtonFillDefault = colorButtonFillWrong, colorButtonFillOnPress = colorButtonFillTrue, 
+        colorButtonStroke = colorButtonStroke, widthButton = widthSoundButton, heightButton = heightSoundButton, 
+        yButton = ySoundSlider, soundSample = tableSoundFiles["answerChosen"] }
+    local buttonSound = utils.createSliderControl(menuGroup, optionsSliderSound)
 end
 
 function scene:create( event )
