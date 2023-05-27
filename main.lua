@@ -41,7 +41,7 @@ local function assignVariables()
     composer.setVariable( "userToken", "" )
 
     composer.setVariable( "emailSupport", "info.sleepybug@gmail.com" ) -- Used to show player a way to get in contact
-    composer.setVariable( "currentVersion" , "OpenBilgi, v0.9 (58)" ) -- Visible in Settings screen
+    composer.setVariable( "currentVersion" , "OpenBilgi, v0.9 (59)" ) -- Visible in Settings screen
     composer.setVariable( "idAppStore" , "123456789" ) -- Required to show rating pop-ups
     composer.setVariable( "urlLandingPage" , "https://sekodev.github.io/bilgiWeb/" ) -- Required for sharing landing page on social media
     composer.setVariable( "pathIconFile" , "assets/menu/iconQuiz.png" ) -- Required for share UI
