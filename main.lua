@@ -37,17 +37,18 @@ local function assignVariables()
     -- Those variables were used for online functionalities that existed before.
     -- Stays in code to keep preference/save file intact.
     composer.setVariable( "userID" , "" )
-    composer.setVariable( "userName" , "asd" )
+    composer.setVariable( "userName" , "" )
     composer.setVariable( "userToken", "" )
 
     composer.setVariable( "emailSupport", "info.sleepybug@gmail.com" ) -- Used to show player a way to get in contact
-    composer.setVariable( "currentVersion" , "OpenBilgi, v0.9 (60)" ) -- Visible in Settings screen
+    composer.setVariable( "currentVersion" , "OpenBilgi, v0.9 (61)" ) -- Visible in Settings screen
     composer.setVariable( "idAppStore" , "123456789" ) -- Required to show rating pop-ups
     composer.setVariable( "urlLandingPage" , "https://sekodev.github.io/bilgiWeb/" ) -- Required for sharing landing page on social media
     composer.setVariable( "pathIconFile" , "assets/menu/iconQuiz.png" ) -- Required for share UI
 
     composer.setVariable( "currentTheme" , "dark") -- dark/light
     composer.setVariable( "currentLanguage" , "tr") -- Default: Turkish
+    composer.setVariable( "languageSelected" , "") -- Default: ""
     composer.setVariable( "fullScreen" , true) -- Full screen support - Default: true
     composer.setVariable( "currentAppScene" , "menuScreen") -- Required for back button on Android
     composer.setVariable( "timeTransitionScene", 250 ) -- Used in every scene change
@@ -149,6 +150,7 @@ local function loadPreferences()
         composer.setVariable( "isTermsPrivacyAccepted", preference.getValue("settings")[34] )
         composer.setVariable( "fullScreen", preference.getValue("settings")[35] )
         composer.setVariable( "isLanguageOptionShown", preference.getValue("settings")[36] )
+        composer.setVariable( "languageSelected", preference.getValue("settings")[37] )
     end
 end
 
@@ -190,7 +192,8 @@ function savePreferences()
         composer.getVariable( "savedIsRevived" ),
         composer.getVariable( "isTermsPrivacyAccepted" ),
         composer.getVariable( "fullScreen" ),
-        composer.getVariable( "isLanguageOptionShown" ), } }
+        composer.getVariable( "isLanguageOptionShown" ),
+        composer.getVariable( "languageSelected" ), } }
 end
 
 -- Reset preferences file
@@ -285,6 +288,12 @@ end
 
 assignVariables()
 
+-- Load preferences file and initialize variables
+loadPreferences()
+
+-- Adjust screen dimensions depending on full screen option
+adjustScreenDimensions(composer.getVariable( "fullScreen" ))
+
 -- Import sozluk library for localization
 -- https://github.com/sekodev/sozluk
 sozluk = require ( "libs.sozluk" )
@@ -294,28 +303,28 @@ sozluk.init()
 
 
 -- Code block used for language selection
-local shownLanguage
+local languageSelected = composer.getVariable( "languageSelected" )
+if (languageSelected == "") then
+    -- If language is not picked by the player before, get device language
+    local deviceLanguage
 
-if (system.getInfo("targetAppStore") == "google" or system.getInfo("targetAppStore") == "amazon" or system.getInfo("targetAppStore") == "none") then
-    shownLanguage = system.getPreference( "locale", "language" )
-elseif (system.getInfo("targetAppStore") == "apple") then
-    shownLanguage = string.sub( system.getPreference( "ui", "language" ), 1, 2 )
-end
+    if (system.getInfo("targetAppStore") == "google" or system.getInfo("targetAppStore") == "amazon" or system.getInfo("targetAppStore") == "none") then
+        deviceLanguage = system.getPreference( "locale", "language" )
+    elseif (system.getInfo("targetAppStore") == "apple") then
+        deviceLanguage = string.sub( system.getPreference( "ui", "language" ), 1, 2 )
+    end
 
-if ( shownLanguage == "tr" or shownLanguage == "TR" or "Türkçe" == shownLanguage or shownLanguage == "Turkish" or "Turkce" == shownLanguage ) then
-    composer.setVariable( "currentLanguage", "tr" )
+    if ( deviceLanguage == "tr" or deviceLanguage == "TR" or "Türkçe" == deviceLanguage or deviceLanguage == "Turkish" or "Turkce" == deviceLanguage ) then
+        composer.setVariable( "currentLanguage", "tr" )
+    else
+        composer.setVariable( "currentLanguage", "en" )
+    end
 else
-    composer.setVariable( "currentLanguage", "en" )
+    composer.setVariable( "currentLanguage", languageSelected )
 end
 
---composer.setVariable( "currentLanguage", "tr" )
 sozluk.setSelectedTranslation( composer.getVariable("currentLanguage") )
 
--- Load preferences file and initialize variables
-loadPreferences()
-
--- Adjust screen dimensions depending on full screen option
-adjustScreenDimensions(composer.getVariable( "fullScreen" ))
 
 -- Pick starting set and handle bugs caused by previous versions
 pickStartingQuestionSet()

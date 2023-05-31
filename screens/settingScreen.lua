@@ -123,6 +123,7 @@ local function handleTouch(event)
                 end
 
                 composer.setVariable( "currentLanguage", languageSelected )
+                composer.setVariable( "languageSelected", languageSelected )
 
                 sozluk.setSelectedTranslation( composer.getVariable("currentLanguage") )
                 utils.clearDisplayGroup(menuGroup)
