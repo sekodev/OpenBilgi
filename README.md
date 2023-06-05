@@ -2,14 +2,14 @@
 
 OpenBilgi is the open source version of roguelike trivia/quiz game [*bilgi*](https://play.google.com/store/apps/details?id=io.sleepybug.bilgi).
 
-Repository version(build): v0.9(58)
+Repository version(build): v0.9(62)
 <br><br>
 
 ## Engine
 
 You need [Solar2D](https://solar2d.com/) to compile and build the project.
 
-Tested against version [2022.3685](https://github.com/coronalabs/corona/releases/tag/3685).
+Tested against version [2022.3690](https://github.com/coronalabs/corona/releases/tag/3690).
 <br><br>
 
 ## Libraries
@@ -60,9 +60,9 @@ This Font Software is licensed under the [SIL Open Font License](http://scripts.
 ## Contact information
 [e-mail](mailto:info.sleepybug@gmail.com?subject=[GitHub]%20OpenBilgi) (preferred)
 
-[Facebook](https://www.facebook.com/sleepybugstudio/)
-
 [Twitter](https://twitter.com/sleepybugstudio)
+
+[Facebook](https://www.facebook.com/sleepybugstudio/)
 <br><br>
 
 ## Privacy Policy and Terms of Use
