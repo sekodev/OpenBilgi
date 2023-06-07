@@ -579,7 +579,8 @@ function utils.showRateUI()
             iOSAppId = idAppStore
         }
     else
-        local storeSupported = { "google" }
+        local targetAppStore = system.getInfo( "targetAppStore" )
+        local storeSupported = { targetAppStore }
 
         local optionsRateGame = {
             supportedAndroidStores = storeSupported
