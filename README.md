@@ -9,7 +9,7 @@ Repository version(build): v0.9(62)
 
 You need [Solar2D](https://solar2d.com/) to compile and build the project.
 
-Tested against version [2022.3690](https://github.com/coronalabs/corona/releases/tag/3690).
+Tested against version [2023.3690](https://github.com/coronalabs/corona/releases/tag/3690).
 <br><br>
 
 ## Libraries
