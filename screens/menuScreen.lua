@@ -182,7 +182,7 @@ function handleTouch(event)
 
                 event.target:setFillColor( unpack(themeData.colorButtonOver) )
 
-                utils.showRateUI()
+                utils.showRateUI(composer.getVariable( "idAppStore" ))
             elseif (event.target.id == "showStats") then
                 isInteractionAvailable = false
 

@@ -710,7 +710,7 @@ local function handleRatingTouch(event)
             savePreferences()
             
             utils.clearDisplayGroup(rateGroup)
-            utils.showRateUI()
+            utils.showRateUI(composer.getVariable( "idAppStore" ))
         elseif (event.target.id == "rateLater") then
             -- This option is NOT used to ask for ratings later
             composer.setVariable( "askedRateGame", true )
