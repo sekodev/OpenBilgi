@@ -1,6 +1,6 @@
 # OpenBilgi
 
-OpenBilgi is the open source version of roguelike trivia/quiz game [*bilgi*](https://play.google.com/store/apps/details?id=io.sleepybug.bilgi).
+OpenBilgi is the open source version of roguelike trivia/quiz game [*bilgi*](https://sekodev.github.io/bilgiWeb/).
 
 Repository version(build): v0.9(62)
 <br><br>
