@@ -15,9 +15,11 @@ local scene = composer.newScene()
 
 local widget = require ("widget")
 
+local sceneTransitionTime = composer.getVariable( "sceneTransitionTime" )
+local sceneTransitionEffect = composer.getVariable( "sceneTransitionEffect" )
+
 local fontIngame = composer.getVariable( "fontIngame" )
 local fontLogo = composer.getVariable( "fontLogo" )
-local timeTransitionScene = composer.getVariable( "timeTransitionScene" )
 
 local mainGroup, menuGroup, resetGroup
 
@@ -39,7 +41,7 @@ end
 local function resetProgress()
     resetQuestions()
 
-    local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene}
+    local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime}
     composer.gotoScene( "screens.logoScreen", optionsChangeScene )
 end
 
@@ -144,18 +146,7 @@ local function handleTouch(event)
         end
     elseif (event.phase == "ended") then
         if (isInteractionAvailable) then
-            if (event.target.id == "buttonBack") then
-                -- Return player to the screen where they pressed "Settings"
-                -- Player can reach settings from either menuScreen or endScreen
-                if (callSource == "endScreen") then
-                    local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, 
-                    params = {callSource = "settingScreen", scoreCurrent = scoreCurrent, statusGame = statusGame}}
-                    composer.gotoScene( "screens.endScreen", optionsChangeScene )
-                else
-                    local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "settingScreen"}}
-                    composer.gotoScene( "screens.menuScreen", optionsChangeScene )
-                end
-            elseif (event.target.id == "resetQuestions") then
+            if (event.target.id == "resetQuestions") then
                 -- Declare options for dialog box creation
                 local optionsDialogBox = {
                     fontDialog = fontLogo,
@@ -180,6 +171,19 @@ local function handleTouch(event)
     return true
 end
 
+local function goBack()
+    -- Return player to the screen where they pressed "Settings"
+    -- Player can reach settings from either menuScreen or endScreen
+    if (callSource == "endScreen") then
+        local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, 
+        params = {callSource = "settingScreen", scoreCurrent = scoreCurrent, statusGame = statusGame}}
+        composer.gotoScene( "screens.endScreen", optionsChangeScene )
+    else
+        local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, params = {callSource = "settingScreen"}}
+        composer.gotoScene( "screens.menuScreen", optionsChangeScene )
+    end
+end
+
 function createSettingsElements()
     local xDistanceSides = contentWidthSafe / 10
     local widthButtonSettings = contentWidthSafe / 8
@@ -197,36 +201,9 @@ function createSettingsElements()
     local background = display.newRect( menuGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
     background:setFillColor( unpack(colorBackground) )
 
-    local optionsButtonBack = 
-    {
-        shape = "rect",
-        fillColor = { default = colorButtonFillDefault, over = colorButtonFillDefault },
-        width = contentWidthSafe / 6,
-        height = contentHeightSafe / 10,
-        label = "<",
-        labelColor = { default = colorButtonDefault, over = colorButtonOver },
-        font = fontLogo,
-        fontSize = contentHeightSafe / 15,
-        id = "buttonBack",
-        onEvent = handleTouch,
-    }
-    local buttonBack = widget.newButton( optionsButtonBack )
-    buttonBack.x = buttonBack.width / 2
-    buttonBack.y = display.safeScreenOriginY + buttonBack.height / 2
-    menuGroup:insert( buttonBack )
-
-    local optionsLabelVersion = { text = composer.getVariable("currentVersion"), 
-        height = 0, align = "center", font = fontLogo, fontSize = contentHeightSafe / 40 }
-    local labelVersionNumber = display.newText( optionsLabelVersion )
-    labelVersionNumber:setFillColor( unpack(colorTextDefault) )
-    labelVersionNumber.anchorX = 1
-    labelVersionNumber.x = contentWidthSafe - buttonBack.width / 2
-    labelVersionNumber.y = buttonBack.y
-    menuGroup:insert(labelVersionNumber)
-
-    local menuSeparator = display.newRect( menuGroup, background.x, 0, background.width, 10 )
-    menuSeparator.y = buttonBack.y + buttonBack.height / 2
-    menuSeparator:setFillColor( unpack(colorButtonOver) )
+    local optionsNavigationMenu = { position = "top", fontName = fontLogo, 
+        backFunction = goBack }
+    local yStartingPlacement = commonMethods.createNavigationMenu(menuGroup, optionsNavigationMenu)
 
 
     -- Create settings elements from bottom to top so player can easily reach those options on touch screen

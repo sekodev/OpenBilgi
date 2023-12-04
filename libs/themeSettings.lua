@@ -18,10 +18,12 @@ function themeSettings.getData(themeSelected)
 	-- themes: dark - light
 
 	if (themeSelected == "dark") then
-		themeData.themeSelected = "dark"
+		themeData.nameSelected = "dark"
 
 		themeData.colorBackground = { 0, 0, 0 }
 		themeData.colorBackgroundPopup = { .917, .917, .843 }
+
+		themeData.colorSeparator = { .99, .82, .009 }
 
 		themeData.colorButtonFillDefault = themeData.colorBackground
 		themeData.colorButtonFillOver = { .917, .917, .843 }
@@ -39,6 +41,8 @@ function themeSettings.getData(themeSelected)
 
 		themeData.colorPadlock = { .878, 0, 0 }
 
+		themeData.colorTitle = { 1, 0, 0 }
+
 		themeData.colorTextDefault = { .917, .917, .843 }
 		themeData.colorTextOver = { 0, 0, 0 }
 		themeData.colorTextSelected = { .917, .917, .843 }
@@ -54,10 +58,12 @@ function themeSettings.getData(themeSelected)
 		themeData.colorHyperlinkPopup = { 0, 0, 1 }
 		themeData.colorHyperlinkPopupVisited = { .56, .85, .85 }
 	elseif (themeSelected == "light") then
-		themeData.themeSelected = "light"
+		themeData.nameSelected = "light"
 
 		themeData.colorBackground = { 1, 1, .922 }
 		themeData.colorBackgroundPopup = { 0, 0, 0 }
+
+		themeData.colorSeparator = { .99, .82, .009 }
 
 		themeData.colorButtonFillDefault = themeData.colorBackground
 		themeData.colorButtonFillOver = { 0, 0, 0 }
@@ -74,6 +80,8 @@ function themeSettings.getData(themeSelected)
 		themeData.strokeWidthVisualCue = 10
 
 		themeData.colorPadlock = { .878, 0, 0 }
+
+		themeData.colorTitle = { 1, 0, 0 }
 
 		themeData.colorTextDefault = { 0, 0, 0 }
 		themeData.colorTextOver = { 0, 0, 0 }

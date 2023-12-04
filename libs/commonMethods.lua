@@ -306,6 +306,79 @@ function commonMethods.showLocksAvailable(targetGroup, yTopInfoBox, locksAvailab
     targetGroup:insert(imageLock.textNumAvailable)
 end
 
+-- Handle touch events for navigation buttons
+-- Calls assigned function when corresponding option is selected
+local function handleNavigationTouch(event)
+    if (event.phase == "ended") then
+        event.target.methodAssigned()
+    end
+    return true
+end
+
+-- Creates navigation menu with back button
+function commonMethods.createNavigationMenu(targetGroup, optionsNavigationMenu)
+    local position = optionsNavigationMenu["position"]
+    local fontName = optionsNavigationMenu["fontName"]
+    local backFunction = optionsNavigationMenu["backFunction"]
+
+    local colorBackground = themeData.colorBackground
+    local colorButtonFillDefault = themeData.colorButtonFillDefault
+    local colorButtonDefault = themeData.colorButtonDefault
+    local colorButtonOver = themeData.colorButtonOver
+    local colorTextDefault = themeData.colorTextDefault
+    local colorSeparator = themeData.colorSeparator
+
+    local background = display.newRect( targetGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
+    background:setFillColor( unpack(colorBackground) )
+    background:addEventListener( "touch", function () return true end )
+
+    local optionsButtonBack = 
+    {
+        shape = "rect",
+        fillColor = { default = colorButtonFillDefault, over = colorButtonFillDefault },
+        width = contentWidthSafe / 6,
+        height = contentHeightSafe / 10,
+        label = "<",
+        labelColor = { default = colorButtonDefault, over = colorButtonOver },
+        font = fontName,
+        fontSize = contentHeightSafe / 15,
+        id = "buttonBack",
+        onEvent = handleNavigationTouch,
+    }
+    local buttonBack = widget.newButton( optionsButtonBack )
+    buttonBack.x = buttonBack.width / 2
+    if (position == "top") then
+        buttonBack.y = display.safeScreenOriginY + buttonBack.height / 2
+    elseif (position == "bottom") then
+        buttonBack.y = contentHeightSafe - buttonBack.height / 2
+    end
+    buttonBack.methodAssigned = backFunction
+    targetGroup:insert( buttonBack )
+
+
+    local yStartingPlacement
+
+    local menuSeparator = display.newRect( targetGroup, background.x, 0, background.width, 10 )
+    
+    menuSeparator:setFillColor( unpack(colorSeparator) )
+
+    if (position == "top") then
+        menuSeparator.y = buttonBack.y + buttonBack.height / 2 + menuSeparator.height
+        yStartingPlacement = menuSeparator.y + menuSeparator.height / 2
+
+        background.height = (menuSeparator.y + menuSeparator.height / 2) - display.safeScreenOriginY
+        background.y = display.safeScreenOriginY + background.height / 2
+    elseif (position == "bottom") then
+        menuSeparator.y = buttonBack.y - buttonBack.height / 2 - menuSeparator.height
+        yStartingPlacement = menuSeparator.y - menuSeparator.height / 2
+
+        background.height = contentHeight - yStartingPlacement
+        background.y = contentHeight - background.height / 2
+    end
+
+    return yStartingPlacement
+end
+
 -- Handles touch events when in-game share UI is shown
 local function handleShareTouch(event)
     if (event.phase == "ended") then

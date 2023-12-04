@@ -41,7 +41,7 @@ local function assignVariables()
     composer.setVariable( "userToken", "" )
 
     composer.setVariable( "emailSupport", "info.sleepybug@gmail.com" ) -- Used to show player a way to get in contact
-    composer.setVariable( "currentVersion" , "OpenBilgi, v0.9.1 (67)" ) -- Visible in Settings screen
+    composer.setVariable( "currentVersion" , "OpenBilgi, v0.9.2 (70)" ) -- Visible in Settings screen
     composer.setVariable( "idAppStore" , "123456789" ) -- Required to show rating pop-ups
     composer.setVariable( "urlLandingPage" , "https://sekodev.github.io/bilgiWeb/" ) -- Required for sharing landing page on social media
     composer.setVariable( "pathIconFile" , "assets/menu/iconQuiz.png" ) -- Required for share UI
@@ -51,7 +51,9 @@ local function assignVariables()
     composer.setVariable( "languageSelected" , "") -- Default: ""
     composer.setVariable( "fullScreen" , true) -- Full screen support - Default: true
     composer.setVariable( "currentAppScene" , "menuScreen") -- Required for back button on Android
-    composer.setVariable( "timeTransitionScene", 250 ) -- Used in every scene change
+    
+    composer.setVariable( "sceneTransitionEffect", "tossLeft" ) -- Used in every scene change
+    composer.setVariable( "sceneTransitionTime", 250 ) -- Used in every scene change
 
     composer.setVariable( "fontIngame", "Arial" )
     composer.setVariable( "fontLogo", "Russo_One.ttf" )
@@ -346,7 +348,8 @@ for i = 2, audio.totalChannels do
 end
 
 
-local timeTransitionScene = composer.getVariable( "timeTransitionScene" )
+local sceneTransitionTime = composer.getVariable( "sceneTransitionTime" )
+local sceneTransitionEffect = composer.getVariable( "sceneTransitionEffect" )
 
 -- Back button behavior for Android
 local function onKeyEvent( event )
@@ -358,16 +361,16 @@ local function onKeyEvent( event )
         elseif ( currentAppScene == "gameScreen" ) then
             composer.setVariable( "currentAppScene", "menuScreen" )
 
-            audio.fade( {channel = channelMusicBackground, time = timeTransitionScene, volume = 0} )
+            audio.fade( {channel = channelMusicBackground, time = sceneTransitionTime, volume = 0} )
 
-            local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = currentAppScene}}
+            local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, params = {callSource = currentAppScene}}
             composer.gotoScene( "screens.menuScreen", optionsChangeScene )
         else
             composer.setVariable( "currentAppScene", "menuScreen" )
 
-            --audio.fade( {channel = channelMusicBackground, time = timeTransitionScene, volume = 0} )
+            --audio.fade( {channel = channelMusicBackground, time = sceneTransitionTime, volume = 0} )
 
-            local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = currentAppScene}}
+            local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, params = {callSource = currentAppScene}}
             composer.gotoScene( "screens.menuScreen", optionsChangeScene )
         end
         return true
@@ -378,6 +381,6 @@ Runtime:addEventListener( "key", onKeyEvent )
 
 
 -- After everything is done, switch to logo screen to start the game
-local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, 
+local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, 
     params = {callSource = "main"}}
 composer.gotoScene( "screens.logoScreen", optionsChangeScene )

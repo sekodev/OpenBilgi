@@ -19,7 +19,9 @@ local random = math.random
 
 local mainGroup, menuGroup, scoreGroup, mapGroup, rateGroup, shareGroup, infoGroup
 
-local timeTransitionScene = composer.getVariable( "timeTransitionScene" )
+local sceneTransitionTime = composer.getVariable( "sceneTransitionTime" )
+local sceneTransitionEffect = composer.getVariable( "sceneTransitionEffect" )
+
 local fontIngame = composer.getVariable( "fontIngame" )
 local fontLogo = composer.getVariable( "fontLogo" )
 local fontSize = contentHeightSafe / 15
@@ -125,7 +127,7 @@ function handleTouch(event)
                         audio.play( tableSoundFiles["answerRight"], {channel = 2} )
 
                         local timerChangeScene = timer.performWithDelay( timeWaitChoice, function () 
-                                local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, 
+                                local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, 
                                     params = {callSource = "endScreen", scoreCurrent = scoreCurrent,
                                      isSetLocked = buttonLockQuestionSet.isActivated, statusGame = statusGame}}
                                 composer.gotoScene( "screens." .. targetScreen, optionsChangeScene )
@@ -146,7 +148,7 @@ function handleTouch(event)
 
                 event.target:setFillColor( unpack(themeData.colorButtonOver) )
 
-                local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene,
+                local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime,
                  params = {callSource = "endScreen", scoreCurrent = scoreCurrent, statusGame = statusGame}}
                 composer.gotoScene( "screens.statsScreen", optionsChangeScene )
             elseif (event.target.id == "convertCurrency") then

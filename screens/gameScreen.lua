@@ -19,9 +19,11 @@ local rng = require ( "libs.rng" )
 
 local mainGroup, frontGroup, backGroup
 
+local sceneTransitionTime = composer.getVariable( "sceneTransitionTime" )
+local sceneTransitionEffect = composer.getVariable( "sceneTransitionEffect" )
+
 local fontIngame = composer.getVariable( "fontIngame" )
 local fontLogo = composer.getVariable( "fontLogo" )
-local timeTransitionScene = composer.getVariable( "timeTransitionScene" )
 
 local availableQuestionSets = composer.getVariable( "availableQuestionSets" )
 local amountQuestionSingleGame = composer.getVariable( "amountQuestionSingleGame" )     --20
@@ -165,7 +167,7 @@ local function hideActiveCard(typeHide, activeGroup, passiveGroup, statusGame, s
 
         resetPlayerProgress()
 
-        local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, 
+        local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, 
             params = {callSource = "gameScreen", scoreCurrent = scoreCurrent, questionCurrent = questionCurrent, 
             coinsEarned = coinsEarned, statusGame = statusGame}}
         composer.gotoScene( targetScene, optionsChangeScene )
@@ -917,7 +919,7 @@ local function createSpecialCard(targetGroup, typeCard)
 
 
         local fileParticleFX = "assets/particleFX/campfire.json"
-        if (themeData.themeSelected == "light") then
+        if (themeData.nameSelected == "light") then
             fileParticleFX = "assets/particleFX/campfire-light.json"
         end
 
@@ -940,7 +942,7 @@ local function createSpecialCard(targetGroup, typeCard)
 
 
         local fileParticleFX = "assets/particleFX/revival.json"
-        if (themeData.themeSelected == "light") then
+        if (themeData.nameSelected == "light") then
             fileParticleFX = "assets/particleFX/revival-light.json"
         end
 
@@ -1299,7 +1301,7 @@ function handleUITouch(event)
         elseif (event.target.id == "quitAccept") then
             resetPlayerProgress()
 
-            local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "gameScreen"}}
+            local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, params = {callSource = "gameScreen"}}
             composer.gotoScene( "screens.menuScreen", optionsChangeScene )
         elseif (event.target.id == "quitDecline") then
             if (frontGroup.numChildren > 0) then
@@ -1432,7 +1434,7 @@ function handleGameTouch(event)
                         transition.to( activeGroup.emitterFX, { time = timeWaitChoice, alpha = 0 } )
 
                         local timerChangeScene = timer.performWithDelay(1500, function () 
-                                local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "gameScreen"}}
+                                local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, params = {callSource = "gameScreen"}}
                                 composer.gotoScene( "screens.menuScreen", optionsChangeScene )
                             end, 1)
                         table.insert( tableTimers, timerChangeScene )

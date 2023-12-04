@@ -18,8 +18,9 @@ local particleDesigner = require( "libs.particleDesigner" )
 
 local mainGroup, menuGroup, shareGroup, infoGroup, URLGroup
 
-local currentLanguage = composer.getVariable( "currentLanguage" )
-local timeTransitionScene = composer.getVariable( "timeTransitionScene" )
+local sceneTransitionTime = composer.getVariable( "sceneTransitionTime" )
+local sceneTransitionEffect = composer.getVariable( "sceneTransitionEffect" )
+
 local fontLogo = composer.getVariable( "fontLogo" )
 local fontIngame = composer.getVariable( "fontIngame" )
 
@@ -55,7 +56,7 @@ local function hideActiveCard()
     end
 
     -- Pass current scene name, lock and save status
-    local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, 
+    local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, 
     params = {callSource = "menuScreen", isSetLocked = buttonLockQuestionSet.isActivated, isSaveAvailable = isSaveAvailable}}
     composer.gotoScene( "screens.gameScreen", optionsChangeScene )
 end
@@ -148,7 +149,7 @@ function handleTouch(event)
                         audio.play( tableSoundFiles["answerRight"], {channel = 2} )
 
                         local timerChangeScene = timer.performWithDelay( timeWaitChoice, function () 
-                                local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "menuScreen"}}
+                                local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, params = {callSource = "menuScreen"}}
                                 composer.gotoScene( "screens.settingScreen", optionsChangeScene )
                             end, 1 )
                         table.insert( tableTimers, timerChangeScene )
@@ -165,7 +166,7 @@ function handleTouch(event)
                         audio.play( tableSoundFiles["answerRight"], {channel = 2} )
 
                         local timerChangeScene = timer.performWithDelay( timeWaitChoice, function () 
-                                local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "menuScreen"}}
+                                local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, params = {callSource = "menuScreen"}}
                                 composer.gotoScene( "screens.creditScreen", optionsChangeScene )
                             end, 1 )
                         table.insert( tableTimers, timerChangeScene )
@@ -196,7 +197,7 @@ function handleTouch(event)
 
                 transition.to( menuGroup.emitterFXLeft, { time = timeWaitChoice, alpha = 0 } )
                 transition.to( menuGroup.emitterFXRight, { time = timeWaitChoice, alpha = 0, onComplete = function ()
-                        local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "menuScreen"}}
+                        local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, params = {callSource = "menuScreen"}}
                         composer.gotoScene( "screens.statsScreen", optionsChangeScene )
                     end})
             elseif (event.target.id == "convertCurrency") then
@@ -466,7 +467,7 @@ local function createMenuElements()
 
     -- Load particle file depending on selected theme
     local fileParticleFX = "assets/particleFX/torch.json"
-    if (themeData.themeSelected == "light") then
+    if (themeData.nameSelected == "light") then
         fileParticleFX = "assets/particleFX/torch-light.json"
     end
 
@@ -676,6 +677,9 @@ local function showPermissionRequest()
     buttonAcceptTerms.x = display.contentCenterX
     infoGroup:insert( buttonAcceptTerms )
 
+    -- Used to create links to corresponding privacy policy and terms of use
+    local currentLanguage = composer.getVariable( "currentLanguage" )
+
     local optionsButtonPrivacyPolicy = 
     {
         label = sozluk.getString("privacyPolicy"),
@@ -750,7 +754,7 @@ local function gotoSettings()
     composer.setVariable( "isLanguageOptionShown", true )
     savePreferences()
 
-    local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "menuScreen"}}
+    local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, params = {callSource = "menuScreen"}}
     composer.gotoScene( "screens.settingScreen", optionsChangeScene )
 end
 

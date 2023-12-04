@@ -14,7 +14,9 @@
 local scene = composer.newScene()
 
 local mainGroup
-local timeTransitionScene = composer.getVariable( "timeTransitionScene" )
+
+local sceneTransitionTime = composer.getVariable( "sceneTransitionTime" )
+local sceneTransitionEffect = composer.getVariable( "sceneTransitionEffect" )
 
 local tmr
 
@@ -23,8 +25,21 @@ local function changeScene()
     timer.cancel( tmr )
     tmr = nil
 
-    local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "logoScreen"}}
+    local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, params = {callSource = "logoScreen"}}
     composer.gotoScene( "screens.menuScreen", optionsChangeScene )
+end
+
+local function printBuildVersion()
+    local fontLogo = composer.getVariable( "fontLogo" )
+    local colorTextDefault = themeData.colorTextDefault
+
+    local optionsLabelVersion = { text = composer.getVariable("currentVersion"), 
+        height = 0, align = "center", font = fontLogo, fontSize = contentHeightSafe / 50 }
+    local labelVersionNumber = display.newText( optionsLabelVersion )
+    labelVersionNumber:setFillColor( unpack(colorTextDefault) )
+    labelVersionNumber.x = display.contentCenterX
+    labelVersionNumber.y = contentHeightSafe - labelVersionNumber.height
+    mainGroup:insert(labelVersionNumber)
 end
 
 function scene:create( event )
@@ -40,6 +55,8 @@ function scene:create( event )
     -- Your company/team logo here
     local logoSB = display.newImageRect( mainGroup, "assets/other/logoSleepyBug.png", 813 * scaleLogo, 194 * scaleLogo )
     logoSB.x, logoSB.y = display.contentCenterX, display.contentCenterY
+
+    printBuildVersion()
 end
 
 function scene:show( event )
