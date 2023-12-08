@@ -245,8 +245,13 @@ local function createCreditsElements()
     creditsGroup:insert(containerCredits)
 
     local tableCredits = {}
-    local sizeTitles = contentHeightSafe / 20
-    local sizeNames = contentHeightSafe / 25
+
+    local sizeTitles = contentHeightSafe / 22
+    local sizeNames = contentHeightSafe / 27
+
+    local yDistanceBetweenSections = sizeTitles * 1.5
+    local yDistanceBetweenTitleName = sizeTitles / 1.5
+    local yDistanceBetweenNames = sizeNames
 
     local colorTitle = themeData.colorTitle
     local colorTextDefault = themeData.colorTextDefault
@@ -255,7 +260,7 @@ local function createCreditsElements()
     for i = 1, #creditsData.entries do
         if (creditsData.entries[i].title) then
             local optionsTitlePeople = { text = creditsData.entries[i].title, font = fontLogo, 
-            width = contentWidthSafe / 1.1, fontSize = sizeTitles, align = "center" }
+                width = contentWidthSafe / 1.1, fontSize = sizeTitles, align = "center" }
             local titleEntry = display.newText( optionsTitlePeople )
             titleEntry:setFillColor( unpack( colorTitle ) )
             titleEntry.x = display.contentCenterX
@@ -263,7 +268,8 @@ local function createCreditsElements()
             if (i == 1) then
                 titleEntry.y = yLimitBottom + titleEntry.height
             else
-                titleEntry.y = tableCredits[#tableCredits].y + tableCredits[#tableCredits].height / 2 + titleEntry.height * 2
+                titleEntry.y = tableCredits[#tableCredits].y + tableCredits[#tableCredits].height / 2 + 
+                    titleEntry.height / 2 + yDistanceBetweenSections
             end
 
             creditsGroup:insert(titleEntry)
@@ -313,9 +319,11 @@ local function createCreditsElements()
                 namePeople:setFillColor( unpack(colorTextDefault) )
                 namePeople.x = display.contentCenterX
                 if (j == 1) then
-                    namePeople.y = tableCredits[#tableCredits].y + tableCredits[#tableCredits].height + namePeople.height / 2
+                    namePeople.y = tableCredits[#tableCredits].y + tableCredits[#tableCredits].height / 2 + 
+                        namePeople.height / 2 + yDistanceBetweenTitleName
                 else
-                    namePeople.y = tableCredits[#tableCredits].y + tableCredits[#tableCredits].height + namePeople.height
+                    namePeople.y = tableCredits[#tableCredits].y + tableCredits[#tableCredits].height / 2 + 
+                        namePeople.height / 2 + yDistanceBetweenNames
                 end
 
                 creditsGroup:insert( namePeople )
