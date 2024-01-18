@@ -17,7 +17,9 @@ local particleDesigner = require( "libs.particleDesigner" )
 
 local mainGroup, successGroup
 
-local timeTransitionScene = composer.getVariable( "timeTransitionScene" )
+local sceneTransitionTime = composer.getVariable( "sceneTransitionTime" )
+local sceneTransitionEffect = composer.getVariable( "sceneTransitionEffect" )
+
 local fontIngame = composer.getVariable( "fontIngame" )
 local fontLogo = composer.getVariable( "fontLogo" )
 
@@ -44,7 +46,7 @@ end
 
 local function createWisp()
     fileParticleFX = "assets/particleFX/wisp.json"
-    if (themeData.themeSelected == "light") then
+    if (themeData.nameSelected == "light") then
         fileParticleFX = "assets/particleFX/wisp-light.json"
     end
 
@@ -100,7 +102,7 @@ local function createBonfire()
     woodFire5.y = woodFire.y
 
     fileParticleFX = "assets/particleFX/bonfire.json"
-    if (themeData.themeSelected == "light") then
+    if (themeData.nameSelected == "light") then
         fileParticleFX = "assets/particleFX/bonfire-light.json"
     end
 
@@ -120,7 +122,7 @@ local function handleTouch(event)
         emitterFX:stop()
 
         transition.to( emitterFX, { time = 1000, alpha = 0, onComplete = function ()
-                local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, 
+                local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, 
                     params = {callSource = "gameScreen", scoreCurrent = scoreCurrent, questionCurrent = questionCurrent, 
                     coinsEarned = coinsEarned, statusGame = statusGame}}
                 composer.gotoScene( "screens.endScreen", optionsChangeScene )

@@ -18,8 +18,9 @@ local particleDesigner = require( "libs.particleDesigner" )
 
 local mainGroup, menuGroup, shareGroup, infoGroup, URLGroup
 
-local currentLanguage = composer.getVariable( "currentLanguage" )
-local timeTransitionScene = composer.getVariable( "timeTransitionScene" )
+local sceneTransitionTime = composer.getVariable( "sceneTransitionTime" )
+local sceneTransitionEffect = composer.getVariable( "sceneTransitionEffect" )
+
 local fontLogo = composer.getVariable( "fontLogo" )
 local fontIngame = composer.getVariable( "fontIngame" )
 
@@ -55,7 +56,7 @@ local function hideActiveCard()
     end
 
     -- Pass current scene name, lock and save status
-    local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, 
+    local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, 
     params = {callSource = "menuScreen", isSetLocked = buttonLockQuestionSet.isActivated, isSaveAvailable = isSaveAvailable}}
     composer.gotoScene( "screens.gameScreen", optionsChangeScene )
 end
@@ -148,7 +149,7 @@ function handleTouch(event)
                         audio.play( tableSoundFiles["answerRight"], {channel = 2} )
 
                         local timerChangeScene = timer.performWithDelay( timeWaitChoice, function () 
-                                local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "menuScreen"}}
+                                local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, params = {callSource = "menuScreen"}}
                                 composer.gotoScene( "screens.settingScreen", optionsChangeScene )
                             end, 1 )
                         table.insert( tableTimers, timerChangeScene )
@@ -165,7 +166,7 @@ function handleTouch(event)
                         audio.play( tableSoundFiles["answerRight"], {channel = 2} )
 
                         local timerChangeScene = timer.performWithDelay( timeWaitChoice, function () 
-                                local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "menuScreen"}}
+                                local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, params = {callSource = "menuScreen"}}
                                 composer.gotoScene( "screens.creditScreen", optionsChangeScene )
                             end, 1 )
                         table.insert( tableTimers, timerChangeScene )
@@ -196,7 +197,7 @@ function handleTouch(event)
 
                 transition.to( menuGroup.emitterFXLeft, { time = timeWaitChoice, alpha = 0 } )
                 transition.to( menuGroup.emitterFXRight, { time = timeWaitChoice, alpha = 0, onComplete = function ()
-                        local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "menuScreen"}}
+                        local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, params = {callSource = "menuScreen"}}
                         composer.gotoScene( "screens.statsScreen", optionsChangeScene )
                     end})
             elseif (event.target.id == "convertCurrency") then
@@ -249,67 +250,8 @@ function handleTouch(event)
             if (event.target.id == "shareSocial" or "rateGame" == event.target.id) then
                 event.target:setFillColor( unpack(themeData.colorButtonDefault) )
             elseif (event.target.id == "lockQuestionSet") then
-                local lockInfoAvailable = composer.getVariable( "lockInfoAvailable" )
-
-                -- Only change the flag as activated
-                -- This change will be used later on button press("Play") and scene change
-                if (event.target.isActivated) then
-                    event.target.isActivated = false
-                    event.target.alpha = event.target.alphaInactive
-                    event.target:setFillColor( unpack(themeData.colorPadlock) )
-                else
-                    audio.play( tableSoundFiles["lockQuestionSet"], {channel = 2} )
-
-                    -- Check to see if information about lock system will be shown
-                    -- If player discarded the message and chose "Don't show again", don't show info box
-                    if (lockInfoAvailable) then
-                        if (locksAvailable > 0) then
-                            event.target.isActivated = true
-                            event.target.alpha = 1
-                        end
-
-                        local infoText
-                        local isPromptAvailable = true
-                        if (locksAvailable > 0) then
-                            infoText = sozluk.getString("lockInformation")
-                        else
-                            infoText = sozluk.getString("lockInformationNA")
-                            isPromptAvailable = false
-                        end
-
-                        -- Declare options for information box creation
-                        local optionsInfoBox = {
-                            infoFont = fontLogo,
-                            infoText = infoText,
-                            isPromptAvailable = isPromptAvailable,
-                            stringPromptPreference = "lockInfoAvailable",
-                        }
-                        yTopFrame = utils.showInformationBox(infoGroup, optionsInfoBox)
-                        commonMethods.showLocksAvailable(infoGroup, yTopFrame, locksAvailable)
-                    else
-                        if (locksAvailable > 0) then
-                            event.target.isActivated = true
-                            event.target.alpha = 1
-                        else
-                            local infoText
-                            local isPromptAvailable = true
-                            if (locksAvailable <= 0) then
-                                infoText = sozluk.getString("lockInformationNA")
-                                isPromptAvailable = false
-                            end
-
-                            -- Declare options for information box creation
-                            local optionsInfoBox = {
-                                infoFont = fontLogo,
-                                infoText = infoText,
-                                isPromptAvailable = isPromptAvailable,
-                                stringPromptPreference = "lockInfoAvailable",
-                            }
-                            yTopFrame = utils.showInformationBox(infoGroup, optionsInfoBox)
-                            commonMethods.showLocksAvailable(infoGroup, yTopFrame, locksAvailable)
-                        end
-                    end
-                end
+                commonMethods.switchLock(event.target, infoGroup, locksAvailable, 
+                    tableSoundFiles["lockQuestionSet"], fontLogo)
             end
         end
     end
@@ -466,7 +408,7 @@ local function createMenuElements()
 
     -- Load particle file depending on selected theme
     local fileParticleFX = "assets/particleFX/torch.json"
-    if (themeData.themeSelected == "light") then
+    if (themeData.nameSelected == "light") then
         fileParticleFX = "assets/particleFX/torch-light.json"
     end
 
@@ -676,6 +618,9 @@ local function showPermissionRequest()
     buttonAcceptTerms.x = display.contentCenterX
     infoGroup:insert( buttonAcceptTerms )
 
+    -- Used to create links to corresponding privacy policy and terms of use
+    local currentLanguage = composer.getVariable( "currentLanguage" )
+
     local optionsButtonPrivacyPolicy = 
     {
         label = sozluk.getString("privacyPolicy"),
@@ -750,7 +695,7 @@ local function gotoSettings()
     composer.setVariable( "isLanguageOptionShown", true )
     savePreferences()
 
-    local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "menuScreen"}}
+    local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, params = {callSource = "menuScreen"}}
     composer.gotoScene( "screens.settingScreen", optionsChangeScene )
 end
 

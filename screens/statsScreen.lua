@@ -15,15 +15,17 @@ local scene = composer.newScene()
 
 local widget = require ("widget")
 
+local sceneTransitionTime = composer.getVariable( "sceneTransitionTime" )
+local sceneTransitionEffect = composer.getVariable( "sceneTransitionEffect" )
+
 local fontIngame = composer.getVariable( "fontIngame" )
 local fontLogo = composer.getVariable( "fontLogo" )
-local timeTransitionScene = composer.getVariable( "timeTransitionScene" )
 
 local mainGroup, statsGroup, resetGroup
 
 local containerStats
 
-local menuSeparator, yLimitBottom
+local yStartingPlacement, yLimitBottom
 
 local callSource
 local scoreCurrent = 0
@@ -85,7 +87,7 @@ local function resetStatistics()
     savePreferences()
 
     -- Resetting statistics takes player back to logoScreen
-    local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene}
+    local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime}
     composer.gotoScene( "screens.logoScreen", optionsChangeScene )
 end
 
@@ -126,17 +128,6 @@ local function handleTouch(event)
             event.target:setFillColor( unpack(colorButtonFillDefault) )
             event.target:setStrokeColor( unpack(colorButtonStroke) )
             event.target.textLabel:setFillColor( unpack(colorTextDefault) )
-        elseif (event.target.id == "buttonBack") then
-            Runtime:removeEventListener( "enterFrame", moveStats )
-
-            if (callSource == "endScreen") then
-                local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, 
-                params = {callSource = "statsScreen", scoreCurrent = scoreCurrent, statusGame = statusGame}}
-                composer.gotoScene( "screens.endScreen", optionsChangeScene )
-            else
-                local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "statsScreen"}}
-                composer.gotoScene( "screens.menuScreen", optionsChangeScene )
-            end
         end
     end
     return true
@@ -159,141 +150,67 @@ local function createStatisticsElements()
     local widthMenuButtons = contentWidthSafe / 1.5
     local fontSizeButtons = contentHeightSafe / 30
 
-    
-    local optionsLabelScoreValue = { text = composer.getVariable( "scoreHigh" ), 
-        height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
-    local labelScoreValue = display.newText( optionsLabelScoreValue )
-    labelScoreValue:setFillColor( unpack(colorTextDefault) )
-    labelScoreValue.x = display.contentCenterX
-    labelScoreValue.y = labelScoreValue.height  -- height is determined this way because it's relative to container coordinates
-    statsGroup:insert(labelScoreValue)
 
-    local optionsLabelScoreTitle = { text = sozluk.getString("bestScore"), 
-        height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
-    local labelScoreTitle = display.newText( optionsLabelScoreTitle )
-    labelScoreTitle:setFillColor( unpack(colorTextDefault) )
-    labelScoreTitle.x = display.contentCenterX
-    labelScoreTitle.y = labelScoreValue.y + labelScoreValue.height / 2 + labelScoreTitle.height / 2
-    statsGroup:insert(labelScoreTitle)
-
-    local optionsLabelGamesPlayedValue = { text = composer.getVariable( "gamesPlayed" ), 
-        height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
-    local labelGamesValue = display.newText( optionsLabelGamesPlayedValue )
-    labelGamesValue:setFillColor( unpack(colorTextDefault) )
-    labelGamesValue.x = display.contentCenterX
-    labelGamesValue.y = labelScoreTitle.y + labelScoreTitle.height + labelGamesValue.height * 1.5
-    statsGroup:insert(labelGamesValue)
-
-    local optionsLabelGamesTitle = { text = sozluk.getString("gamesPlayed"), 
-        height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
-    local labelGamesTitle = display.newText( optionsLabelGamesTitle )
-    labelGamesTitle:setFillColor( unpack(colorTextDefault) )
-    labelGamesTitle.x = display.contentCenterX
-    labelGamesTitle.y = labelGamesValue.y + labelGamesValue.height / 2 + labelGamesTitle.height / 2
-    statsGroup:insert(labelGamesTitle)
-
-    local optionsLabelAnsweredValue = { text = composer.getVariable( "questionsAnsweredTotal" ), 
-        height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
-    local labelAnsweredValue = display.newText( optionsLabelAnsweredValue )
-    labelAnsweredValue:setFillColor( unpack(colorTextDefault) )
-    labelAnsweredValue.x = display.contentCenterX
-    labelAnsweredValue.y = labelGamesTitle.y + labelGamesTitle.height + labelAnsweredValue.height * 1.5
-    statsGroup:insert(labelAnsweredValue)
-
-    local optionsLabelAnsweredTitle = { text = sozluk.getString("questionsAnsweredTotal"), 
-        height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
-    local labelAnsweredTitle = display.newText( optionsLabelAnsweredTitle )
-    labelAnsweredTitle:setFillColor( unpack(colorTextDefault) )
-    labelAnsweredTitle.x = display.contentCenterX
-    labelAnsweredTitle.y = labelAnsweredValue.y + labelAnsweredValue.height / 2 + labelAnsweredTitle.height / 2
-    statsGroup:insert(labelAnsweredTitle)
-
-    local optionsLabelRunsValue = { text = composer.getVariable( "runsCompleted" ), 
-        height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
-    local labelRunsValue = display.newText( optionsLabelRunsValue )
-    labelRunsValue:setFillColor( unpack(colorTextDefault) )
-    labelRunsValue.x = display.contentCenterX
-    labelRunsValue.y = labelAnsweredTitle.y + labelAnsweredTitle.height + labelRunsValue.height * 1.5
-    statsGroup:insert(labelRunsValue)
-
-    local optionsLabelRunsTitle = { text = sozluk.getString("runsCompleted"), 
-        height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
-    local labelRunsTitle = display.newText( optionsLabelRunsTitle )
-    labelRunsTitle:setFillColor( unpack(colorTextDefault) )
-    labelRunsTitle.x = display.contentCenterX
-    labelRunsTitle.y = labelRunsValue.y + labelRunsValue.height / 2 + labelRunsTitle.height / 2
-    statsGroup:insert(labelRunsTitle)
-
-    local optionsLabelLocksValue = { text = composer.getVariable( "locksUsed" ), 
-        height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
-    local labelLocksValue = display.newText( optionsLabelLocksValue )
-    labelLocksValue:setFillColor( unpack(colorTextDefault) )
-    labelLocksValue.x = display.contentCenterX
-    labelLocksValue.y = labelRunsTitle.y + labelRunsTitle.height + labelLocksValue.height * 1.5
-    statsGroup:insert(labelLocksValue)
-
-    local optionsLabelLocksTitle = { text = sozluk.getString("locksUsed"), 
-        height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
-    local labelLocksTitle = display.newText( optionsLabelLocksTitle )
-    labelLocksTitle:setFillColor( unpack(colorTextDefault) )
-    labelLocksTitle.x = display.contentCenterX
-    labelLocksTitle.y = labelLocksValue.y + labelLocksValue.height / 2 + labelLocksTitle.height / 2
-    statsGroup:insert(labelLocksTitle)
-
-    local optionsLabelCoinsValue = { text = composer.getVariable( "coinsTotal" ), 
-        height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
-    local labelCoinsValue = display.newText( optionsLabelCoinsValue )
-    labelCoinsValue:setFillColor( unpack(colorTextDefault) )
-    labelCoinsValue.x = display.contentCenterX
-    labelCoinsValue.y = labelLocksTitle.y + labelLocksTitle.height + labelCoinsValue.height * 1.5
-    statsGroup:insert(labelCoinsValue)
-
-    local optionsLabelCoinsTitle = { text = sozluk.getString("coinsTotal"), 
-        height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
-    local labelCoinsTitle = display.newText( optionsLabelCoinsTitle )
-    labelCoinsTitle:setFillColor( unpack(colorTextDefault) )
-    labelCoinsTitle.x = display.contentCenterX
-    labelCoinsTitle.y = labelCoinsValue.y + labelCoinsValue.height / 2 + labelCoinsTitle.height / 2
-    statsGroup:insert(labelCoinsTitle)
-
-    local optionsLabelRevivalValue = { text = composer.getVariable( "percentageRevival" ) .. "%", 
-        height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
-    local labelRevivalValue = display.newText( optionsLabelRevivalValue )
-    labelRevivalValue:setFillColor( unpack(colorTextDefault) )
-    labelRevivalValue.x = display.contentCenterX
-    labelRevivalValue.y = labelCoinsTitle.y + labelCoinsTitle.height + labelRevivalValue.height * 1.5
-    statsGroup:insert(labelRevivalValue)
-
-    local optionsLabelRevivalTitle = { text = sozluk.getString("percentageRevival"), 
-        height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
-    local labelRevivalTitle = display.newText( optionsLabelRevivalTitle )
-    labelRevivalTitle:setFillColor( unpack(colorTextDefault) )
-    labelRevivalTitle.x = display.contentCenterX
-    labelRevivalTitle.y = labelRevivalValue.y + labelRevivalValue.height / 2 + labelRevivalTitle.height / 2
-    statsGroup:insert(labelRevivalTitle)
-
-    containerStats = display.newContainer( contentWidthSafe, yLimitBottom - menuSeparator.y )
+    containerStats = display.newContainer( contentWidthSafe, yLimitBottom - yStartingPlacement )
     containerStats.anchorX, containerStats.anchorY = 0, 0
-    containerStats.x, containerStats.y = 0, menuSeparator.y + menuSeparator.height / 2
+    containerStats.x, containerStats.y = 0, yStartingPlacement
     containerStats.anchorChildren = false
     containerStats.ySpeed = 1
     containerStats.movementSpeed = -containerStats.ySpeed
     statsGroup:insert(containerStats)
+    
 
-    containerStats:insert(labelScoreValue)
-    containerStats:insert(labelScoreTitle)
-    containerStats:insert(labelGamesValue)
-    containerStats:insert(labelGamesTitle)
-    containerStats:insert(labelAnsweredValue)
-    containerStats:insert(labelAnsweredTitle)
-    containerStats:insert(labelRunsValue)
-    containerStats:insert(labelRunsTitle)
-    containerStats:insert(labelLocksValue)
-    containerStats:insert(labelLocksTitle)
-    containerStats:insert(labelCoinsValue)
-    containerStats:insert(labelCoinsTitle)
-    containerStats:insert(labelRevivalValue)
-    containerStats:insert(labelRevivalTitle)
+    local tableStatsElements = {}
+
+    local tableStats = { 
+        { statsTitle = sozluk.getString("bestScore"), statsValue = composer.getVariable( "scoreHigh" ) },
+        { statsTitle = sozluk.getString("gamesPlayed"), statsValue = composer.getVariable( "gamesPlayed" ) },
+        { statsTitle = sozluk.getString("questionsAnsweredTotal"), statsValue = composer.getVariable( "questionsAnsweredTotal" ) },
+        { statsTitle = sozluk.getString("runsCompleted"), statsValue = composer.getVariable( "runsCompleted" ) },
+        { statsTitle = sozluk.getString("locksUsed"), statsValue = composer.getVariable( "locksUsed" ) },
+        { statsTitle = sozluk.getString("coinsTotal"), statsValue = composer.getVariable( "coinsTotal" ) },
+        { statsTitle = sozluk.getString("percentageRevival"), statsValue = composer.getVariable( "percentageRevival" ) .. "%" },
+    }
+
+    for i = 1, #tableStats do
+        local optionsLabelStatsTitle = { text = tableStats[i].statsTitle,
+            height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
+        local labelStatsTitle = display.newText( optionsLabelStatsTitle )
+        labelStatsTitle:setFillColor( unpack(colorTextDefault) )
+        labelStatsTitle.x = display.contentCenterX
+        if (i == 1) then
+            labelStatsTitle.y = labelStatsTitle.height  -- height is determined this way because it's relative to container coordinates
+        else
+            labelStatsTitle.y = tableStatsElements[i - 1].y + tableStatsElements[i - 1].height + labelStatsTitle.height * 1.5
+        end
+        statsGroup:insert(labelStatsTitle)
+
+        local optionslabelStatsValue = { text = tableStats[i].statsValue,
+            height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
+        local labelStatsValue = display.newText( optionslabelStatsValue )
+        labelStatsValue:setFillColor( unpack(colorTextDefault) )
+        labelStatsValue.x = display.contentCenterX
+        labelStatsValue.y = labelStatsTitle.y + labelStatsTitle.height / 2 + labelStatsValue.height / 2
+        statsGroup:insert(labelStatsValue)
+
+        table.insert(tableStatsElements, labelStatsValue)
+
+        containerStats:insert(labelStatsTitle)
+        containerStats:insert(labelStatsValue)
+    end
+end
+
+local function goBack()
+    Runtime:removeEventListener( "enterFrame", moveStats )
+
+    if (callSource == "endScreen") then
+        local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, 
+        params = {callSource = "statsScreen", scoreCurrent = scoreCurrent, statusGame = statusGame}}
+        composer.gotoScene( "screens.endScreen", optionsChangeScene )
+    else
+        local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, params = {callSource = "statsScreen"}}
+        composer.gotoScene( "screens.menuScreen", optionsChangeScene )
+    end
 end
 
 -- Create UI elements like back button etc.
@@ -317,27 +234,10 @@ local function createUIElements()
     local background = display.newRect( statsGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
     background:setFillColor( unpack(themeData.colorBackground) )
 
-    local optionsButtonBack = 
-    {
-        shape = "rect",
-        fillColor = { default = colorButtonFillDefault, over = colorButtonFillDefault },
-        width = contentWidthSafe / 6,
-        height = contentHeightSafe / 10,
-        label = "<",
-        labelColor = { default = colorButtonDefault, over = colorButtonOver },
-        font = fontLogo,
-        fontSize = contentHeightSafe / 15,
-        id = "buttonBack",
-        onEvent = handleTouch,
-    }
-    local buttonBack = widget.newButton( optionsButtonBack )
-    buttonBack.x = buttonBack.width / 2
-    buttonBack.y = display.safeScreenOriginY + buttonBack.height / 2
-    statsGroup:insert( buttonBack )
+    local optionsNavigationMenu = { position = "top", fontName = fontLogo, 
+        backFunction = goBack }
+    yStartingPlacement = commonMethods.createNavigationMenu(statsGroup, optionsNavigationMenu)
 
-    menuSeparator = display.newRect( statsGroup, background.x, 0, background.width, 10 )
-    menuSeparator.y = buttonBack.y + buttonBack.height / 2
-    menuSeparator:setFillColor( unpack(colorButtonOver) )
 
     local frameButtonReset = display.newRoundedRect( display.contentCenterX, 0, widthMenuButtons, 0, cornerRadiusButtons )
     frameButtonReset.id = "resetStats"

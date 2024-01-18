@@ -282,7 +282,7 @@ function commonMethods.useLock(infoGroup, tableTimers, locksAvailable, textNumLo
 end
 
 -- Show number of locks available to use
-function commonMethods.showLocksAvailable(targetGroup, yTopInfoBox, locksAvailable)
+local function showLocksAvailable(targetGroup, yTopInfoBox, locksAvailable)
     local fontLogo = composer.getVariable( "fontLogo" )
 
     local colorTextDefault = themeData.colorTextDefault
@@ -304,6 +304,145 @@ function commonMethods.showLocksAvailable(targetGroup, yTopInfoBox, locksAvailab
     imageLock.textNumAvailable.x = imageLock.x + imageLock.width / 2 + imageLock.textNumAvailable.width
     imageLock.textNumAvailable.y = imageLock.y
     targetGroup:insert(imageLock.textNumAvailable)
+end
+
+-- Change lock state and show information based on taps/clicks
+function commonMethods.switchLock(buttonLock, infoGroup, locksAvailable, soundLock, fontLockUsed)
+    local lockInfoAvailable = composer.getVariable( "lockInfoAvailable" )
+    local colorPadlock = themeData.colorPadlock
+
+    -- Only change the flag as activated
+    -- This change will be used later on button press("Play") and scene change
+    if (buttonLock.isActivated) then
+        buttonLock.isActivated = false
+        buttonLock.alpha = buttonLock.alphaInactive
+        buttonLock:setFillColor( unpack(colorPadlock) )
+    else
+        audio.play( soundLock, {channel = 2} )
+
+        -- Check to see if information about lock system will be shown
+        -- If player discarded the message and chose "Don't show again", don't show info box
+        if (lockInfoAvailable) then
+            if (locksAvailable > 0) then
+                buttonLock.isActivated = true
+                buttonLock.alpha = 1
+            end
+
+            local infoText
+            local isPromptAvailable = true
+            if (locksAvailable > 0) then
+                infoText = sozluk.getString("lockInformation")
+            else
+                infoText = sozluk.getString("lockInformationNA")
+                isPromptAvailable = false
+            end
+
+            -- Declare options for information box creation
+            local optionsInfoBox = {
+                infoFont = fontLockUsed,
+                infoText = infoText,
+                isPromptAvailable = isPromptAvailable,
+                stringPromptPreference = "lockInfoAvailable",
+            }
+            yTopFrame = utils.showInformationBox(infoGroup, optionsInfoBox)
+            showLocksAvailable(infoGroup, yTopFrame, locksAvailable)
+        else
+            if (locksAvailable > 0) then
+                buttonLock.isActivated = true
+                buttonLock.alpha = 1
+            else
+                local infoText
+                local isPromptAvailable = true
+                if (locksAvailable <= 0) then
+                    infoText = sozluk.getString("lockInformationNA")
+                    isPromptAvailable = false
+                end
+
+                -- Declare options for information box creation
+                local optionsInfoBox = {
+                    infoFont = fontLockUsed,
+                    infoText = infoText,
+                    isPromptAvailable = isPromptAvailable,
+                    stringPromptPreference = "lockInfoAvailable",
+                }
+                yTopFrame = utils.showInformationBox(infoGroup, optionsInfoBox)
+                showLocksAvailable(infoGroup, yTopFrame, locksAvailable)
+            end
+        end
+    end
+end
+
+-- Handle touch events for navigation buttons
+-- Calls assigned function when corresponding option is selected
+local function handleNavigationTouch(event)
+    if (event.phase == "ended") then
+        event.target.methodAssigned()
+    end
+    return true
+end
+
+-- Creates navigation menu with back button
+function commonMethods.createNavigationMenu(targetGroup, optionsNavigationMenu)
+    local position = optionsNavigationMenu["position"]
+    local fontName = optionsNavigationMenu["fontName"]
+    local backFunction = optionsNavigationMenu["backFunction"]
+
+    local colorBackground = themeData.colorBackground
+    local colorButtonFillDefault = themeData.colorButtonFillDefault
+    local colorButtonDefault = themeData.colorButtonDefault
+    local colorButtonOver = themeData.colorButtonOver
+    local colorTextDefault = themeData.colorTextDefault
+    local colorSeparator = themeData.colorSeparator
+
+    local background = display.newRect( targetGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
+    background:setFillColor( unpack(colorBackground) )
+    background:addEventListener( "touch", function () return true end )
+
+    local optionsButtonBack = 
+    {
+        shape = "rect",
+        fillColor = { default = colorButtonFillDefault, over = colorButtonFillDefault },
+        width = contentWidthSafe / 6,
+        height = contentHeightSafe / 10,
+        label = "<",
+        labelColor = { default = colorButtonDefault, over = colorButtonOver },
+        font = fontName,
+        fontSize = contentHeightSafe / 15,
+        id = "buttonBack",
+        onEvent = handleNavigationTouch,
+    }
+    local buttonBack = widget.newButton( optionsButtonBack )
+    buttonBack.x = buttonBack.width / 2
+    if (position == "top") then
+        buttonBack.y = display.safeScreenOriginY + buttonBack.height / 2
+    elseif (position == "bottom") then
+        buttonBack.y = contentHeightSafe - buttonBack.height / 2
+    end
+    buttonBack.methodAssigned = backFunction
+    targetGroup:insert( buttonBack )
+
+
+    local yStartingPlacement
+
+    local menuSeparator = display.newRect( targetGroup, background.x, 0, background.width, 10 )
+    
+    menuSeparator:setFillColor( unpack(colorSeparator) )
+
+    if (position == "top") then
+        menuSeparator.y = buttonBack.y + buttonBack.height / 2 + menuSeparator.height
+        yStartingPlacement = menuSeparator.y + menuSeparator.height / 2
+
+        background.height = (menuSeparator.y + menuSeparator.height / 2) - display.safeScreenOriginY
+        background.y = display.safeScreenOriginY + background.height / 2
+    elseif (position == "bottom") then
+        menuSeparator.y = buttonBack.y - buttonBack.height / 2 - menuSeparator.height
+        yStartingPlacement = menuSeparator.y - menuSeparator.height / 2
+
+        background.height = contentHeight - yStartingPlacement
+        background.y = contentHeight - background.height / 2
+    end
+
+    return yStartingPlacement
 end
 
 -- Handles touch events when in-game share UI is shown

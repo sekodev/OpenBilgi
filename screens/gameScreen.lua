@@ -19,9 +19,13 @@ local rng = require ( "libs.rng" )
 
 local mainGroup, frontGroup, backGroup
 
+local sceneTransitionTime = composer.getVariable( "sceneTransitionTime" )
+local sceneTransitionEffect = composer.getVariable( "sceneTransitionEffect" )
+
+local isMotionReduced = composer.getVariable( "isMotionReduced" )
+
 local fontIngame = composer.getVariable( "fontIngame" )
 local fontLogo = composer.getVariable( "fontLogo" )
-local timeTransitionScene = composer.getVariable( "timeTransitionScene" )
 
 local availableQuestionSets = composer.getVariable( "availableQuestionSets" )
 local amountQuestionSingleGame = composer.getVariable( "amountQuestionSingleGame" )     --20
@@ -152,8 +156,26 @@ local function savePlayerProgress()
     savePreferences()
 end
 
+local function resetActiveGroup(targetGroup)
+    utils.clearDisplayGroup(targetGroup)
+
+    targetGroup:toBack( )
+    targetGroup.x = 0
+    targetGroup.rotation = 0
+    targetGroup.alpha = 1
+end
+
 local function hideActiveCard(typeHide, activeGroup, passiveGroup, statusGame, scoreCurrent)
-    local timeNeededHiding = 250
+    local timeTransitionHideCard = 250
+    local xTargetHideCard = -activeGroup.width * 2
+    local rotationTargetHideCard = -30
+    local alphaTargetHideCard = 1
+
+    if (isMotionReduced) then
+        xTargetHideCard = activeGroup.x
+        rotationTargetHideCard = 0
+        alphaTargetHideCard = 0
+    end
 
     if (typeHide == "endGame") then
         local targetScene = "screens.endScreen"
@@ -165,12 +187,14 @@ local function hideActiveCard(typeHide, activeGroup, passiveGroup, statusGame, s
 
         resetPlayerProgress()
 
-        local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, 
-            params = {callSource = "gameScreen", scoreCurrent = scoreCurrent, questionCurrent = questionCurrent, 
-            coinsEarned = coinsEarned, statusGame = statusGame}}
+        local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, 
+            params = {callSource = "gameScreen", scoreCurrent = scoreCurrent, 
+            questionCurrent = questionCurrent, coinsEarned = coinsEarned, statusGame = statusGame}}
         composer.gotoScene( targetScene, optionsChangeScene )
     elseif (typeHide == "hideLoadingCard" or typeHide == "hideQuestionCard" or typeHide == "hideSpecialCard") then
-        transition.to( activeGroup, {tag = "hideActiveCard", time = timeNeededHiding, x = -activeGroup.width * 2, rotation = -30, onComplete = function ()              
+        transition.to( activeGroup, {tag = "hideActiveCard", time = timeTransitionHideCard, 
+            x = xTargetHideCard, rotation = rotationTargetHideCard, alpha = alphaTargetHideCard, 
+            onComplete = function () 
                 playBackgroundMusic(500)
 
                 local timerHide = timer.performWithDelay( 500, function () 
@@ -186,23 +210,17 @@ local function hideActiveCard(typeHide, activeGroup, passiveGroup, statusGame, s
                     end
                 end
 
-                utils.clearDisplayGroup(activeGroup)
-
-                activeGroup:toBack( )
-                activeGroup.x = 0
-                activeGroup.rotation = 0
+                resetActiveGroup(activeGroup)
             end} )
     elseif (typeHide == "hideBeforeSpecialCard") then
-        transition.to( activeGroup, {tag = "hideActiveCard", time = timeNeededHiding, x = -activeGroup.width * 2, rotation = -30, onComplete = function ()
+        transition.to( activeGroup, {tag = "hideActiveCard", time = timeTransitionHideCard, 
+            x = xTargetHideCard, rotation = rotationTargetHideCard, alpha = alphaTargetHideCard,
+            onComplete = function () 
                 isInteractionAvailable = true   -- re-enable interaction
 
                 audio.setVolume(0, {channel = channelMusicBackground})
 
-                utils.clearDisplayGroup(activeGroup)
-
-                activeGroup:toBack( )
-                activeGroup.x = 0
-                activeGroup.rotation = 0
+                resetActiveGroup(activeGroup)
             end} )
     end
 end
@@ -917,7 +935,7 @@ local function createSpecialCard(targetGroup, typeCard)
 
 
         local fileParticleFX = "assets/particleFX/campfire.json"
-        if (themeData.themeSelected == "light") then
+        if (themeData.nameSelected == "light") then
             fileParticleFX = "assets/particleFX/campfire-light.json"
         end
 
@@ -940,7 +958,7 @@ local function createSpecialCard(targetGroup, typeCard)
 
 
         local fileParticleFX = "assets/particleFX/revival.json"
-        if (themeData.themeSelected == "light") then
+        if (themeData.nameSelected == "light") then
             fileParticleFX = "assets/particleFX/revival-light.json"
         end
 
@@ -1138,10 +1156,22 @@ function showAnswer(targetGroup, choiceSelected, textCoinAward)
 
                     
                     local timeTransAward = 250
+
+                    local xTargetCoinAward = targetGroup.textNumCoins.x
+                    local yTargetCoinAward = targetGroup.textNumCoins.y
+
                     local xTargetCoinImage = targetGroup.textNumCoins.xImageCoin
                     local yTargetCoinImage = targetGroup.textNumCoins.yImageCoin
 
-                    transition.to( textCoinAward, {time = timeTransAward, x = targetGroup.textNumCoins.x, y = targetGroup.textNumCoins.y, alpha = 0, onComplete = function ()
+                    if (isMotionReduced) then
+                        xTargetCoinAward = textCoinAward.x
+                        yTargetCoinAward = textCoinAward.y
+
+                        xTargetCoinImage = textCoinAward.imageCoin.x
+                        yTargetCoinImage = textCoinAward.imageCoin.y
+                    end
+
+                    transition.to( textCoinAward, {time = timeTransAward, x = xTargetCoinAward, y = yTargetCoinAward, alpha = 0, onComplete = function ()
                             targetGroup.textNumCoins.text = coinsEarned + tonumber( textCoinAward.text )
 
                             local currencyShort, currencyAbbreviation = commonMethods.formatCurrencyString(coinsEarned)
@@ -1299,7 +1329,7 @@ function handleUITouch(event)
         elseif (event.target.id == "quitAccept") then
             resetPlayerProgress()
 
-            local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "gameScreen"}}
+            local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, params = {callSource = "gameScreen"}}
             composer.gotoScene( "screens.menuScreen", optionsChangeScene )
         elseif (event.target.id == "quitDecline") then
             if (frontGroup.numChildren > 0) then
@@ -1432,7 +1462,7 @@ function handleGameTouch(event)
                         transition.to( activeGroup.emitterFX, { time = timeWaitChoice, alpha = 0 } )
 
                         local timerChangeScene = timer.performWithDelay(1500, function () 
-                                local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "gameScreen"}}
+                                local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, params = {callSource = "gameScreen"}}
                                 composer.gotoScene( "screens.menuScreen", optionsChangeScene )
                             end, 1)
                         table.insert( tableTimers, timerChangeScene )

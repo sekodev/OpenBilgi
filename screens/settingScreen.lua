@@ -14,10 +14,15 @@
 local scene = composer.newScene()
 
 local widget = require ("widget")
+widget.setTheme( "widget_theme_ios7" )
+
+local sceneTransitionTime = composer.getVariable( "sceneTransitionTime" )
+local sceneTransitionEffect = composer.getVariable( "sceneTransitionEffect" )
+
+local isMotionReduced = composer.getVariable( "isMotionReduced" )
 
 local fontIngame = composer.getVariable( "fontIngame" )
 local fontLogo = composer.getVariable( "fontLogo" )
-local timeTransitionScene = composer.getVariable( "timeTransitionScene" )
 
 local mainGroup, menuGroup, resetGroup
 
@@ -30,6 +35,8 @@ local isInteractionAvailable = true
 
 
 local function cleanUp()
+    composer.setVariable( "isMotionReduced", isMotionReduced )
+
     -- Save changes before the player leaves settings
     -- This is called here to avoid discarding changes when Android user presses OS back button
     savePreferences()
@@ -39,7 +46,7 @@ end
 local function resetProgress()
     resetQuestions()
 
-    local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene}
+    local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime}
     composer.gotoScene( "screens.logoScreen", optionsChangeScene )
 end
 
@@ -144,18 +151,7 @@ local function handleTouch(event)
         end
     elseif (event.phase == "ended") then
         if (isInteractionAvailable) then
-            if (event.target.id == "buttonBack") then
-                -- Return player to the screen where they pressed "Settings"
-                -- Player can reach settings from either menuScreen or endScreen
-                if (callSource == "endScreen") then
-                    local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, 
-                    params = {callSource = "settingScreen", scoreCurrent = scoreCurrent, statusGame = statusGame}}
-                    composer.gotoScene( "screens.endScreen", optionsChangeScene )
-                else
-                    local optionsChangeScene = {effect = "tossLeft", time = timeTransitionScene, params = {callSource = "settingScreen"}}
-                    composer.gotoScene( "screens.menuScreen", optionsChangeScene )
-                end
-            elseif (event.target.id == "resetQuestions") then
+            if (event.target.id == "resetQuestions") then
                 -- Declare options for dialog box creation
                 local optionsDialogBox = {
                     fontDialog = fontLogo,
@@ -180,6 +176,41 @@ local function handleTouch(event)
     return true
 end
 
+local function goBack()
+    -- Return player to the screen where they pressed "Settings"
+    -- Player can reach settings from either menuScreen or endScreen
+    if (callSource == "endScreen") then
+        local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, 
+        params = {callSource = "settingScreen", scoreCurrent = scoreCurrent, statusGame = statusGame}}
+        composer.gotoScene( "screens.endScreen", optionsChangeScene )
+    else
+        local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, params = {callSource = "settingScreen"}}
+        composer.gotoScene( "screens.menuScreen", optionsChangeScene )
+    end
+end
+
+local function turnOnReduceMotion()
+    isMotionReduced = true
+
+    sceneTransitionEffect = composer.getVariable( "sceneTransitionEffectReduceMotion" )
+    composer.setVariable( "sceneTransitionEffect", sceneTransitionEffect )
+end
+
+local function turnOffReduceMotion()
+    isMotionReduced = false
+
+    sceneTransitionEffect = composer.getVariable( "sceneTransitionEffectDefault" )
+    composer.setVariable( "sceneTransitionEffect", sceneTransitionEffect )
+end
+
+local function onSwitchPress(event)
+    if (event.target.isOn) then
+        turnOffReduceMotion()
+    else
+        turnOnReduceMotion()
+    end
+end
+
 function createSettingsElements()
     local xDistanceSides = contentWidthSafe / 10
     local widthButtonSettings = contentWidthSafe / 8
@@ -197,36 +228,9 @@ function createSettingsElements()
     local background = display.newRect( menuGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
     background:setFillColor( unpack(colorBackground) )
 
-    local optionsButtonBack = 
-    {
-        shape = "rect",
-        fillColor = { default = colorButtonFillDefault, over = colorButtonFillDefault },
-        width = contentWidthSafe / 6,
-        height = contentHeightSafe / 10,
-        label = "<",
-        labelColor = { default = colorButtonDefault, over = colorButtonOver },
-        font = fontLogo,
-        fontSize = contentHeightSafe / 15,
-        id = "buttonBack",
-        onEvent = handleTouch,
-    }
-    local buttonBack = widget.newButton( optionsButtonBack )
-    buttonBack.x = buttonBack.width / 2
-    buttonBack.y = display.safeScreenOriginY + buttonBack.height / 2
-    menuGroup:insert( buttonBack )
-
-    local optionsLabelVersion = { text = composer.getVariable("currentVersion"), 
-        height = 0, align = "center", font = fontLogo, fontSize = contentHeightSafe / 40 }
-    local labelVersionNumber = display.newText( optionsLabelVersion )
-    labelVersionNumber:setFillColor( unpack(colorTextDefault) )
-    labelVersionNumber.anchorX = 1
-    labelVersionNumber.x = contentWidthSafe - buttonBack.width / 2
-    labelVersionNumber.y = buttonBack.y
-    menuGroup:insert(labelVersionNumber)
-
-    local menuSeparator = display.newRect( menuGroup, background.x, 0, background.width, 10 )
-    menuSeparator.y = buttonBack.y + buttonBack.height / 2
-    menuSeparator:setFillColor( unpack(colorButtonOver) )
+    local optionsNavigationMenu = { position = "top", fontName = fontLogo, 
+        backFunction = goBack }
+    local yStartingPlacement = commonMethods.createNavigationMenu(menuGroup, optionsNavigationMenu)
 
 
     -- Create settings elements from bottom to top so player can easily reach those options on touch screen
@@ -286,8 +290,61 @@ function createSettingsElements()
     frameButtonTheme.y = frameButtonReset.y - frameButtonReset.height / 2 - frameButtonTheme.height
     frameButtonTheme.textLabel.y = frameButtonTheme.y
 
+    local frameButtonReduceMotion = display.newRoundedRect( display.contentCenterX, 0, widthMenuButtons, 0, cornerRadiusButtons )
+    frameButtonReduceMotion.id = "controlReduceMotion"
+    frameButtonReduceMotion:setFillColor( unpack(colorButtonFillDefault) )
+    frameButtonReduceMotion.strokeWidth = strokeWidthButtons
+    frameButtonReduceMotion:setStrokeColor( unpack(colorButtonFillDefault) )
+    frameButtonReduceMotion:addEventListener( "touch", handleTouch )
+    menuGroup:insert( frameButtonReduceMotion )
+
+    local optionsLabelReduceMotion = { text = sozluk.getString("reduceMotion"), 
+        height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
+    frameButtonReduceMotion.textLabel = display.newText( optionsLabelReduceMotion )
+    frameButtonReduceMotion.textLabel:setFillColor( unpack(colorTextDefault) )
+    frameButtonReduceMotion.textLabel.x = frameButtonReduceMotion.x
+    menuGroup:insert(frameButtonReduceMotion.textLabel)
+
+    local optionsSwitchReduceMotion = {
+        style = "onOff",
+        id = "reduceMotion",
+        onPress = onSwitchPress,
+    }
+    frameButtonReduceMotion.switchRM = widget.newSwitch(optionsSwitchReduceMotion)
+    frameButtonReduceMotion.switchRM.width = contentWidthSafe / 7
+    menuGroup:insert(frameButtonReduceMotion.switchRM)
+
+    if (isMotionReduced) then
+        frameButtonReduceMotion.switchRM:setState( { isOn = true, isAnimated = true } )
+    end
+
+    local xDistanceReduceMotion = (contentWidthSafe - (frameButtonReduceMotion.textLabel.width + frameButtonReduceMotion.switchRM.width)) / 3
+    frameButtonReduceMotion.textLabel.x = frameButtonReduceMotion.textLabel.width / 2 + xDistanceReduceMotion
+    frameButtonReduceMotion.switchRM.x = frameButtonReduceMotion.textLabel.x + frameButtonReduceMotion.textLabel.width / 2 + frameButtonReduceMotion.switchRM.width / 2 + xDistanceReduceMotion
+
+    if (composer.getVariable( "currentTheme" ) == "light") then
+        local colorBackgroundPopup = themeData.colorBackgroundPopup
+        
+        frameButtonReduceMotion.switchRM.outlineRect = display.newRoundedRect( menuGroup, 
+            frameButtonReduceMotion.switchRM.x, frameButtonReduceMotion.switchRM.y, 
+            contentWidthSafe / 7, frameButtonReduceMotion.textLabel.height, 50 )
+        frameButtonReduceMotion.switchRM.outlineRect:setFillColor( unpack(colorBackgroundPopup) )
+        frameButtonReduceMotion.switchRM:toFront( )
+    end
+
+    frameButtonReduceMotion.height = frameButtonReduceMotion.textLabel.height * 2
+    frameButtonReduceMotion.y = frameButtonTheme.y - frameButtonTheme.height / 2 - frameButtonReduceMotion.height / 2
+    
+    frameButtonReduceMotion.textLabel.y = frameButtonReduceMotion.y
+    
+    frameButtonReduceMotion.switchRM.height = frameButtonReduceMotion.height / 2
+    frameButtonReduceMotion.switchRM.y = frameButtonReduceMotion.y
+    if (frameButtonReduceMotion.switchRM.outlineRect) then
+        frameButtonReduceMotion.switchRM.outlineRect.y = frameButtonReduceMotion.switchRM.y
+    end
+
     -- This will keep track of the latest element created, in case full screen toggle is not available
-    yButtonPlacementNextElement = frameButtonTheme.y - frameButtonTheme.height / 2
+    yButtonPlacementNextElement = frameButtonReduceMotion.y - frameButtonReduceMotion.height / 2
 
 
     -- Show full screen toggle based on device resolution
@@ -316,7 +373,7 @@ function createSettingsElements()
         menuGroup:insert(frameButtonFullScreen.textLabel)
 
         frameButtonFullScreen.height = frameButtonFullScreen.textLabel.height * 2
-        frameButtonFullScreen.y = frameButtonTheme.y - frameButtonTheme.height / 2 - frameButtonFullScreen.height / 2
+        frameButtonFullScreen.y = yButtonPlacementNextElement - frameButtonFullScreen.height / 2
         frameButtonFullScreen.textLabel.y = frameButtonFullScreen.y
 
         -- This will keep track of the latest element created

@@ -29,6 +29,7 @@ function translationSetup.getData()
     translationData["themeSelected"] = "Theme:"
     translationData["themeLight"] = "Light"
     translationData["themeDark"] = "Dark"
+    translationData["reduceMotion"] = "Reduce motion"
     translationData["fullScreen"] = "Full screen:"
     translationData["fullScreenOn"] = "On"
     translationData["fullScreenOff"] = "Off"
