@@ -41,7 +41,7 @@ local function assignVariables()
     composer.setVariable( "userToken", "" )
 
     composer.setVariable( "emailSupport", "info.sleepybug@gmail.com" ) -- Used to show player a way to get in contact
-    composer.setVariable( "currentVersion" , "OpenBilgi, v0.9.2 (70)" ) -- Visible in Settings screen
+    composer.setVariable( "currentVersion" , "bilgi, v0.9.2 (72)" ) -- Visible in Settings screen
     composer.setVariable( "idAppStore" , "123456789" ) -- Required to show rating pop-ups
     composer.setVariable( "urlLandingPage" , "https://sekodev.github.io/bilgiWeb/" ) -- Required for sharing landing page on social media
     composer.setVariable( "pathIconFile" , "assets/menu/iconQuiz.png" ) -- Required for share UI
@@ -52,8 +52,21 @@ local function assignVariables()
     composer.setVariable( "fullScreen" , true) -- Full screen support - Default: true
     composer.setVariable( "currentAppScene" , "menuScreen") -- Required for back button on Android
     
-    composer.setVariable( "sceneTransitionEffect", "tossLeft" ) -- Used in every scene change
+    composer.setVariable( "isMotionReduced", false )
+    -- Activate "reduce motion" based on device settings on iOS, tvOS and macOS
+    if (system.getInfo( "platform" ) == "ios" or 
+        system.getInfo( "platform" ) == "tvos" or 
+        system.getInfo( "platform" ) == "macos") then
+
+        if (system.getInfo( "reduceMotion" )) then
+            composer.setVariable( "isMotionReduced", true )
+        end
+    end
+
     composer.setVariable( "sceneTransitionTime", 250 ) -- Used in every scene change
+    composer.setVariable( "sceneTransitionEffect", "tossLeft" ) -- Used in every scene change
+    composer.setVariable( "sceneTransitionEffectDefault", "tossLeft" ) -- Not saved but used as variable in settings
+    composer.setVariable( "sceneTransitionEffectReduceMotion", "crossFade" ) -- Not saved but used as variable in settings
 
     composer.setVariable( "fontIngame", "Arial" )
     composer.setVariable( "fontLogo", "Russo_One.ttf" )
@@ -153,6 +166,7 @@ local function loadPreferences()
         composer.setVariable( "fullScreen", preference.getValue("settings")[35] )
         composer.setVariable( "isLanguageOptionShown", preference.getValue("settings")[36] )
         composer.setVariable( "languageSelected", preference.getValue("settings")[37] )
+        composer.setVariable( "isMotionReduced", preference.getValue("settings")[38] )
     end
 end
 
@@ -195,7 +209,8 @@ function savePreferences()
         composer.getVariable( "isTermsPrivacyAccepted" ),
         composer.getVariable( "fullScreen" ),
         composer.getVariable( "isLanguageOptionShown" ),
-        composer.getVariable( "languageSelected" ), } }
+        composer.getVariable( "languageSelected" ),
+        composer.getVariable( "isMotionReduced" ), } }
 end
 
 -- Reset preferences file
@@ -287,6 +302,20 @@ function adjustScreenDimensions(fullScreen)
     end
 end
 
+-- Set transition effect based on "Reduce motion" option
+local function setSceneTransitionEffect()
+    local isMotionReduced = composer.getVariable( "isMotionReduced" )
+    local sceneTransitionEffect = composer.getVariable( "sceneTransitionEffect" )
+
+    if (isMotionReduced) then
+        sceneTransitionEffect = composer.getVariable( "sceneTransitionEffectReduceMotion" )
+    end
+
+    composer.setVariable( "sceneTransitionEffect", sceneTransitionEffect )
+
+    return sceneTransitionEffect
+end
+
 
 assignVariables()
 
@@ -295,6 +324,9 @@ loadPreferences()
 
 -- Adjust screen dimensions depending on full screen option
 adjustScreenDimensions(composer.getVariable( "fullScreen" ))
+
+local sceneTransitionTime = composer.getVariable( "sceneTransitionTime" )
+local sceneTransitionEffect = setSceneTransitionEffect()
 
 -- Import sozluk library for localization
 -- https://github.com/sekodev/sozluk
@@ -347,9 +379,6 @@ for i = 2, audio.totalChannels do
     audio.setVolume( composer.getVariable("soundLevel"), {channel = i} )
 end
 
-
-local sceneTransitionTime = composer.getVariable( "sceneTransitionTime" )
-local sceneTransitionEffect = composer.getVariable( "sceneTransitionEffect" )
 
 -- Back button behavior for Android
 local function onKeyEvent( event )

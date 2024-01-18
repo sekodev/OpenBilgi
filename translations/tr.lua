@@ -29,6 +29,7 @@ function translationSetup.getData()
     translationData["themeSelected"] = "Tema:"
     translationData["themeLight"] = "Açık"
     translationData["themeDark"] = "Koyu"
+    translationData["reduceMotion"] = "Hareketi azalt"
     translationData["fullScreen"] = "Tam ekran:"
     translationData["fullScreenOn"] = "Açık"
     translationData["fullScreenOff"] = "Kapalı"

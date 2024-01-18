@@ -14,9 +14,12 @@
 local scene = composer.newScene()
 
 local widget = require ("widget")
+widget.setTheme( "widget_theme_ios7" )
 
 local sceneTransitionTime = composer.getVariable( "sceneTransitionTime" )
 local sceneTransitionEffect = composer.getVariable( "sceneTransitionEffect" )
+
+local isMotionReduced = composer.getVariable( "isMotionReduced" )
 
 local fontIngame = composer.getVariable( "fontIngame" )
 local fontLogo = composer.getVariable( "fontLogo" )
@@ -32,6 +35,8 @@ local isInteractionAvailable = true
 
 
 local function cleanUp()
+    composer.setVariable( "isMotionReduced", isMotionReduced )
+
     -- Save changes before the player leaves settings
     -- This is called here to avoid discarding changes when Android user presses OS back button
     savePreferences()
@@ -184,6 +189,28 @@ local function goBack()
     end
 end
 
+local function turnOnReduceMotion()
+    isMotionReduced = true
+
+    sceneTransitionEffect = composer.getVariable( "sceneTransitionEffectReduceMotion" )
+    composer.setVariable( "sceneTransitionEffect", sceneTransitionEffect )
+end
+
+local function turnOffReduceMotion()
+    isMotionReduced = false
+
+    sceneTransitionEffect = composer.getVariable( "sceneTransitionEffectDefault" )
+    composer.setVariable( "sceneTransitionEffect", sceneTransitionEffect )
+end
+
+local function onSwitchPress(event)
+    if (event.target.isOn) then
+        turnOffReduceMotion()
+    else
+        turnOnReduceMotion()
+    end
+end
+
 function createSettingsElements()
     local xDistanceSides = contentWidthSafe / 10
     local widthButtonSettings = contentWidthSafe / 8
@@ -263,8 +290,61 @@ function createSettingsElements()
     frameButtonTheme.y = frameButtonReset.y - frameButtonReset.height / 2 - frameButtonTheme.height
     frameButtonTheme.textLabel.y = frameButtonTheme.y
 
+    local frameButtonReduceMotion = display.newRoundedRect( display.contentCenterX, 0, widthMenuButtons, 0, cornerRadiusButtons )
+    frameButtonReduceMotion.id = "controlReduceMotion"
+    frameButtonReduceMotion:setFillColor( unpack(colorButtonFillDefault) )
+    frameButtonReduceMotion.strokeWidth = strokeWidthButtons
+    frameButtonReduceMotion:setStrokeColor( unpack(colorButtonFillDefault) )
+    frameButtonReduceMotion:addEventListener( "touch", handleTouch )
+    menuGroup:insert( frameButtonReduceMotion )
+
+    local optionsLabelReduceMotion = { text = sozluk.getString("reduceMotion"), 
+        height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
+    frameButtonReduceMotion.textLabel = display.newText( optionsLabelReduceMotion )
+    frameButtonReduceMotion.textLabel:setFillColor( unpack(colorTextDefault) )
+    frameButtonReduceMotion.textLabel.x = frameButtonReduceMotion.x
+    menuGroup:insert(frameButtonReduceMotion.textLabel)
+
+    local optionsSwitchReduceMotion = {
+        style = "onOff",
+        id = "reduceMotion",
+        onPress = onSwitchPress,
+    }
+    frameButtonReduceMotion.switchRM = widget.newSwitch(optionsSwitchReduceMotion)
+    frameButtonReduceMotion.switchRM.width = contentWidthSafe / 7
+    menuGroup:insert(frameButtonReduceMotion.switchRM)
+
+    if (isMotionReduced) then
+        frameButtonReduceMotion.switchRM:setState( { isOn = true, isAnimated = true } )
+    end
+
+    local xDistanceReduceMotion = (contentWidthSafe - (frameButtonReduceMotion.textLabel.width + frameButtonReduceMotion.switchRM.width)) / 3
+    frameButtonReduceMotion.textLabel.x = frameButtonReduceMotion.textLabel.width / 2 + xDistanceReduceMotion
+    frameButtonReduceMotion.switchRM.x = frameButtonReduceMotion.textLabel.x + frameButtonReduceMotion.textLabel.width / 2 + frameButtonReduceMotion.switchRM.width / 2 + xDistanceReduceMotion
+
+    if (composer.getVariable( "currentTheme" ) == "light") then
+        local colorBackgroundPopup = themeData.colorBackgroundPopup
+        
+        frameButtonReduceMotion.switchRM.outlineRect = display.newRoundedRect( menuGroup, 
+            frameButtonReduceMotion.switchRM.x, frameButtonReduceMotion.switchRM.y, 
+            contentWidthSafe / 7, frameButtonReduceMotion.textLabel.height, 50 )
+        frameButtonReduceMotion.switchRM.outlineRect:setFillColor( unpack(colorBackgroundPopup) )
+        frameButtonReduceMotion.switchRM:toFront( )
+    end
+
+    frameButtonReduceMotion.height = frameButtonReduceMotion.textLabel.height * 2
+    frameButtonReduceMotion.y = frameButtonTheme.y - frameButtonTheme.height / 2 - frameButtonReduceMotion.height / 2
+    
+    frameButtonReduceMotion.textLabel.y = frameButtonReduceMotion.y
+    
+    frameButtonReduceMotion.switchRM.height = frameButtonReduceMotion.height / 2
+    frameButtonReduceMotion.switchRM.y = frameButtonReduceMotion.y
+    if (frameButtonReduceMotion.switchRM.outlineRect) then
+        frameButtonReduceMotion.switchRM.outlineRect.y = frameButtonReduceMotion.switchRM.y
+    end
+
     -- This will keep track of the latest element created, in case full screen toggle is not available
-    yButtonPlacementNextElement = frameButtonTheme.y - frameButtonTheme.height / 2
+    yButtonPlacementNextElement = frameButtonReduceMotion.y - frameButtonReduceMotion.height / 2
 
 
     -- Show full screen toggle based on device resolution
@@ -293,7 +373,7 @@ function createSettingsElements()
         menuGroup:insert(frameButtonFullScreen.textLabel)
 
         frameButtonFullScreen.height = frameButtonFullScreen.textLabel.height * 2
-        frameButtonFullScreen.y = frameButtonTheme.y - frameButtonTheme.height / 2 - frameButtonFullScreen.height / 2
+        frameButtonFullScreen.y = yButtonPlacementNextElement - frameButtonFullScreen.height / 2
         frameButtonFullScreen.textLabel.y = frameButtonFullScreen.y
 
         -- This will keep track of the latest element created
