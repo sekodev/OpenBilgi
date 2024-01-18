@@ -250,67 +250,8 @@ function handleTouch(event)
             if (event.target.id == "shareSocial" or "rateGame" == event.target.id) then
                 event.target:setFillColor( unpack(themeData.colorButtonDefault) )
             elseif (event.target.id == "lockQuestionSet") then
-                local lockInfoAvailable = composer.getVariable( "lockInfoAvailable" )
-
-                -- Only change the flag as activated
-                -- This change will be used later on button press("Play") and scene change
-                if (event.target.isActivated) then
-                    event.target.isActivated = false
-                    event.target.alpha = event.target.alphaInactive
-                    event.target:setFillColor( unpack(themeData.colorPadlock) )
-                else
-                    audio.play( tableSoundFiles["lockQuestionSet"], {channel = 2} )
-
-                    -- Check to see if information about lock system will be shown
-                    -- If player discarded the message and chose "Don't show again", don't show info box
-                    if (lockInfoAvailable) then
-                        if (locksAvailable > 0) then
-                            event.target.isActivated = true
-                            event.target.alpha = 1
-                        end
-
-                        local infoText
-                        local isPromptAvailable = true
-                        if (locksAvailable > 0) then
-                            infoText = sozluk.getString("lockInformation")
-                        else
-                            infoText = sozluk.getString("lockInformationNA")
-                            isPromptAvailable = false
-                        end
-
-                        -- Declare options for information box creation
-                        local optionsInfoBox = {
-                            infoFont = fontLogo,
-                            infoText = infoText,
-                            isPromptAvailable = isPromptAvailable,
-                            stringPromptPreference = "lockInfoAvailable",
-                        }
-                        yTopFrame = utils.showInformationBox(infoGroup, optionsInfoBox)
-                        commonMethods.showLocksAvailable(infoGroup, yTopFrame, locksAvailable)
-                    else
-                        if (locksAvailable > 0) then
-                            event.target.isActivated = true
-                            event.target.alpha = 1
-                        else
-                            local infoText
-                            local isPromptAvailable = true
-                            if (locksAvailable <= 0) then
-                                infoText = sozluk.getString("lockInformationNA")
-                                isPromptAvailable = false
-                            end
-
-                            -- Declare options for information box creation
-                            local optionsInfoBox = {
-                                infoFont = fontLogo,
-                                infoText = infoText,
-                                isPromptAvailable = isPromptAvailable,
-                                stringPromptPreference = "lockInfoAvailable",
-                            }
-                            yTopFrame = utils.showInformationBox(infoGroup, optionsInfoBox)
-                            commonMethods.showLocksAvailable(infoGroup, yTopFrame, locksAvailable)
-                        end
-                    end
-                end
+                commonMethods.switchLock(event.target, infoGroup, locksAvailable, 
+                    tableSoundFiles["lockQuestionSet"], fontLogo)
             end
         end
     end

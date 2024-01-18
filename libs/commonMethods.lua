@@ -282,7 +282,7 @@ function commonMethods.useLock(infoGroup, tableTimers, locksAvailable, textNumLo
 end
 
 -- Show number of locks available to use
-function commonMethods.showLocksAvailable(targetGroup, yTopInfoBox, locksAvailable)
+local function showLocksAvailable(targetGroup, yTopInfoBox, locksAvailable)
     local fontLogo = composer.getVariable( "fontLogo" )
 
     local colorTextDefault = themeData.colorTextDefault
@@ -304,6 +304,72 @@ function commonMethods.showLocksAvailable(targetGroup, yTopInfoBox, locksAvailab
     imageLock.textNumAvailable.x = imageLock.x + imageLock.width / 2 + imageLock.textNumAvailable.width
     imageLock.textNumAvailable.y = imageLock.y
     targetGroup:insert(imageLock.textNumAvailable)
+end
+
+-- Change lock state and show information based on taps/clicks
+function commonMethods.switchLock(buttonLock, infoGroup, locksAvailable, soundLock, fontLockUsed)
+    local lockInfoAvailable = composer.getVariable( "lockInfoAvailable" )
+    local colorPadlock = themeData.colorPadlock
+
+    -- Only change the flag as activated
+    -- This change will be used later on button press("Play") and scene change
+    if (buttonLock.isActivated) then
+        buttonLock.isActivated = false
+        buttonLock.alpha = buttonLock.alphaInactive
+        buttonLock:setFillColor( unpack(colorPadlock) )
+    else
+        audio.play( soundLock, {channel = 2} )
+
+        -- Check to see if information about lock system will be shown
+        -- If player discarded the message and chose "Don't show again", don't show info box
+        if (lockInfoAvailable) then
+            if (locksAvailable > 0) then
+                buttonLock.isActivated = true
+                buttonLock.alpha = 1
+            end
+
+            local infoText
+            local isPromptAvailable = true
+            if (locksAvailable > 0) then
+                infoText = sozluk.getString("lockInformation")
+            else
+                infoText = sozluk.getString("lockInformationNA")
+                isPromptAvailable = false
+            end
+
+            -- Declare options for information box creation
+            local optionsInfoBox = {
+                infoFont = fontLockUsed,
+                infoText = infoText,
+                isPromptAvailable = isPromptAvailable,
+                stringPromptPreference = "lockInfoAvailable",
+            }
+            yTopFrame = utils.showInformationBox(infoGroup, optionsInfoBox)
+            showLocksAvailable(infoGroup, yTopFrame, locksAvailable)
+        else
+            if (locksAvailable > 0) then
+                buttonLock.isActivated = true
+                buttonLock.alpha = 1
+            else
+                local infoText
+                local isPromptAvailable = true
+                if (locksAvailable <= 0) then
+                    infoText = sozluk.getString("lockInformationNA")
+                    isPromptAvailable = false
+                end
+
+                -- Declare options for information box creation
+                local optionsInfoBox = {
+                    infoFont = fontLockUsed,
+                    infoText = infoText,
+                    isPromptAvailable = isPromptAvailable,
+                    stringPromptPreference = "lockInfoAvailable",
+                }
+                yTopFrame = utils.showInformationBox(infoGroup, optionsInfoBox)
+                showLocksAvailable(infoGroup, yTopFrame, locksAvailable)
+            end
+        end
+    end
 end
 
 -- Handle touch events for navigation buttons
