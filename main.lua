@@ -44,7 +44,7 @@ local function assignVariables()
     composer.setVariable( "currentVersion" , "OpenBilgi, v0.9.2 (72)" ) -- Visible in Settings screen
     composer.setVariable( "idAppStore" , "123456789" ) -- Required to show rating pop-ups
     composer.setVariable( "urlLandingPage" , "https://sekodev.github.io/bilgiWeb/" ) -- Required for sharing landing page on social media
-    composer.setVariable( "pathIconFile" , "assets/menu/iconQuiz.png" ) -- Required for share UI
+    composer.setVariable( "pathIconFile" , "assets/socialMedia/iconQuiz.png" ) -- Required for share UI
 
     composer.setVariable( "currentTheme" , "dark") -- dark/light
     composer.setVariable( "currentLanguage" , "tr") -- Default: Turkish

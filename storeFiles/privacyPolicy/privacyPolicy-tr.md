@@ -13,7 +13,7 @@ Sleepy Bug tarafından geliştirilen Uygulamalar'da bizimle iletişime geçmeyi 
 
 Bizimle iletişime geçtiğiniz takdirde, seçtiğiniz platforma göre hakkınızda görüntüleyebileceğimiz, saklayabileceğimiz ve kullanabileceğimiz veriler şunlardır:
 - Facebook: Herkese açık profilinizde yer alan bilgileriniz,
-- Twitter: Herkese açık profilinizde yer alan bilgileriniz,
+- X: Herkese açık profilinizde yer alan bilgileriniz,
 - e-posta: e-posta adresiniz.
 
 Bizimle paylaşmayı kabul ettiğiniz iletişim bilgileriniz Sleepy Bug tarafından sadece Sizinle iletişim kurma amacıyla saklanabilir, işlenebilir ve kullanılabilir.
@@ -28,6 +28,8 @@ Platformlar'a ait gizlilik politikalarına ulaşmak için aşağıdaki bağlant�
 [Google Play Store](https://policies.google.com/privacy?hl=tr-TR)
 
 [App Store](https://www.apple.com/tr/legal/privacy/tr/)
+
+[Amazon](https://www.amazon.com/gp/help/customer/display.html?nodeId=GX7NJQ4ZB8MHFRNJ)
 <br><br>
 
 Yukarıda belirtilen veriler dışında Sleepy Bug tarafından geliştirilen Uygulamalar'da hakkınızda herhangi bir kişisel veri toplanmamaktadır.

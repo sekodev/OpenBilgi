@@ -13,7 +13,7 @@ If You choose to get in contact with Sleepy Bug, either through Applications or 
 
 In case you contact Us, the information we can view, store and use based on your choice of communication method is as follows:
 - Facebook: Information on your public profile,
-- Twitter: Information on your public profile,
+- X: Information on your public profile,
 - e-mail: Your e-mail address.
 
 The contact information You choose to provide will only be stored, processed and used to communicate with You.
@@ -28,6 +28,8 @@ Below you can find links to the privacy policies of the Platforms.
 [Google Play Store](https://policies.google.com/privacy?hl=en-US)
 
 [App Store](https://www.apple.com/legal/privacy/en-ww/)
+
+[Amazon](https://www.amazon.com/gp/help/customer/display.html?nodeId=GX7NJQ4ZB8MHFRNJ)
 <br><br>
 
 Other than the information listed above, We do not collect any personal information when You use Applications made by Sleepy Bug.

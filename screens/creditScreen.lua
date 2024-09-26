@@ -164,7 +164,7 @@ local function createContactButtons()
 
     local optionsButtonFacebook = 
     {
-        defaultFile = "assets/menu/facebook.png",
+        defaultFile = "assets/socialMedia/facebook.png",
         width = widthContactButton,
         height = heightContactButton,
         id = "openURL",
@@ -175,22 +175,26 @@ local function createContactButtons()
     buttonFacebook.y = buttonTermsUse.y - buttonTermsUse.height - buttonFacebook.height / 1.5
     creditsGroup:insert(buttonFacebook)
 
+    local fileTwitterLogo = "assets/socialMedia/twitter.png"
+    if (currentTheme == "dark") then
+        fileTwitterLogo = "assets/socialMedia/twitter-light.png"
+    end
     local optionsButtonTwitter = 
     {
-        defaultFile = "assets/menu/twitter.png",
+        defaultFile = fileTwitterLogo,
         width = widthContactButton,
         height = heightContactButton,
         id = "openURL",
         onEvent = handleTouch,
     }
     local buttonTwitter = widget.newButton( optionsButtonTwitter )
-    buttonTwitter.URL = "https://twitter.com/sleepybugstudio"
+    buttonTwitter.URL = "https://x.com/sleepybugstudio"
     buttonTwitter.y = buttonFacebook.y
     creditsGroup:insert(buttonTwitter)
 
-    local fileGithub = "assets/menu/github.png"
+    local fileGithub = "assets/socialMedia/github.png"
     if (currentTheme == "dark") then
-        fileGithub = "assets/menu/github-light.png"
+        fileGithub = "assets/socialMedia/github-light.png"
     end
 
     local optionsButtonGithub = 
@@ -209,7 +213,7 @@ local function createContactButtons()
 --[[
     local optionsButtonSendMail = 
     {
-        defaultFile = "assets/menu/sendMail.png",
+        defaultFile = "assets/socialMedia/sendMail.png",
         width = widthContactButton,
         height = heightContactButton,
         id = "sendMail",
