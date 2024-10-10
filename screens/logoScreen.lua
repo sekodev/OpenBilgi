@@ -18,12 +18,12 @@ local mainGroup
 local sceneTransitionTime = composer.getVariable( "sceneTransitionTime" )
 local sceneTransitionEffect = composer.getVariable( "sceneTransitionEffect" )
 
-local tmr
+local timerChangeScene
 
 
 local function changeScene()
-    timer.cancel( tmr )
-    tmr = nil
+    timer.cancel( timerChangeScene )
+    timerChangeScene = nil
 
     local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, params = {callSource = "logoScreen"}}
     composer.gotoScene( "screens.menuScreen", optionsChangeScene )
@@ -48,12 +48,10 @@ function scene:create( event )
     local background = display.newRect( mainGroup, display.contentCenterX, display.contentCenterY, contentWidth, contentHeight )
     background:setFillColor( unpack(themeData.colorBackground) ) -- themeData is global, main.lua
 
-    -- This is included because of low asset quality
-    -- Can be fixed with a higher quality asset
-    local scaleLogo = 0.8
-
-    -- Your company/team logo here
-    local logoSB = display.newImageRect( mainGroup, "assets/other/logoSleepyBug.png", 813 * scaleLogo, 194 * scaleLogo )
+    -- Your logo here
+    local heightLogo = contentHeightSafe / 3
+    local widthLogo = heightLogo
+    local logoSB = display.newImageRect( mainGroup, "assets/other/logoSleepyBug.png", widthLogo, heightLogo)
     logoSB.x, logoSB.y = display.contentCenterX, display.contentCenterY
 
     printBuildVersion()
@@ -68,7 +66,7 @@ function scene:show( event )
         composer.removeHidden()
 
         -- Wait some time and automatically change to menu screen
-        tmr = timer.performWithDelay( 1500, changeScene, 1 )
+        timerChangeScene = timer.performWithDelay( 1500, changeScene, 1 )
     end
 end
 

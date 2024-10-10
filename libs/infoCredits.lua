@@ -8,7 +8,7 @@ function infoCredits.getData()
     -- START OF EDITABLE AREA
 
 	creditsData.entries[1] = {
-		imagePath = { dark = "assets/other/logoSleepyBug.png", light = "assets/other/logoSleepyBug.png", width = 650, height = 155 }
+		imagePath = { dark = "assets/other/logoSleepyBug.png", light = "assets/other/logoSleepyBug.png", width = contentHeightSafe / 3, height = contentHeightSafe / 3 }
 	}
 
 	creditsData.entries[2] = {
