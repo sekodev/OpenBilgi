@@ -10,28 +10,18 @@
 --
 ------------------------------------------------------------------------------
 
-local resWidth, resHeight
+local widthStarting, heightStarting = 720, 1280
+local pixelWidth, pixelHeight = display.pixelWidth, display.pixelHeight
 
-if ( string.sub( system.getInfo("model"), 1, 4 ) == "iPad" ) then
-    resWidth = 768
-    resHeight = 1024
-elseif ( display.pixelHeight / display.pixelWidth > 2 ) then
-    resWidth = 810
-    resHeight = 1800
-elseif ( display.pixelHeight / display.pixelWidth > 1.72 ) then
-    resWidth = 720
-    resHeight = 1280
-else
-    resWidth = 768
-    resHeight = 1280
-end
+local scale = math.max(widthStarting / pixelWidth, heightStarting / pixelHeight)
+local widthResolution, heightResolution = pixelWidth * scale, pixelHeight * scale
 
 application =
 {
     content =
     {
-        width = resWidth,
-        height = resHeight,
+        width = widthResolution,
+        height = heightResolution,
         fps = 60,
 
         imageSuffix =
