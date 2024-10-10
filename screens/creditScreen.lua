@@ -216,6 +216,7 @@ local function createContactButtons()
         onEvent = handleTouch,
     }
     local buttonSendMail = widget.newButton( optionsButtonSendMail )
+    buttonSendMail:setFillColor( unpack(themeData.colorButtonStroke) )
     buttonSendMail.y = buttonTwitter.y
     creditsGroup:insert(buttonSendMail)
 ]]
