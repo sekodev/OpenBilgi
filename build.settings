@@ -73,7 +73,7 @@ settings =
 
         osx = {"Icon*.png", "Icon*.ico", "IconNotificationDefault*.png", "AndroidResources*"},
         
-        android = {"*.nib", "*.xcassets", "Icon-40.png", "Icon-58.png", "Icon-76.png", "Icon-80.png", "Icon-87.png", "Icon-120.png", "Icon-152.png", "Icon-167.png", "Icon-180.png", "iTunes*.png", "Icon*.ico", "Icon*.icns"},
+        android = {"*.nib", "*.xcassets", "iTunes*.png", "Icon*.ico", "Icon*.icns"},
 
         win32 = {"*.nib", "*.xcassets", "Icon*.png", "Icon*.icns", "iTunes*.png", "IconNotificationDefault*.png", "AndroidResources*"},
     },
