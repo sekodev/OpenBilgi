@@ -264,6 +264,7 @@ end
 
 local function cleanUp()
     Runtime:removeEventListener( "enterFrame", moveStats )
+    timer.cancelAll( )
 end
 
 function scene:create( event )
@@ -306,7 +307,9 @@ function scene:show( event )
         composer.removeHidden()
         composer.setVariable("currentAppScene", "statsScreen")
 
-        Runtime:addEventListener( "enterFrame", moveStats )
+        timer.performWithDelay( 1000, function ()
+                Runtime:addEventListener( "enterFrame", moveStats )
+            end, 1)
     end
 end
 
