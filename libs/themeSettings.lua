@@ -21,17 +21,17 @@ function themeSettings.getData(themeSelected)
 		themeData.nameSelected = "dark"
 
 		themeData.colorBackground = { 0, 0, 0 }
-		themeData.colorBackgroundPopup = { .917, .917, .843 }
+		themeData.colorBackgroundPopup = { .98, .952, .878 }
 
 		themeData.colorSeparator = { .99, .82, .009 }
 
 		themeData.colorButtonFillDefault = themeData.colorBackground
-		themeData.colorButtonFillOver = { .917, .917, .843 }
-		themeData.colorButtonDefault = { .917, .917, .843 }
+		themeData.colorButtonFillOver = themeData.colorBackgroundPopup
+		themeData.colorButtonDefault = themeData.colorBackgroundPopup
 		themeData.colorButtonFillTrue = { .055, .759, .035 }
 		themeData.colorButtonFillWrong = { .878, 0, 0 }
 		themeData.colorButtonOver = { .99, .82, .009 }
-		themeData.colorButtonStroke = { .917, .917, .843 }
+		themeData.colorButtonStroke = themeData.colorBackgroundPopup
 
 		themeData.strokeWidthButtons = 3
 		themeData.cornerRadiusButtons = 25
@@ -43,9 +43,9 @@ function themeSettings.getData(themeSelected)
 
 		themeData.colorTitle = { 1, 0, 0 }
 
-		themeData.colorTextDefault = { .917, .917, .843 }
+		themeData.colorTextDefault = themeData.colorBackgroundPopup
 		themeData.colorTextOver = { 0, 0, 0 }
-		themeData.colorTextSelected = { .917, .917, .843 }
+		themeData.colorTextSelected = { .98, .952, .878 }
 		themeData.colorTextTrue = themeData.colorTextSelected
 		themeData.colorTextWrong = { 0, 0, 0 }
 
@@ -60,18 +60,18 @@ function themeSettings.getData(themeSelected)
 	elseif (themeSelected == "light") then
 		themeData.nameSelected = "light"
 
-		themeData.colorBackground = { 1, 1, .922 }
+		themeData.colorBackground = { .98, .952, .878 }
 		themeData.colorBackgroundPopup = { 0, 0, 0 }
 
 		themeData.colorSeparator = { .99, .82, .009 }
 
 		themeData.colorButtonFillDefault = themeData.colorBackground
-		themeData.colorButtonFillOver = { 0, 0, 0 }
-		themeData.colorButtonDefault = { 0, 0, 0 }
+		themeData.colorButtonFillOver = themeData.colorBackgroundPopup
+		themeData.colorButtonDefault = themeData.colorBackgroundPopup
 		themeData.colorButtonFillTrue = { .055, .759, .035 }
 		themeData.colorButtonFillWrong = { .878, 0, 0 }
 		themeData.colorButtonOver = { .99, .82, .009 }
-		themeData.colorButtonStroke = { 0, 0, 0 }
+		themeData.colorButtonStroke = themeData.colorBackgroundPopup
 
 		themeData.strokeWidthButtons = 3
 		themeData.cornerRadiusButtons = 25
@@ -83,9 +83,9 @@ function themeSettings.getData(themeSelected)
 
 		themeData.colorTitle = { 1, 0, 0 }
 
-		themeData.colorTextDefault = { 0, 0, 0 }
+		themeData.colorTextDefault = themeData.colorBackgroundPopup
 		themeData.colorTextOver = { 0, 0, 0 }
-		themeData.colorTextSelected = { .917, .917, .843 }
+		themeData.colorTextSelected = { .98, .952, .878 }
 		themeData.colorTextTrue = themeData.colorTextSelected
 		themeData.colorTextWrong = { 0, 0, 0 }
 
