@@ -30,10 +30,6 @@ local URLselected = ""
 local yLimitBottom
 
 
-local function cleanUp()
-    Runtime:removeEventListener( "enterFrame", moveCredits )
-end
-
 -- Reset y position of credits container to move everything back to starting point
 local function resetCreditsPosition()
     for i = 1, containerCredits.numChildren do
@@ -388,6 +384,10 @@ local function createScreenElements()
 
     createContactButtons()
     createCreditsElements()
+end
+
+local function cleanUp()
+    Runtime:removeEventListener( "enterFrame", moveCredits )
 end
 
 function scene:create( event )
