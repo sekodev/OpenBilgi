@@ -41,7 +41,7 @@ local function assignVariables()
     composer.setVariable( "userToken", "" )
 
     composer.setVariable( "emailSupport", "info.sleepybug@gmail.com" ) -- Used to show player a way to get in contact
-    composer.setVariable( "currentVersion" , "OpenBilgi, v0.9.2 (72)" ) -- Visible in Settings screen
+    composer.setVariable( "currentVersion" , "OpenBilgi, v0.9.3 (76)" ) -- Visible in Logo screen
     composer.setVariable( "idAppStore" , "123456789" ) -- Required to show rating pop-ups
     composer.setVariable( "urlLandingPage" , "https://sekodev.github.io/bilgiWeb/" ) -- Required for sharing landing page on social media
     composer.setVariable( "pathIconFile" , "assets/socialMedia/iconQuiz.png" ) -- Required for share UI
@@ -412,4 +412,5 @@ Runtime:addEventListener( "key", onKeyEvent )
 -- After everything is done, switch to logo screen to start the game
 local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, 
     params = {callSource = "main"}}
+--composer.gotoScene( "screens.creditScreen", optionsChangeScene )
 composer.gotoScene( "screens.logoScreen", optionsChangeScene )
