@@ -14,7 +14,6 @@
 local scene = composer.newScene()
 
 local widget = require ("widget")
-widget.setTheme( "widget_theme_ios7" )
 
 local sceneTransitionTime = composer.getVariable( "sceneTransitionTime" )
 local sceneTransitionEffect = composer.getVariable( "sceneTransitionEffect" )
@@ -61,13 +60,10 @@ local function handleTouch(event)
         if (isInteractionAvailable) then
             if (event.target.id == "controlTheme") then
                 -- Changing theme happens in the same screen
-
                 isInteractionAvailable = false
 
                 local colorButtonOver = themeData.colorButtonOver
-
                 event.target.textLabel:setFillColor( unpack(colorButtonOver) )
-
                 audio.play( tableSoundFiles["answerChosen"], {channel = 2} )
 
                 local currentTheme = composer.getVariable( "currentTheme" )
@@ -87,15 +83,38 @@ local function handleTouch(event)
                 createSettingsElements()
 
                 isInteractionAvailable = true
-            elseif (event.target.id == "controlFullScreen") then
-                -- Changing full screen support happens in the same screen
-                
+            elseif (event.target.id == "controlReduceMotion") then
+                -- Changing reduce motion setting happens in the same screen
                 isInteractionAvailable = false
 
                 local colorButtonOver = themeData.colorButtonOver
-
                 event.target.textLabel:setFillColor( unpack(colorButtonOver) )
+                audio.play( tableSoundFiles["answerChosen"], {channel = 2} )
 
+                if (isMotionReduced) then
+                    -- Turn off
+                    isMotionReduced = false
+
+                    sceneTransitionEffect = composer.getVariable( "sceneTransitionEffectDefault" )
+                    composer.setVariable( "sceneTransitionEffect", sceneTransitionEffect )
+                else
+                    -- Turn on
+                    isMotionReduced = true
+
+                    sceneTransitionEffect = composer.getVariable( "sceneTransitionEffectReduceMotion" )
+                    composer.setVariable( "sceneTransitionEffect", sceneTransitionEffect )
+                end
+
+                utils.clearDisplayGroup(menuGroup)
+                createSettingsElements()
+
+                isInteractionAvailable = true
+            elseif (event.target.id == "controlFullScreen") then
+                -- Changing full screen support happens in the same screen
+                isInteractionAvailable = false
+
+                local colorButtonOver = themeData.colorButtonOver
+                event.target.textLabel:setFillColor( unpack(colorButtonOver) )
                 audio.play( tableSoundFiles["answerChosen"], {channel = 2} )
 
                 local fullScreen = composer.getVariable( "fullScreen" )
@@ -111,13 +130,10 @@ local function handleTouch(event)
                 isInteractionAvailable = true
             elseif (event.target.id == "controlLanguage") then
                 -- Changing selected language happens in the same screen
-
                 isInteractionAvailable = false
 
                 local colorButtonOver = themeData.colorButtonOver
-
                 event.target.textLabel:setFillColor( unpack(colorButtonOver) )
-
                 audio.play( tableSoundFiles["answerChosen"], {channel = 2} )
 
                 local currentLanguage = composer.getVariable( "currentLanguage" )
@@ -186,28 +202,6 @@ local function goBack()
     else
         local optionsChangeScene = {effect = sceneTransitionEffect, time = sceneTransitionTime, params = {callSource = "settingScreen"}}
         composer.gotoScene( "screens.menuScreen", optionsChangeScene )
-    end
-end
-
-local function turnOnReduceMotion()
-    isMotionReduced = true
-
-    sceneTransitionEffect = composer.getVariable( "sceneTransitionEffectReduceMotion" )
-    composer.setVariable( "sceneTransitionEffect", sceneTransitionEffect )
-end
-
-local function turnOffReduceMotion()
-    isMotionReduced = false
-
-    sceneTransitionEffect = composer.getVariable( "sceneTransitionEffectDefault" )
-    composer.setVariable( "sceneTransitionEffect", sceneTransitionEffect )
-end
-
-local function onSwitchPress(event)
-    if (event.target.isOn) then
-        turnOffReduceMotion()
-    else
-        turnOnReduceMotion()
     end
 end
 
@@ -290,6 +284,14 @@ function createSettingsElements()
     frameButtonTheme.y = frameButtonReset.y - frameButtonReset.height / 2 - frameButtonTheme.height
     frameButtonTheme.textLabel.y = frameButtonTheme.y
 
+
+    local statusMotionReduced
+    if (isMotionReduced) then
+        statusMotionReduced = sozluk.getString("settingOn")
+    else
+        statusMotionReduced = sozluk.getString("settingOff")
+    end
+
     local frameButtonReduceMotion = display.newRoundedRect( display.contentCenterX, 0, widthMenuButtons, 0, cornerRadiusButtons )
     frameButtonReduceMotion.id = "controlReduceMotion"
     frameButtonReduceMotion:setFillColor( unpack(colorButtonFillDefault) )
@@ -298,50 +300,16 @@ function createSettingsElements()
     frameButtonReduceMotion:addEventListener( "touch", handleTouch )
     menuGroup:insert( frameButtonReduceMotion )
 
-    local optionsLabelReduceMotion = { text = sozluk.getString("reduceMotion"), 
+    local optionsLabelReduceMotion = { text = sozluk.getString("reduceMotion") .. " " .. statusMotionReduced, 
         height = 0, align = "center", font = fontLogo, fontSize = fontSizeButtons }
     frameButtonReduceMotion.textLabel = display.newText( optionsLabelReduceMotion )
     frameButtonReduceMotion.textLabel:setFillColor( unpack(colorTextDefault) )
     frameButtonReduceMotion.textLabel.x = frameButtonReduceMotion.x
     menuGroup:insert(frameButtonReduceMotion.textLabel)
 
-    local optionsSwitchReduceMotion = {
-        style = "onOff",
-        id = "reduceMotion",
-        onPress = onSwitchPress,
-    }
-    frameButtonReduceMotion.switchRM = widget.newSwitch(optionsSwitchReduceMotion)
-    frameButtonReduceMotion.switchRM.width = contentWidthSafe / 7
-    menuGroup:insert(frameButtonReduceMotion.switchRM)
-
-    if (isMotionReduced) then
-        frameButtonReduceMotion.switchRM:setState( { isOn = true, isAnimated = true } )
-    end
-
-    local xDistanceReduceMotion = (contentWidthSafe - (frameButtonReduceMotion.textLabel.width + frameButtonReduceMotion.switchRM.width)) / 3
-    frameButtonReduceMotion.textLabel.x = frameButtonReduceMotion.textLabel.width / 2 + xDistanceReduceMotion
-    frameButtonReduceMotion.switchRM.x = frameButtonReduceMotion.textLabel.x + frameButtonReduceMotion.textLabel.width / 2 + frameButtonReduceMotion.switchRM.width / 2 + xDistanceReduceMotion
-
-    if (composer.getVariable( "currentTheme" ) == "light") then
-        local colorBackgroundPopup = themeData.colorBackgroundPopup
-        
-        frameButtonReduceMotion.switchRM.outlineRect = display.newRoundedRect( menuGroup, 
-            frameButtonReduceMotion.switchRM.x, frameButtonReduceMotion.switchRM.y, 
-            contentWidthSafe / 7, frameButtonReduceMotion.textLabel.height, 50 )
-        frameButtonReduceMotion.switchRM.outlineRect:setFillColor( unpack(colorBackgroundPopup) )
-        frameButtonReduceMotion.switchRM:toFront( )
-    end
-
     frameButtonReduceMotion.height = frameButtonReduceMotion.textLabel.height * 2
     frameButtonReduceMotion.y = frameButtonTheme.y - frameButtonTheme.height / 2 - frameButtonReduceMotion.height / 2
-    
     frameButtonReduceMotion.textLabel.y = frameButtonReduceMotion.y
-    
-    frameButtonReduceMotion.switchRM.height = frameButtonReduceMotion.height / 2
-    frameButtonReduceMotion.switchRM.y = frameButtonReduceMotion.y
-    if (frameButtonReduceMotion.switchRM.outlineRect) then
-        frameButtonReduceMotion.switchRM.outlineRect.y = frameButtonReduceMotion.switchRM.y
-    end
 
     -- This will keep track of the latest element created, in case full screen toggle is not available
     yButtonPlacementNextElement = frameButtonReduceMotion.y - frameButtonReduceMotion.height / 2
@@ -352,9 +320,9 @@ function createSettingsElements()
     if (display.contentHeight > display.safeActualContentHeight) then
         local statusFullScreen
         if (composer.getVariable( "fullScreen" ) == true) then
-            statusFullScreen = sozluk.getString("fullScreenOn")
+            statusFullScreen = sozluk.getString("settingOn")
         else
-            statusFullScreen = sozluk.getString("fullScreenOff")
+            statusFullScreen = sozluk.getString("settingOff")
         end
 
         local frameButtonFullScreen = display.newRoundedRect( display.contentCenterX, 0, widthMenuButtons, 0, cornerRadiusButtons )
