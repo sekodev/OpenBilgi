@@ -206,10 +206,6 @@ local function goBack()
 end
 
 function createSettingsElements()
-    local xDistanceSides = contentWidthSafe / 10
-    local widthButtonSettings = contentWidthSafe / 8
-    local heightButtonSettings = widthButtonSettings
-
     local colorBackground = themeData.colorBackground
     local colorButtonFillDefault = themeData.colorButtonFillDefault
     local colorButtonDefault = themeData.colorButtonDefault
@@ -374,10 +370,10 @@ function createSettingsElements()
     frameButtonLanguage.y = yButtonPlacementNextElement - frameButtonLanguage.height / 2
     frameButtonLanguage.textLabel.y = frameButtonLanguage.y
 
-
-    local widthMusicButton = widthButtonSettings
-    local heightMusicButton = heightButtonSettings
+    local widthMusicButton = contentWidthSafe / 8
+    local heightMusicButton = widthMusicButton
     local yMusicSlider = frameButtonLanguage.y - frameButtonLanguage.height - heightMusicButton * 1.2
+
     local optionsSliderMusic = { id = "musicLevel", filePath = "assets/menu/music.png", 
         colorBackground = colorBackground, colorButtonDefault = colorButtonDefault, 
         colorButtonFillDefault = colorButtonFillWrong, colorButtonFillOnPress = colorButtonFillTrue, 
